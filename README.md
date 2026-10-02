@@ -4,7 +4,11 @@ One place for everyday QA work: CI runs, bug tracking, time tracking, PR QA sess
 
 **Live:** https://rakesh-qa-hub.vercel.app
 
-![Rakesh QA Hub home page](docs/home.png)
+| Light | Dark |
+|---|---|
+| ![Rakesh QA Hub home page, light mode](docs/home.png) | ![Rakesh QA Hub home page, dark mode](docs/home-dark.png) |
+
+**Themes:** pick Light, Dark or System and a colour theme (Aurora, Ocean, Emerald, Sunset or Mono) from the Theme button in the sidebar. The choice is remembered in your browser.
 
 ## Modules
 
@@ -24,6 +28,7 @@ Everything starts empty. Suites, teams, feature pages and people are added in th
 ## Tech stack
 
 - Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, shadcn/ui, lucide-react
+- next-themes for light/dark mode, plus five colour themes driven by CSS variables
 - Prisma 6 with PostgreSQL on Supabase
 - zod for validating every API request
 - Recharts, PapaParse, react-markdown with remark-gfm
