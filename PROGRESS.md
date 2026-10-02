@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** 1 done (app shell). Next: Phase 2 — Database.
+**Current phase:** 2 done (database). Next: Phase 3 — Bug Formatter.
 
 ## Decisions (Phase 0)
 
@@ -41,6 +41,21 @@
   Sidebar collapse state stored via `useLocalStorage` (useSyncExternalStore).
   `.playwright-mcp/` is git-ignored. Next 16 ships its own docs in
   `node_modules/next/dist/docs/` (see AGENTS.md).
+
+- **Phase 2:** Prisma 6.19. Install scripts for prisma/@prisma/* (and esbuild,
+  fsevents, unrs-resolver) approved in package.json `allowScripts` — version-pinned,
+  re-approve after upgrades. Migration `init` applied to Supabase. Enums for fixed
+  value sets; unique names for Team, FeaturePage, Resource. `IssueEvent` keeps
+  `issueTitle` and uses SetNull so the feed survives deletes.
+  Supabase password had unencoded reserved chars — user percent-encoded it in `.env`
+  (remember for Vercel env vars: use the same encoded URLs).
+  Default seed inserts nothing. `seed:demo` needs `ALLOW_DEMO_SEED=1`, refuses on
+  production, `--reset` removes demo rows. Never run it against Supabase.
+- **Local test DB:** Homebrew `postgresql@16`, started with
+  `/opt/homebrew/opt/postgresql@16/bin/pg_ctl -D /opt/homebrew/var/postgresql@16 start`
+  (not a login service). Database `qa_hub_test`, URL
+  `postgresql://rakesham@localhost:5432/qa_hub_test` — pass as DATABASE_URL and
+  DIRECT_URL env vars (they override `.env`).
 
 ## Open questions
 

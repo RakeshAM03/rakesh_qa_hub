@@ -1,0 +1,209 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Severity {
+  P0
+  P1
+  P2
+  P3
+}
+
+// ---------- Bug Tracker ----------
+
+enum IssueStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum IssueEventType {
+  CREATED
+  UPDATED
+  STATUS_CHANGED
+  MARKED_VALID
+  MARKED_INVALID
+  DELETED
+}
+
+model Team {
+  id        String        @id @default(cuid())
+  name      String        @unique
+  features  FeaturePage[]
+  createdAt DateTime      @default(now())
+}
+
+model FeaturePage {
+  id        String       @id @default(cuid())
+  name      String       @unique
+  teamId    String?
+  team      Team?        @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  sheetUrl  String?
+  issues    Issue[]
+  events    IssueEvent[]
+  createdAt DateTime     @default(now())
+
+  @@index([teamId])
+}
+
+model Issue {
+  id            String       @id @default(cuid())
+  featurePageId String
+  featurePage   FeaturePage  @relation(fields: [featurePageId], references: [id], onDelete: Cascade)
+  title         String
+  description   String?
+  severity      Severity     @default(P2)
+  status        IssueStatus  @default(OPEN)
+  isValid       Boolean      @default(true)
+  reporter      String?
+  assignee      String?
+  events        IssueEvent[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([featurePageId])
+  @@index([assignee])
+}
+
+/// One row per change to an issue; feeds the Activity page.
+model IssueEvent {
+  id            String         @id @default(cuid())
+  featurePageId String
+  featurePage   FeaturePage    @relation(fields: [featurePageId], references: [id], onDelete: Cascade)
+  issueId       String?
+  issue         Issue?         @relation(fields: [issueId], references: [id], onDelete: SetNull)
+  /// Title at the time of the event, so the feed still reads well after a delete.
+  issueTitle    String
+  type          IssueEventType
+  field         String?
+  fromValue     String?
+  toValue       String?
+  actor         String?
+  createdAt     DateTime       @default(now())
+
+  @@index([createdAt])
+  @@index([featurePageId])
+}
+
+// ---------- QA Tracker ----------
+
+enum TaskStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+model Resource {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  email     String?
+  active    Boolean   @default(true)
+  logs      TaskLog[]
+  createdAt DateTime  @default(now())
+}
+
+model TaskLog {
+  id          String     @id @default(cuid())
+  resourceId  String
+  resource    Resource   @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  date        DateTime   @db.Date
+  description String
+  status      TaskStatus @default(NOT_STARTED)
+  hours       Float
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([resourceId, date])
+  @@index([date])
+}
+
+// ---------- AI PR Review ----------
+
+enum FlagType {
+  LOGIC_ERROR
+  REGRESSION_RISK
+  SECURITY
+  MISSING_ERROR_HANDLING
+  REQUIREMENT_FIDELITY
+}
+
+enum FlagSource {
+  CLAUDE_OUTPUT
+  MANUAL
+}
+
+model Flag {
+  id           String     @id @default(cuid())
+  date         DateTime   @default(now())
+  repo         String
+  prNumber     Int?
+  filePath     String?
+  line         Int?
+  flagType     FlagType
+  detail       String
+  severity     Severity
+  suggestedFix String?
+  loggedBy     String?
+  source       FlagSource @default(MANUAL)
+  createdAt    DateTime   @default(now())
+
+  @@index([date])
+  @@index([repo])
+  @@index([flagType])
+}
+
+// ---------- TC Library ----------
+
+model TestPlanEntry {
+  id          String   @id @default(cuid())
+  name        String
+  prReference String?
+  output      String
+  createdBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([createdAt])
+}
+
+// ---------- PR QA Session ----------
+
+model SessionTemplate {
+  id         String   @id @default(cuid())
+  name       String   @unique
+  focusAreas String[]
+  steps      Int[]
+  context    String?
+  specRef    String?
+  createdAt  DateTime @default(now())
+}
+
+// ---------- CI Reports ----------
+
+/// A user-added CI suite. Nothing is hard-coded; the page is built from these rows.
+model CiSuite {
+  id             String   @id @default(cuid())
+  name           String
+  /// GitHub repo as "owner/name".
+  repo           String
+  workflowFile   String
+  color          String   @default("blue")
+  /// [{ key, label, type: "text" | "choice", options?, default? }]
+  dispatchInputs Json?
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+}
+
+model RootCauseCache {
+  runId     String   @id
+  summary   String
+  detail    String
+  createdAt DateTime @default(now())
+}

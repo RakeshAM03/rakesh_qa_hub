@@ -28,7 +28,7 @@ After every phase: `npm run lint` + `npm run build` clean → check routes load
   - `<Toaster />` (sonner) in root layout. `.gitignore` keeps `.env`, `.env*.local`.
   - Vitest set up (`npm test`).
 
-- [ ] **Phase 2 — Database** (🛑 skipped: `.env` already has DATABASE_URL, DIRECT_URL, ADMIN_PASSCODE)
+- [x] **Phase 2 — Database** (🛑 skipped: `.env` already has DATABASE_URL, DIRECT_URL, ADMIN_PASSCODE)
   - Prisma 6. `prisma/schema.prisma` from DEPLOYMENT-GUIDE (incl. `CiSuite`) + `IssueEvent`
     model (issueId, featurePageId, type, fromValue, toValue, actor, createdAt).
   - `npx prisma migrate dev --name init`; `src/lib/db.ts`.
