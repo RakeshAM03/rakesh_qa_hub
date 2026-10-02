@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** 9 done (CI Reports). Next: Phase 10 — Public-access protection.
+**Current phase:** 10 done (protection). Next: Phase 11 — Tests.
 
 ## Decisions (Phase 0)
 
@@ -135,6 +135,15 @@
   cached in RootCauseCache by `repo#runId`, in-memory daily cap (RCA_DAILY_LIMIT,
   default 50); only when ANTHROPIC_API_KEY is set (currently off → "—").
   Verified locally with the user's `gh` token (read-only) against actions/checkout.
+
+- **Phase 10:** `src/proxy.ts` (Next 16 "proxy" = middleware) applies `src/lib/rate-limit.ts`:
+  POST/PATCH 30 / 10 min per IP; CI dispatch 5 / hour; AI root cause 10 / hour; 429 JSON
+  + Retry-After. `RATE_LIMIT_DISABLED=1` turns it off for local/CI E2E only — never on
+  Vercel. Audit: all 7 DELETE routes call `requireAdmin`; every POST/PATCH body goes
+  through `readJson` + zod; no dangerouslySetInnerHTML; no NEXT_PUBLIC_ vars; no
+  process.env in client files; client bundle only contains the GITHUB_TOKEN *name* in
+  help text. Security headers in next.config.ts (nosniff, referrer policy, DENY
+  framing, permissions policy), X-Powered-By off. No CSP yet (Next inline scripts).
 
 ## Open questions
 

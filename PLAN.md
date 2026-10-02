@@ -90,7 +90,7 @@ After every phase: `npm run lint` + `npm run build` clean → check routes load
     Jump-to chips + sections from saved suites in sortOrder, runs table, polling,
     pagination, "Connect GitHub to see runs" when no GITHUB_TOKEN.
 
-- [ ] **Phase 10 — Public-access protection**
+- [x] **Phase 10 — Public-access protection**
   - `src/lib/admin.ts` (x-admin-passcode), `src/lib/rate-limit.ts` (30 / 10 min / IP),
     passcode dialog + sessionStorage, zod everywhere, secrets audit.
 
