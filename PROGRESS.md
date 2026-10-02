@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** 0 done — prompts generic, history reset to one orphan commit (force push by user). Waiting for "go" to start Phase 1.
+**Current phase:** 1 done (app shell). Next: Phase 2 — Database.
 
 ## Decisions (Phase 0)
 
@@ -31,6 +31,16 @@
 16. Jira export = Jira wiki markup; .md download = spec Markdown.
 17. % VALID with 0 issues → grey "—" pill.
 18. In-memory rate limiter accepted (per serverless instance).
+
+## Phase notes
+
+- **Phase 1:** Next.js 16.3 (App Router, `src/`), React 19.2, Tailwind 4, shadcn/ui
+  (radix-nova preset; `cn` helper comes from shadcn's `cn` package), zod 4, recharts 3,
+  Vitest 5, Playwright. `@types/node` ^22 (Vitest peer). npm 11 blocks package install
+  scripts until approved (`npm install-scripts approve <pkg>`) — matters for Prisma.
+  Sidebar collapse state stored via `useLocalStorage` (useSyncExternalStore).
+  `.playwright-mcp/` is git-ignored. Next 16 ships its own docs in
+  `node_modules/next/dist/docs/` (see AGENTS.md).
 
 ## Open questions
 

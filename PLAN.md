@@ -14,7 +14,7 @@ After every phase: `npm run lint` + `npm run build` clean → check routes load
 - [x] **Phase 0 — Read and plan**
   Read all specs, clarifying questions answered, prompts sanitized, this plan.
 
-- [ ] **Phase 1 — Project setup + app shell**
+- [x] **Phase 1 — Project setup + app shell**
   - `create-next-app` (TS, Tailwind, ESLint, App Router, `src/`, `@/*`) in repo root,
     keeping `prompts/`, `.gitignore`, `.claude/`, `.env`.
   - shadcn/ui init + components (button, card, input, textarea, select, dialog, tabs,
