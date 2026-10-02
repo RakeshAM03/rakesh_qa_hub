@@ -100,7 +100,7 @@ After every phase: `npm run lint` + `npm run build` clean → check routes load
   - `.github/workflows/e2e.yml`: Postgres service → migrate + seed → lint, unit, build,
     Playwright.
 
-- [ ] **Phase 12 — Deploy to Vercel** 🛑 (CLI already logged in; team `rakesh-qa`)
+- [x] **Phase 12 — Deploy to Vercel** 🛑 (CLI already logged in; team `rakesh-qa`)
   - Link, env vars (Production), `vercel --prod`, subdomain `rakesh-qa-hub`,
     Deployment Protection off (you), smoke test + Playwright against `BASE_URL`.
 
