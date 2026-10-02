@@ -52,7 +52,7 @@ After every phase: `npm run lint` + `npm run build` clean → check routes load
     output panel (Copy/Reset/Download .md, counts), localStorage draft.
   - Unit tests: prompt builder (step renumbering, optional sections), PR URL validation.
 
-- [ ] **Phase 5 — TC Library** (`/tc-library`)
+- [x] **Phase 5 — TC Library** (`/tc-library`)
   - API: list/search/paginate, get, create, import, patch, delete, export.
   - UI: Save card (create/edit, unsaved-changes warning, duplicate-name hint),
     list with search + sort, View drawer (react-markdown, no raw HTML), Copy, Edit,

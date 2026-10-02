@@ -10,6 +10,13 @@ export type SessionInputs = {
   /** Selected step ids (1–10), in any order. */
   steps: number[];
   specRef: string;
+  /** Approved Step 1 + Step 2 output loaded from the TC Library. */
+  approvedPlan?: { name: string; output: string } | null;
+};
+
+const APPROVED_STEP_TEXT: Record<number, string[]> = {
+  1: ["Analyse the PR — already done and approved (see “Approved Steps 1–2” below). Skip."],
+  2: ["Test Plan — already done and approved (see “Approved Steps 1–2” below). Skip."],
 };
 
 /** Each step's lines; continuation lines are indented under the step text when assembled. */
@@ -61,9 +68,16 @@ const orNot = (value: string, fallback = "not provided") => value.trim() || fall
 /**
  * Assembles the copy-ready QA session prompt. Only the selected steps are
  * included, renumbered from 1 in their original order.
+ *
+ * With an approved plan from the TC Library, steps 1 and 2 are always listed
+ * (marked as done) so the remaining steps start at 3, and the saved output is
+ * appended for Claude to work from.
  */
 export function buildPrompt(inputs: SessionInputs): string {
-  const selected = SESSION_STEPS.filter((s) => inputs.steps.includes(s.id));
+  const approved = inputs.approvedPlan?.output.trim() ? inputs.approvedPlan : null;
+  const selected = SESSION_STEPS.filter(
+    (s) => inputs.steps.includes(s.id) || (approved && (s.id === 1 || s.id === 2)),
+  );
   const additional = inputs.additionalPrs.map((p) => p.trim()).filter(Boolean);
 
   const lines = [
@@ -84,12 +98,22 @@ export function buildPrompt(inputs: SessionInputs): string {
     ...selected.map((step, index) => {
       const marker = `${index + 1}. `;
       const pad = " ".repeat(marker.length);
-      const [first, ...rest] = STEP_TEXT[step.id](inputs);
+      const [first, ...rest] = (approved && APPROVED_STEP_TEXT[step.id]) || STEP_TEXT[step.id](inputs);
       return [marker + first, ...rest.map((l) => (l ? pad + l : l))].join("\n");
     }),
     "",
     "## Output",
-    "Work through the steps in order, and show the output of each step under its own heading.",
+    approved
+      ? "Steps 1–2 are already approved: skip them and start from Step 3, using the approved\ntest plan below. Work through the remaining steps in order, and show the output of\neach step under its own heading."
+      : "Work through the steps in order, and show the output of each step under its own heading.",
   ];
+  if (approved) {
+    lines.push(
+      "",
+      `## Approved Steps 1–2 (from TC Library: ${approved.name})`,
+      "",
+      approved.output.trim(),
+    );
+  }
   return lines.join("\n");
 }

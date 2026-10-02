@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FlaskConical, Plus, Save, X } from "lucide-react";
+import { BookMarked, FlaskConical, Plus, Save, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -24,10 +24,12 @@ import { Chip } from "./chip";
 import { BeforeYouStart, HowItWorks } from "./info-panels";
 import { OutputPanel } from "./output-panel";
 import { SaveTemplateDialog } from "./save-template-dialog";
+import { TcLibraryPicker } from "./tc-library-picker";
 
 const DRAFT_KEY = "qa-hub:pr-qa-session:draft";
 
-type Draft = SessionInputs & { template: string | null };
+type TcRef = { id: string; name: string };
+type Draft = Omit<SessionInputs, "approvedPlan"> & { template: string | null; tcEntry: TcRef | null };
 
 const DEFAULT_DRAFT: Draft = {
   frontendPr: "",
@@ -39,6 +41,7 @@ const DEFAULT_DRAFT: Draft = {
   steps: ALL_STEP_IDS,
   specRef: "",
   template: null,
+  tcEntry: null,
 };
 
 const draftSchema = z.object({
@@ -51,12 +54,13 @@ const draftSchema = z.object({
   steps: z.array(z.number()),
   specRef: z.string(),
   template: z.string().nullable(),
+  tcEntry: z.object({ id: z.string(), name: z.string() }).nullable().catch(null),
 });
 
 function parseDraft(raw: string | null): Draft {
   if (!raw) return DEFAULT_DRAFT;
   try {
-    const result = draftSchema.safeParse(JSON.parse(raw));
+    const result = draftSchema.safeParse({ tcEntry: null, ...JSON.parse(raw) });
     return result.success ? result.data : DEFAULT_DRAFT;
   } catch {
     return DEFAULT_DRAFT;
@@ -78,6 +82,10 @@ export function PrQaSession() {
   const [attempted, setAttempted] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [output, setOutput] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [building, setBuilding] = useState(false);
+  /** Full outputs of loaded TC Library entries, by id. */
+  const tcOutputs = useRef(new Map<string, string>());
   const outputRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -112,18 +120,42 @@ export function PrQaSession() {
     return list.includes(item) ? list.filter((x) => x !== item) : [...list, item];
   }
 
-  function build() {
+  /** The prompt for the current inputs, loading the TC Library entry's output if needed. */
+  async function promptFromInputs(): Promise<string | null> {
+    let approvedPlan: SessionInputs["approvedPlan"] = null;
+    if (draft.tcEntry) {
+      const { id, name } = draft.tcEntry;
+      let text = tcOutputs.current.get(id);
+      if (text === undefined) {
+        const res = await fetch(`/api/tc-library/${id}`).catch(() => null);
+        if (!res?.ok) {
+          toast.error(`Couldn't load “${name}” from the TC Library. Remove it or pick another entry.`);
+          return null;
+        }
+        text = ((await res.json()).entry.output as string) ?? "";
+        tcOutputs.current.set(id, text);
+      }
+      approvedPlan = { name, output: text };
+    }
+    return buildPrompt({ ...draft, approvedPlan });
+  }
+
+  async function build() {
     setAttempted(true);
     if (!hasPr) return;
     if (prUrls.some((u) => u && !isGithubPrUrl(u))) {
       toast.error("Fix the PR URLs marked in red first.");
       return;
     }
-    if (draft.steps.length === 0) {
+    if (draft.steps.length === 0 && !draft.tcEntry) {
       toast.error("Select at least one step.");
       return;
     }
-    setOutput(buildPrompt(draft));
+    setBuilding(true);
+    const prompt = await promptFromInputs();
+    setBuilding(false);
+    if (prompt === null) return;
+    setOutput(prompt);
     requestAnimationFrame(() => outputRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   }
 
@@ -312,6 +344,33 @@ export function PrQaSession() {
             </div>
           </div>
 
+          <div className="flex flex-col gap-2">
+            <span className={labelClass}>
+              Approved Steps 1–2 <span className="font-normal normal-case tracking-normal">(optional)</span>
+            </span>
+            {draft.tcEntry ? (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex max-w-full items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-sm text-teal-800">
+                  <BookMarked className="size-4 shrink-0" aria-hidden />
+                  <span className="truncate">{draft.tcEntry.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => update({ tcEntry: null })}
+                    aria-label="Remove TC Library entry"
+                    className="rounded-full p-0.5 hover:bg-teal-100"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </span>
+                <span className="text-xs text-neutral-500">Claude will skip Steps 1–2 and start from Step 3.</span>
+              </div>
+            ) : (
+              <Button variant="outline" size="sm" className="w-fit" onClick={() => setPickerOpen(true)}>
+                <BookMarked className="text-teal-600" /> Load from TC Library
+              </Button>
+            )}
+          </div>
+
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="spec-ref" className={labelClass}>
               Playwright Spec Style Reference{" "}
@@ -330,7 +389,7 @@ export function PrQaSession() {
 
           <Button
             onClick={build}
-            disabled={!hasPr}
+            disabled={!hasPr || building}
             size="lg"
             className="w-full bg-purple-600 text-white hover:bg-purple-700 sm:w-fit sm:self-end"
           >
@@ -344,8 +403,10 @@ export function PrQaSession() {
           <OutputPanel
             value={output}
             onChange={setOutput}
-            onReset={() => {
-              setOutput(buildPrompt(draft));
+            onReset={async () => {
+              const prompt = await promptFromInputs();
+              if (prompt === null) return;
+              setOutput(prompt);
               toast.success("Prompt regenerated from inputs");
             }}
           />
@@ -353,6 +414,14 @@ export function PrQaSession() {
       )}
 
       <SaveTemplateDialog open={saveOpen} onOpenChange={setSaveOpen} onSave={saveTemplate} />
+      <TcLibraryPicker
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        onPick={(entry) => {
+          update({ tcEntry: entry });
+          toast.success(`Loaded “${entry.name}” from the TC Library`);
+        }}
+      />
     </div>
   );
 }

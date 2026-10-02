@@ -5,7 +5,7 @@ export function jsonError(status: number, error: string, details?: unknown) {
   return NextResponse.json({ error, ...(details ? { details } : {}) }, { status });
 }
 
-/** Max request body we accept (bytes); TC Library output is the largest field at 1 MB. */
+/** Default max request body (bytes); TC Library output is the largest single field at 1 MB. */
 const MAX_BODY_BYTES = 2 * 1024 * 1024;
 
 /**
@@ -14,14 +14,22 @@ const MAX_BODY_BYTES = 2 * 1024 * 1024;
 export async function readJson<T extends z.ZodType>(
   req: Request,
   schema: T,
+  { maxBytes = MAX_BODY_BYTES }: { maxBytes?: number } = {},
 ): Promise<{ data: z.infer<T> } | { response: NextResponse }> {
-  const length = Number(req.headers.get("content-length") ?? 0);
-  if (length > MAX_BODY_BYTES) {
-    return { response: jsonError(413, "Request is too large.") };
+  const tooLarge = () => ({
+    response: jsonError(413, `Request is too large (max ${Math.round(maxBytes / 1024 / 1024)} MB).`),
+  });
+  if (Number(req.headers.get("content-length") ?? 0) > maxBytes) return tooLarge();
+  let text: string;
+  try {
+    text = await req.text();
+  } catch {
+    return { response: jsonError(400, "Couldn't read the request body.") };
   }
+  if (Buffer.byteLength(text) > maxBytes) return tooLarge();
   let body: unknown;
   try {
-    body = await req.json();
+    body = JSON.parse(text);
   } catch {
     return { response: jsonError(400, "Request body must be valid JSON.") };
   }

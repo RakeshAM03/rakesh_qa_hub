@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** 4 done (PR QA Session). Next: Phase 5 — TC Library.
+**Current phase:** 5 done (TC Library). Next: Phase 6 — AI PR Review.
 
 ## Decisions (Phase 0)
 
@@ -74,6 +74,22 @@
   overwrite context). Manual chip changes clear the template highlight. Contract
   comparison sentence in step 1 appears only when both PRs are given. Inputs kept
   as a localStorage draft. Manual testing runs against the local `qa_hub_test` DB.
+
+- **Phase 5:** Shared pieces added early (Phase 10 will audit/extend):
+  `src/lib/admin.ts` (`requireAdmin`, sha256 + timingSafeEqual; 503 if
+  ADMIN_PASSCODE unset), `useAdminPasscode()` dialog hook (sessionStorage, re-asks
+  on 401), `useYourName()`/`YourNameField` ("Anonymous" fallback), `Pagination` +
+  `pageItems()`, `Markdown` (react-markdown + remark-gfm, skipHtml, safe links,
+  `.markdown` styles in globals.css), `formatDate/formatRelative`.
+  TC Library: list API returns a 280-char preview; full output via `/[id]`.
+  PR reference links: URL / `owner/repo #n` → PR, bare `repo #n` → GitHub PR search.
+  Import accepts one entry, an array, or `{entries: [...]}`; max 500 entries / 10 MB.
+  Name duplicates allowed with a hint (`/api/tc-library/name-check`).
+  Load from TC Library: steps 1–2 listed as "already approved — skip", others
+  continue from 3, saved output appended under "Approved Steps 1–2".
+  `npm run typecheck` runs `next typegen` first (route types).
+  `npm audit`: 3 high in deepmerge-ts via Prisma CLI's @prisma/config — dev-only,
+  fix requires a Prisma downgrade; left as is.
 
 ## Open questions
 

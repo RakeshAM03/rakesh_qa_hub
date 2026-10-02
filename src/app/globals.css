@@ -131,3 +131,27 @@
     @apply font-sans;
   }
 }
+/* Rendered Markdown (TC Library). Kept small instead of a typography plugin. */
+@layer components {
+  .markdown {
+    @apply text-sm leading-relaxed text-neutral-800 break-words;
+  }
+  .markdown > * + * { @apply mt-3; }
+  .markdown h1 { @apply mt-6 text-xl font-bold text-neutral-900; }
+  .markdown h2 { @apply mt-6 border-b border-neutral-200 pb-1 text-lg font-semibold text-neutral-900; }
+  .markdown h3 { @apply mt-5 text-base font-semibold text-neutral-900; }
+  .markdown h4 { @apply mt-4 font-semibold text-neutral-900; }
+  .markdown :is(h1, h2, h3, h4):first-child { @apply mt-0; }
+  .markdown ul { @apply list-disc pl-5; }
+  .markdown ol { @apply list-decimal pl-5; }
+  .markdown li + li { @apply mt-1; }
+  .markdown a { @apply text-teal-700 underline underline-offset-2; }
+  .markdown code { @apply rounded bg-neutral-100 px-1 py-0.5 font-mono text-[0.85em]; }
+  .markdown pre { @apply overflow-x-auto rounded-lg bg-neutral-900 p-3 text-neutral-100; }
+  .markdown pre code { @apply bg-transparent p-0 text-xs; }
+  .markdown blockquote { @apply border-l-4 border-neutral-200 pl-3 text-neutral-600; }
+  .markdown table { @apply block w-full overflow-x-auto border-collapse text-left; }
+  .markdown th { @apply border border-neutral-200 bg-neutral-50 px-2 py-1 font-semibold; }
+  .markdown td { @apply border border-neutral-200 px-2 py-1 align-top; }
+  .markdown hr { @apply border-neutral-200; }
+}

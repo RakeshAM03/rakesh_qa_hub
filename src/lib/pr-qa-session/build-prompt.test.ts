@@ -92,4 +92,29 @@ describe("buildPrompt", () => {
       /## Steps\n\n## Output\nWork through the steps in order/,
     );
   });
+
+  describe("with an approved plan from the TC Library", () => {
+    const approvedPlan = { name: "Checkout Flow — Oct 2026", output: "## Step 1\nAnalysis\n## Step 2\n| # | Case |" };
+
+    it("marks steps 1–2 as done and keeps the rest starting at 3", () => {
+      const prompt = buildPrompt({ ...base, steps: [3, 7], approvedPlan });
+      const lines = stepLines(prompt);
+      expect(lines).toEqual([
+        expect.stringMatching(/^1\. Analyse the PR — already done and approved/),
+        expect.stringMatching(/^2\. Test Plan — already done and approved/),
+        expect.stringMatching(/^3\. Feature Validation/),
+        expect.stringMatching(/^4\. Report/),
+      ]);
+    });
+
+    it("tells Claude to start from Step 3 and appends the saved output", () => {
+      const prompt = buildPrompt({ ...base, approvedPlan });
+      expect(prompt).toContain("skip them and start from Step 3");
+      expect(prompt.endsWith("## Approved Steps 1–2 (from TC Library: Checkout Flow — Oct 2026)\n\n## Step 1\nAnalysis\n## Step 2\n| # | Case |")).toBe(true);
+    });
+
+    it("ignores an empty plan", () => {
+      expect(buildPrompt({ ...base, approvedPlan: { name: "x", output: "  " } })).toBe(buildPrompt(base));
+    });
+  });
 });
