@@ -59,7 +59,7 @@ After every phase: `npm run lint` + `npm run build` clean → check routes load
     Export JSON, Delete (modal), Import JSON preview, Export all.
   - PR QA Session: "Load from TC Library" → prompt says skip Steps 1–2.
 
-- [ ] **Phase 6 — AI PR Review** (`/ai-pr-review`)
+- [x] **Phase 6 — AI PR Review** (`/ai-pr-review`)
   - `src/lib/ai-pr-review/` — prompt generator, markdown-table parser, location parser.
   - API: flags POST (one/many), GET (filters + pagination), summary, PATCH, DELETE.
   - UI: generator card, log flags (Claude output preview w/ inline edit | manual form),

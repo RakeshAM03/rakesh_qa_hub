@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ShieldCheck } from "lucide-react";
 
-import { ComingSoon } from "@/components/shell/coming-soon";
+import { AiPrReview } from "@/components/ai-pr-review/ai-pr-review";
 import { PageHeader } from "@/components/shell/page-header";
 
 export const metadata: Metadata = { title: "AI PR Review" };
@@ -15,7 +15,7 @@ export default function AiPrReviewPage() {
         icon={ShieldCheck}
         iconClassName="text-purple-600"
       />
-      <ComingSoon message="AI PR Review is being built." />
+      <AiPrReview />
     </>
   );
 }

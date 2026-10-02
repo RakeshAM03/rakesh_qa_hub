@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** 5 done (TC Library). Next: Phase 6 — AI PR Review.
+**Current phase:** 6 done (AI PR Review). Next: Phase 7 — QA Tracker.
 
 ## Decisions (Phase 0)
 
@@ -90,6 +90,16 @@
   `npm run typecheck` runs `next typegen` first (route types).
   `npm audit`: 3 high in deepmerge-ts via Prisma CLI's @prisma/config — dev-only,
   fix requires a Prisma downgrade; left as is.
+
+- **Phase 6:** Review prompt adds one line to the spec template: "Repo: `owner/name`"
+  so Location can link to the PR file (`/pull/N/files#diff-<sha256(path)>R<line>`,
+  computed server-side in `withFileUrl`). Table parser finds the first table with
+  Flag Type + Detail + Severity columns (others optional, aliases accepted), handles
+  escaped pipes / pipes in code / `<br>`. Rows with unknown type or severity other
+  than P0/P1 are shown in red in the preview and must be fixed or removed before
+  saving (data model allows only P0/P1). Preview rows: inline type/severity selects
+  + edit dialog + remove. Flag edit is open to everyone; delete needs passcode.
+  Summary endpoint also returns the distinct repo list for the filter.
 
 ## Open questions
 
