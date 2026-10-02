@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** 2 done (database). Next: Phase 3 — Bug Formatter.
+**Current phase:** 3 done (Bug Formatter). Next: Phase 4 — PR QA Session.
 
 ## Decisions (Phase 0)
 
@@ -56,6 +56,14 @@
   (not a login service). Database `qa_hub_test`, URL
   `postgresql://rakesham@localhost:5432/qa_hub_test` — pass as DATABASE_URL and
   DIRECT_URL env vars (they override `.env`).
+
+- **Phase 3:** Bug Formatter is client-only; findings stored in localStorage
+  (`qa-hub:bug-formatter:findings`, zod-validated on read). Parser extras beyond spec:
+  severity may be bracketed/trailing, label lines may be bold/bulleted, unlabelled
+  lines before the first label become notes, prose after a blank line ends an item,
+  single-line steps split on , ; > -> →. New bugs are inserted by severity; drag
+  handle (or arrow keys on it) reorders. Edited bugs keep their position.
+  Jira export = wiki markup; Slack escapes & < >.
 
 ## Open questions
 

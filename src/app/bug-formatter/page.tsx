@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { FileSignature } from "lucide-react";
 
-import { ComingSoon } from "@/components/shell/coming-soon";
+import { BugFormatter } from "@/components/bug-formatter/bug-formatter";
 import { PageHeader } from "@/components/shell/page-header";
 
 export const metadata: Metadata = { title: "Bug Formatter" };
@@ -15,7 +15,7 @@ export default function BugFormatterPage() {
         icon={FileSignature}
         iconClassName="text-orange-500"
       />
-      <ComingSoon message="Bug Formatter is being built." />
+      <BugFormatter />
     </>
   );
 }

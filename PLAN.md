@@ -39,7 +39,7 @@ After every phase: `npm run lint` + `npm run build` clean → check routes load
   - `.env.example` (empty values). `postinstall: prisma generate`,
     `build: prisma migrate deploy && next build`.
 
-- [ ] **Phase 3 — Bug Formatter** (`/bug-formatter`, client-only, localStorage draft)
+- [x] **Phase 3 — Bug Formatter** (`/bug-formatter`, client-only, localStorage draft)
   - `src/lib/bug-formatter/` — `parser.ts`, `csv.ts`, `export.ts` (Markdown, Jira wiki, Slack).
   - `src/components/bug-formatter/` — tabs (Paste/Manual/CSV), Findings panel, bug card.
   - CSV template download, 2 MB limit, Clear all with in-app confirm.
