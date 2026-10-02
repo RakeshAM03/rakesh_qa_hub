@@ -104,6 +104,6 @@ After every phase: `npm run lint` + `npm run build` clean → check routes load
   - Link, env vars (Production), `vercel --prod`, subdomain `rakesh-qa-hub`,
     Deployment Protection off (you), smoke test + Playwright against `BASE_URL`.
 
-- [ ] **Phase 13 — Wrap-up**
+- [x] **Phase 13 — Wrap-up**
   - README (live link, screenshot, modules, stack, setup, env names, tests),
     secret scan, final summary.

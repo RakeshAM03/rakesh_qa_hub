@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** 12 done (live at https://rakesh-qa-hub.vercel.app). Next: Phase 13 — Wrap-up.
+**Current phase:** All 13 phases done. Live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -166,6 +166,10 @@
   user's GitHub account — until it is, deploy with `vercel deploy --prod --scope rakesh-qa`.
   Smoke test: all routes 200, one item created + deleted per DB module (prod left
   empty), deletes refused without passcode. Live Playwright: 30/30 read-only pass.
+- **Phase 13:** README (live link, screenshot `docs/home.png`, modules, stack, setup,
+  env var names, tests, deployment). Secret scan: `.env` never in git history; no
+  `ghp_` / `github_pat_` / `sk-ant-` anywhere; `postgresql://` only placeholders,
+  the CI throwaway DB and the local test DB.
 
 ## Open questions
 
