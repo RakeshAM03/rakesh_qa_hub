@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** 11 done (tests). Next: Phase 12 — Deploy to Vercel (checkpoint).
+**Current phase:** 12 done (live at https://rakesh-qa-hub.vercel.app). Next: Phase 13 — Wrap-up.
 
 ## Decisions (Phase 0)
 
@@ -156,6 +156,19 @@
   with `base_url` runs the suite against a deployed site. Found & fixed via E2E:
   in-table Radix selects opened off-screen → `position="popper"`.
 
+- **Phase 12:** Vercel team `rakesh-qa`, project `rakesh-qa-hub`, production URL
+  https://rakesh-qa-hub.vercel.app (subdomain as planned). Functions pinned to `bom1`
+  (Mumbai, next to Supabase) via `vercel.json`. Production env: DATABASE_URL,
+  DIRECT_URL, ADMIN_PASSCODE (piped from `.env`, never displayed). GITHUB_TOKEN and
+  ANTHROPIC_API_KEY unset. Production domain is public (Standard Protection only
+  guards preview URLs). Deployed with `vercel deploy --prod` from the CLI;
+  `vercel git connect` failed because the Vercel GitHub app isn't installed on the
+  user's GitHub account — until it is, deploy with `vercel deploy --prod --scope rakesh-qa`.
+  Smoke test: all routes 200, one item created + deleted per DB module (prod left
+  empty), deletes refused without passcode. Live Playwright: 30/30 read-only pass.
+
 ## Open questions
 
-None.
+- Install the Vercel GitHub app for RakeshAM03/rakesh_qa_hub, then run
+  `vercel git connect --scope rakesh-qa` so pushes to main auto-deploy.
+- Optional: turn Deployment Protection fully off if preview URLs should be public too.
