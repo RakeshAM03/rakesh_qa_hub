@@ -45,7 +45,7 @@ After every phase: `npm run lint` + `npm run build` clean → check routes load
   - CSV template download, 2 MB limit, Clear all with in-app confirm.
   - Unit tests: parser, CSV mapping, exporters.
 
-- [ ] **Phase 4 — PR QA Session** (`/pr-qa-session`)
+- [x] **Phase 4 — PR QA Session** (`/pr-qa-session`)
   - `src/config/pr-qa-templates.ts`; `src/lib/pr-qa-session/build-prompt.ts`.
   - API: `GET/POST /api/pr-qa-session/templates` (SessionTemplate).
   - UI: how-it-works panel, notice, inputs, focus chips, step chips (All/None),

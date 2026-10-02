@@ -1,0 +1,394 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { FlaskConical, Plus, Save, X } from "lucide-react";
+import { toast } from "sonner";
+import { z } from "zod";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  ALL_STEP_IDS,
+  BUILT_IN_TEMPLATES,
+  FOCUS_AREAS,
+  SESSION_STEPS,
+  type SessionTemplateConfig,
+} from "@/config/pr-qa-templates";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import { isGithubPrUrl } from "@/lib/github";
+import { buildPrompt, type SessionInputs } from "@/lib/pr-qa-session/build-prompt";
+import { cn } from "@/lib/utils";
+import { Chip } from "./chip";
+import { BeforeYouStart, HowItWorks } from "./info-panels";
+import { OutputPanel } from "./output-panel";
+import { SaveTemplateDialog } from "./save-template-dialog";
+
+const DRAFT_KEY = "qa-hub:pr-qa-session:draft";
+
+type Draft = SessionInputs & { template: string | null };
+
+const DEFAULT_DRAFT: Draft = {
+  frontendPr: "",
+  backendPr: "",
+  additionalPrs: [],
+  testEnvUrl: "",
+  context: "",
+  focusAreas: [],
+  steps: ALL_STEP_IDS,
+  specRef: "",
+  template: null,
+};
+
+const draftSchema = z.object({
+  frontendPr: z.string(),
+  backendPr: z.string(),
+  additionalPrs: z.array(z.string()),
+  testEnvUrl: z.string(),
+  context: z.string(),
+  focusAreas: z.array(z.enum(FOCUS_AREAS)),
+  steps: z.array(z.number()),
+  specRef: z.string(),
+  template: z.string().nullable(),
+});
+
+function parseDraft(raw: string | null): Draft {
+  if (!raw) return DEFAULT_DRAFT;
+  try {
+    const result = draftSchema.safeParse(JSON.parse(raw));
+    return result.success ? result.data : DEFAULT_DRAFT;
+  } catch {
+    return DEFAULT_DRAFT;
+  }
+}
+
+const labelClass = "text-xs font-semibold uppercase tracking-wider text-neutral-500";
+const PR_PLACEHOLDER = "https://github.com/org/repo/pull/123";
+const PR_ERROR = "Enter a GitHub pull request URL, e.g. https://github.com/org/repo/pull/123";
+
+export function PrQaSession() {
+  const [raw, setRaw] = useLocalStorage(DRAFT_KEY);
+  const draft = useMemo(() => parseDraft(raw), [raw]);
+  const update = (patch: Partial<Draft>) =>
+    setRaw((prev) => JSON.stringify({ ...parseDraft(prev), ...patch }));
+
+  const [customTemplates, setCustomTemplates] = useState<SessionTemplateConfig[]>([]);
+  const [saveOpen, setSaveOpen] = useState(false);
+  const [attempted, setAttempted] = useState(false);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [output, setOutput] = useState<string | null>(null);
+  const outputRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/pr-qa-session/templates")
+      .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+      .then((data: { templates: SessionTemplateConfig[] }) => {
+        if (!cancelled) setCustomTemplates(data.templates);
+      })
+      .catch(() => {
+        if (!cancelled) toast.error("Couldn't load saved templates.");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const prUrls = [draft.frontendPr, draft.backendPr, ...draft.additionalPrs].map((u) => u.trim());
+  const hasPr = prUrls.some(Boolean);
+  const urlError = (value: string, field: string) =>
+    value.trim() && (attempted || touched[field]) && !isGithubPrUrl(value) ? PR_ERROR : undefined;
+
+  function applyTemplate(t: SessionTemplateConfig) {
+    const patch: Partial<Draft> = { template: t.name, focusAreas: [...t.focusAreas], steps: [...t.steps] };
+    // Saved templates also carry a spec reference, and context when the field is still empty.
+    if (t.specRef) patch.specRef = t.specRef;
+    if (t.context && !draft.context.trim()) patch.context = t.context;
+    update(patch);
+  }
+
+  function toggle<T>(list: T[], item: T) {
+    return list.includes(item) ? list.filter((x) => x !== item) : [...list, item];
+  }
+
+  function build() {
+    setAttempted(true);
+    if (!hasPr) return;
+    if (prUrls.some((u) => u && !isGithubPrUrl(u))) {
+      toast.error("Fix the PR URLs marked in red first.");
+      return;
+    }
+    if (draft.steps.length === 0) {
+      toast.error("Select at least one step.");
+      return;
+    }
+    setOutput(buildPrompt(draft));
+    requestAnimationFrame(() => outputRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  }
+
+  async function saveTemplate(name: string): Promise<string | null> {
+    if (draft.steps.length === 0) return "Select at least one step first.";
+    try {
+      const res = await fetch("/api/pr-qa-session/templates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          focusAreas: draft.focusAreas,
+          steps: draft.steps,
+          context: draft.context,
+          specRef: draft.specRef,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) return data.error ?? "Couldn't save the template.";
+      setCustomTemplates((list) => [...list, data.template]);
+      update({ template: data.template.name });
+      toast.success(`Template “${name}” saved`);
+      return null;
+    } catch {
+      return "Couldn't reach the server. Try again.";
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <HowItWorks />
+      <BeforeYouStart />
+
+      <section
+        aria-labelledby="session-inputs-title"
+        className="overflow-hidden rounded-xl border border-t-4 border-neutral-200 border-t-purple-600 bg-white shadow-xs"
+      >
+        <header className="flex items-center gap-2 border-b border-purple-100 bg-purple-50 px-4 py-3">
+          <FlaskConical className="size-4 text-purple-600" aria-hidden />
+          <h2 id="session-inputs-title" className="text-base font-semibold text-neutral-900">
+            Session Inputs
+          </h2>
+        </header>
+
+        <div className="flex flex-col gap-6 p-4 sm:p-5">
+          <div className="flex flex-col gap-2">
+            <span className={labelClass} id="templates-label">
+              Templates
+            </span>
+            <div className="flex flex-wrap items-center gap-2" role="group" aria-labelledby="templates-label">
+              {[...BUILT_IN_TEMPLATES, ...customTemplates].map((t) => (
+                <Chip key={t.name} pressed={draft.template === t.name} onClick={() => applyTemplate(t)}>
+                  {t.name}
+                </Chip>
+              ))}
+              <Button variant="ghost" size="sm" onClick={() => setSaveOpen(true)} className="text-purple-700">
+                <Save /> Save current
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="grid gap-4 md:grid-cols-2">
+              <UrlField
+                id="frontend-pr"
+                label="Frontend PR URL"
+                value={draft.frontendPr}
+                error={urlError(draft.frontendPr, "frontend")}
+                onChange={(v) => update({ frontendPr: v })}
+                onBlur={() => setTouched((t) => ({ ...t, frontend: true }))}
+              />
+              <UrlField
+                id="backend-pr"
+                label="Backend PR URL"
+                value={draft.backendPr}
+                error={urlError(draft.backendPr, "backend")}
+                onChange={(v) => update({ backendPr: v })}
+                onBlur={() => setTouched((t) => ({ ...t, backend: true }))}
+              />
+            </div>
+            {draft.additionalPrs.map((url, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <div className="flex-1">
+                  <UrlField
+                    id={`additional-pr-${i}`}
+                    label={`Additional PR URL ${i + 1}`}
+                    hideLabel
+                    value={url}
+                    error={urlError(url, `additional-${i}`)}
+                    onChange={(v) =>
+                      update({ additionalPrs: draft.additionalPrs.map((u, j) => (j === i ? v : u)) })
+                    }
+                    onBlur={() => setTouched((t) => ({ ...t, [`additional-${i}`]: true }))}
+                  />
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`Remove additional PR ${i + 1}`}
+                  onClick={() => update({ additionalPrs: draft.additionalPrs.filter((_, j) => j !== i) })}
+                >
+                  <X />
+                </Button>
+              </div>
+            ))}
+            <p className={cn("text-xs", attempted && !hasPr ? "text-red-600" : "text-neutral-500")}>
+              At least one PR URL is required. Provide both for contract mismatch analysis.
+            </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-fit text-purple-700"
+              onClick={() => update({ additionalPrs: [...draft.additionalPrs, ""] })}
+            >
+              <Plus /> Add another PR
+            </Button>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="test-env" className={labelClass}>
+              Test Environment URL
+            </Label>
+            <Input
+              id="test-env"
+              value={draft.testEnvUrl}
+              onChange={(e) => update({ testEnvUrl: e.target.value })}
+              placeholder="https://your-env.example.com"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="context" className={labelClass}>
+              Additional Context <span className="font-normal normal-case tracking-normal">(optional)</span>
+            </Label>
+            <Textarea
+              id="context"
+              value={draft.context}
+              onChange={(e) => update({ context: e.target.value })}
+              placeholder="e.g. what the feature does, known edge cases"
+              className="min-h-20"
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <span className={labelClass} id="focus-label">
+              Focus Areas <span className="font-normal normal-case tracking-normal">(optional)</span>
+            </span>
+            <div className="flex flex-wrap gap-2" role="group" aria-labelledby="focus-label">
+              {FOCUS_AREAS.map((area) => (
+                <Chip
+                  key={area}
+                  pressed={draft.focusAreas.includes(area)}
+                  onClick={() => update({ focusAreas: toggle(draft.focusAreas, area), template: null })}
+                >
+                  {area}
+                </Chip>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="flex items-baseline justify-between gap-2">
+              <span className={labelClass} id="steps-label">
+                Steps{" "}
+                <span className="font-normal normal-case tracking-normal">— deselect steps you don&apos;t need</span>
+              </span>
+              <span className="flex gap-3 text-sm">
+                <button type="button" className="font-medium text-purple-700 hover:underline" onClick={() => update({ steps: ALL_STEP_IDS, template: null })}>
+                  All
+                </button>
+                <button type="button" className="font-medium text-purple-700 hover:underline" onClick={() => update({ steps: [], template: null })}>
+                  None
+                </button>
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2" role="group" aria-labelledby="steps-label">
+              {SESSION_STEPS.map((step) => (
+                <Chip
+                  key={step.id}
+                  pressed={draft.steps.includes(step.id)}
+                  onClick={() => update({ steps: toggle(draft.steps, step.id as number), template: null })}
+                >
+                  <span className="opacity-70">{step.id}.</span> {step.name}
+                </Chip>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="spec-ref" className={labelClass}>
+              Playwright Spec Style Reference{" "}
+              <span className="font-normal normal-case tracking-normal">(optional)</span>
+            </Label>
+            <Textarea
+              id="spec-ref"
+              value={draft.specRef}
+              onChange={(e) => update({ specRef: e.target.value })}
+              placeholder="Paste a sample .spec.ts file here..."
+              className="min-h-28 resize-y font-mono text-xs"
+              spellCheck={false}
+            />
+            <p className="text-xs text-neutral-500">Used in Step 9 so Claude mirrors your team&apos;s style.</p>
+          </div>
+
+          <Button
+            onClick={build}
+            disabled={!hasPr}
+            size="lg"
+            className="w-full bg-purple-600 text-white hover:bg-purple-700 sm:w-fit sm:self-end"
+          >
+            <FlaskConical /> Build Prompt
+          </Button>
+        </div>
+      </section>
+
+      {output !== null && (
+        <div ref={outputRef} className="scroll-mt-4">
+          <OutputPanel
+            value={output}
+            onChange={setOutput}
+            onReset={() => {
+              setOutput(buildPrompt(draft));
+              toast.success("Prompt regenerated from inputs");
+            }}
+          />
+        </div>
+      )}
+
+      <SaveTemplateDialog open={saveOpen} onOpenChange={setSaveOpen} onSave={saveTemplate} />
+    </div>
+  );
+}
+
+type UrlFieldProps = {
+  id: string;
+  label: string;
+  hideLabel?: boolean;
+  value: string;
+  error?: string;
+  onChange: (value: string) => void;
+  onBlur: () => void;
+};
+
+function UrlField({ id, label, hideLabel, value, error, onChange, onBlur }: UrlFieldProps) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor={id} className={cn(labelClass, hideLabel && "sr-only")}>
+        {label}
+      </Label>
+      <Input
+        id={id}
+        type="url"
+        inputMode="url"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
+        placeholder={PR_PLACEHOLDER}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${id}-error` : undefined}
+      />
+      {error && (
+        <p id={`${id}-error`} className="text-xs text-red-600">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}

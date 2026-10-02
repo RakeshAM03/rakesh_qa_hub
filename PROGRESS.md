@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** 3 done (Bug Formatter). Next: Phase 4 — PR QA Session.
+**Current phase:** 4 done (PR QA Session). Next: Phase 5 — TC Library.
 
 ## Decisions (Phase 0)
 
@@ -64,6 +64,16 @@
   single-line steps split on , ; > -> →. New bugs are inserted by severity; drag
   handle (or arrow keys on it) reorders. Edited bugs keep their position.
   Jira export = wiki markup; Slack escapes & < >.
+
+- **Phase 4:** Shared `src/lib/api.ts` (readJson + zod, 2 MB body cap, Prisma error
+  helpers) and `src/lib/github.ts` (PR URL parsing, list splitting). DB GET routes use
+  `dynamic = "force-dynamic"`. Built-in templates in `src/config/pr-qa-templates.ts`;
+  custom ones via `/api/pr-qa-session/templates` (GET/POST, names unique, built-in
+  names reserved). Picking a saved template applies focus areas + steps + spec ref,
+  and its context only if the context field is empty (spec: templates don't
+  overwrite context). Manual chip changes clear the template highlight. Contract
+  comparison sentence in step 1 appears only when both PRs are given. Inputs kept
+  as a localStorage draft. Manual testing runs against the local `qa_hub_test` DB.
 
 ## Open questions
 

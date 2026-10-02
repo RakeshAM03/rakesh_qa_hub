@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { FlaskConical } from "lucide-react";
 
-import { ComingSoon } from "@/components/shell/coming-soon";
+import { PrQaSession } from "@/components/pr-qa-session/pr-qa-session";
 import { PageHeader } from "@/components/shell/page-header";
 
 export const metadata: Metadata = { title: "PR QA Session" };
@@ -15,7 +15,7 @@ export default function PrQaSessionPage() {
         icon={FlaskConical}
         iconClassName="text-purple-600"
       />
-      <ComingSoon message="PR QA Session is being built." />
+      <PrQaSession />
     </>
   );
 }
