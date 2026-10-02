@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** 7 done (QA Tracker). Next: Phase 8 — Bug Tracker.
+**Current phase:** 8 done (Bug Tracker). Next: Phase 9 — CI Reports.
 
 ## Decisions (Phase 0)
 
@@ -111,6 +111,17 @@
   Manage resources: add / rename (on blur) / (de)activate; delete (passcode) also deletes
   logs. Inactive resources vanish from form + tabs; history kept. Logging switches the
   history tab to that person.
+
+- **Phase 8:** Counts/% valid computed from Issue rows (`issueCounts` groupBy). Team and
+  feature names are unique case-insensitively (409). Issue changes write IssueEvents
+  (`diffIssue`: status, valid/invalid, assignee, severity, title/description/reporter
+  edits; DELETED before delete). Actor = "Your name". Feature detail: inline status +
+  valid switch (optimistic), edit dialog, delete issue / delete feature page (passcode).
+  Global search (issues + features) on all Bug Tracker pages; issue results open the
+  feature page with `?issue=` highlighted. "View sheet" shows "Coming soon". Workload
+  counts valid issues only: open = Open + In Progress, closed = Resolved + Closed, plus
+  open P0/P1. Issue display ID = last 6 chars of the cuid. Note: zod 4 `.partial()`
+  keeps `.default()`s — patch schemas must be built without defaults.
 
 ## Open questions
 

@@ -73,7 +73,7 @@ After every phase: `npm run lint` + `npm run build` clean → check routes load
     Log Entry (multi-row, validation), analytics (bar/pie/line + stats),
     per-resource tabs, date-grouped history, search + date range, inline edit, load more.
 
-- [ ] **Phase 8 — Bug Tracker** (`/bug-tracker`, `/activity`, `/workload`, `/[featureId]`)
+- [x] **Phase 8 — Bug Tracker** (`/bug-tracker`, `/activity`, `/workload`, `/[featureId]`)
   - API: teams, features (with computed counts), issues CRUD, activity, workload, search.
   - UI: team sidebar w/ counts (dropdown on small screens), feature table + % valid pills,
     New Team / New Feature Page modals, "View sheet" → Coming soon, global search,

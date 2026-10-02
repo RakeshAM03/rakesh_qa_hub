@@ -1,23 +1,9 @@
 import type { Metadata } from "next";
-import { Users } from "lucide-react";
 
-import { ComingSoon } from "@/components/shell/coming-soon";
-import { PageHeader } from "@/components/shell/page-header";
+import { WorkloadView } from "@/components/bug-tracker/workload-view";
 
-export const metadata: Metadata = { title: "Workload" };
+export const metadata: Metadata = { title: "Bug Tracker Workload" };
 
 export default function BugTrackerWorkloadPage() {
-  return (
-    <>
-      <PageHeader
-        title="Workload"
-        subtitle="Open and closed issues per assignee"
-        icon={Users}
-        iconClassName="text-neutral-700"
-        backHref="/bug-tracker"
-        backLabel="Bug Tracker"
-      />
-      <ComingSoon message="Workload is being built." />
-    </>
-  );
+  return <WorkloadView />;
 }
