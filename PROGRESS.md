@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** 6 done (AI PR Review). Next: Phase 7 — QA Tracker.
+**Current phase:** 7 done (QA Tracker). Next: Phase 8 — Bug Tracker.
 
 ## Decisions (Phase 0)
 
@@ -100,6 +100,17 @@
   saving (data model allows only P0/P1). Preview rows: inline type/severity selects
   + edit dialog + remove. Flag edit is open to everyone; delete needs passcode.
   Summary endpoint also returns the distinct repo list for the filter.
+
+- **Phase 7:** Dates travel as YYYY-MM-DD and are stored as UTC-midnight `@db.Date`
+  (`src/lib/dates.ts`, `fromIsoDate/toIsoDate`); the date picker can't pick future days.
+  Hours: > 0, ≤ 24, steps of 0.25. Analytics period selector (7/14/30 days, default 14);
+  "Avg hours per day" = total ÷ days that have logs. Charts (Recharts): single-hue bars
+  per resource, status bars in the pill colours with text labels, linear daily line,
+  tooltips, "Show the data as a table". History pages by date groups (10 dates per
+  "Load older dates"). Inline status/hours edit open to all; delete needs passcode.
+  Manage resources: add / rename (on blur) / (de)activate; delete (passcode) also deletes
+  logs. Inactive resources vanish from form + tabs; history kept. Logging switches the
+  history tab to that person.
 
 ## Open questions
 

@@ -66,7 +66,7 @@ After every phase: `npm run lint` + `npm run build` clean → check routes load
     all-flags table (type summary bar, search, severity pills, repo filter, pagination).
   - Unit tests: table parser, location parsing, URL splitting.
 
-- [ ] **Phase 7 — QA Tracker** (`/qa-tracker`)
+- [x] **Phase 7 — QA Tracker** (`/qa-tracker`)
   - API: resources, logs POST/GET, logs PATCH/DELETE, analytics.
   - API: resources POST/PATCH/DELETE (delete needs passcode).
   - UI: Manage resources dialog (add / rename / deactivate / delete),
