@@ -24,9 +24,9 @@ export function BugFormatter() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
-      <section aria-label="Add bugs" className="overflow-hidden rounded-xl border border-t-4 border-neutral-200 border-t-orange-500 bg-white shadow-xs">
+      <section aria-label="Add bugs" className="overflow-hidden rounded-xl border border-t-4 border-neutral-200 border-t-orange-500 bg-card shadow-xs">
         <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)} className="gap-0">
-          <TabsList className="h-auto w-full rounded-none border-b border-neutral-200 bg-white p-0">
+          <TabsList className="h-auto w-full rounded-none border-b border-neutral-200 bg-card p-0">
             <TabsTrigger value="paste" className={triggerClass}>
               <ClipboardList /> Paste from Claude
             </TabsTrigger>

@@ -36,7 +36,7 @@ export function FindingsCard({ bugs, editingId, onEdit, onDelete, onMove, onClea
   const counts = severityCounts(bugs);
 
   return (
-    <section aria-labelledby="findings-title" className="flex flex-col rounded-xl border border-neutral-200 bg-white shadow-xs">
+    <section aria-labelledby="findings-title" className="flex flex-col rounded-xl border border-neutral-200 bg-card shadow-xs">
       <header className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-100 px-4 py-3">
         <h2 id="findings-title" className="text-base font-semibold text-neutral-900">
           Findings{bugs.length > 0 && ` (${bugs.length})`}

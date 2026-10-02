@@ -88,7 +88,7 @@ export function SuiteSection(props: SuiteSectionProps) {
     <section
       id={`suite-${suite.id}`}
       aria-labelledby={`suite-${suite.id}-title`}
-      className={cn("scroll-mt-4 overflow-hidden rounded-xl border border-t-4 border-neutral-200 bg-white shadow-xs", style.border)}
+      className={cn("scroll-mt-4 overflow-hidden rounded-xl border border-t-4 border-neutral-200 bg-card shadow-xs", style.border)}
     >
       <header className={cn("flex flex-wrap items-center gap-2 px-4 py-3", style.header)}>
         <div className="min-w-0 flex-1">

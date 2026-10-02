@@ -19,6 +19,10 @@ export type NavItem = NavLink & {
   icon: LucideIcon;
   /** One-line description shown on the home page card. */
   description: string;
+  /** Icon chip colours on the home page (literal classes for Tailwind). */
+  tone: string;
+  /** Module uses or prepares AI (Claude) work — shows an "AI" badge. */
+  ai?: boolean;
   /** Sub-pages; when present the item renders as an expandable group. */
   children?: NavLink[];
 };
@@ -29,12 +33,15 @@ export const navItems: NavItem[] = [
     href: "/ci",
     icon: GitBranch,
     description: "Trigger and monitor the GitHub Actions regression suites you add.",
+    tone: "bg-blue-100 text-blue-700",
+    ai: true,
   },
   {
     title: "Bug Tracker",
     href: "/bug-tracker",
     icon: LayoutGrid,
     description: "Track QA issues per feature and team, with % valid at a glance.",
+    tone: "bg-rose-100 text-rose-700",
     children: [
       { title: "Dashboard", href: "/bug-tracker" },
       { title: "Activity", href: "/bug-tracker/activity" },
@@ -46,36 +53,46 @@ export const navItems: NavItem[] = [
     href: "/qa-tracker",
     icon: ClipboardList,
     description: "Log daily QA tasks and time spent, with analytics and history.",
+    tone: "bg-green-100 text-green-700",
   },
   {
     title: "QA Digest",
     href: "/qa-digest",
     icon: CalendarDays,
     description: "A periodic summary of QA activity. Coming soon.",
+    tone: "bg-neutral-100 text-neutral-600",
   },
   {
     title: "PR QA Session",
     href: "/pr-qa-session",
     icon: FlaskConical,
     description: "Build a full QA session prompt for Claude Code from PR URLs.",
+    tone: "bg-purple-100 text-purple-700",
+    ai: true,
   },
   {
     title: "AI PR Review",
     href: "/ai-pr-review",
     icon: ShieldCheck,
     description: "Generate a code review prompt and log the flags Claude finds.",
+    tone: "bg-violet-100 text-violet-700",
+    ai: true,
   },
   {
     title: "TC Library",
     href: "/tc-library",
     icon: BookMarked,
     description: "Save approved PR analyses and test plans to reuse later.",
+    tone: "bg-teal-100 text-teal-700",
+    ai: true,
   },
   {
     title: "Bug Formatter",
     href: "/bug-formatter",
     icon: FileSignature,
     description: "Turn findings, forms or CSVs into clean Markdown for Jira or Slack.",
+    tone: "bg-orange-100 text-orange-700",
+    ai: true,
   },
 ];
 

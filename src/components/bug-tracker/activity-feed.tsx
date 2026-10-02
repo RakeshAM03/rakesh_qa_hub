@@ -116,7 +116,7 @@ export function ActivityFeed() {
           ))}
         </div>
       ) : events.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-neutral-300 bg-white px-6 py-16 text-center text-neutral-600">
+        <div className="rounded-xl border border-dashed border-neutral-300 bg-card px-6 py-16 text-center text-neutral-600">
           No activity yet. Changes to issues will show up here.{" "}
           <Link href="/bug-tracker" className="font-medium underline">
             Go to the dashboard
@@ -127,7 +127,7 @@ export function ActivityFeed() {
           {groups.map((g) => (
             <section key={g.day} aria-label={g.day}>
               <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">{g.day}</h2>
-              <ol className="flex flex-col divide-y divide-neutral-100 rounded-xl border border-neutral-200 bg-white">
+              <ol className="flex flex-col divide-y divide-neutral-100 rounded-xl border border-neutral-200 bg-card">
                 {g.events.map((e) => {
                   const { icon: Icon, className } = ICONS[e.type];
                   return (

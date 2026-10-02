@@ -173,11 +173,11 @@ export function TcLibrary() {
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search name, PR reference or content..."
                 aria-label="Search the library"
-                className="bg-white pl-9"
+                className="bg-card pl-9"
               />
             </div>
             <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
-              <SelectTrigger className="w-full bg-white sm:w-44" aria-label="Sort">
+              <SelectTrigger className="w-full bg-card sm:w-44" aria-label="Sort">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -186,7 +186,7 @@ export function TcLibrary() {
                 <SelectItem value="name">Name (A–Z)</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" asChild className="bg-white">
+            <Button variant="outline" asChild className="bg-card">
               <a href="/api/tc-library/export" download>
                 <FileDown /> Export all
               </a>
@@ -206,7 +206,7 @@ export function TcLibrary() {
         {data === null && !loadError ? (
           <ul className="flex flex-col gap-3" aria-label="Loading entries">
             {Array.from({ length: 3 }, (_, i) => (
-              <li key={i} className="rounded-xl border border-neutral-200 bg-white p-4">
+              <li key={i} className="rounded-xl border border-neutral-200 bg-card p-4">
                 <Skeleton className="h-5 w-1/3" />
                 <Skeleton className="mt-2 h-4 w-1/4" />
                 <Skeleton className="mt-3 h-10 w-full" />
@@ -214,7 +214,7 @@ export function TcLibrary() {
             ))}
           </ul>
         ) : libraryEmpty ? (
-          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-neutral-300 bg-white px-6 py-16 text-center">
+          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-neutral-300 bg-card px-6 py-16 text-center">
             <BookMarked className="size-10 text-teal-200" aria-hidden />
             <p className="max-w-sm text-neutral-600">
               No saved test plans yet. Click New Entry after Claude completes Step 2.
@@ -228,7 +228,7 @@ export function TcLibrary() {
             </Button>
           </div>
         ) : data && data.entries.length === 0 ? (
-          <p className="rounded-xl border border-neutral-200 bg-white p-6 text-center text-sm text-neutral-500">
+          <p className="rounded-xl border border-neutral-200 bg-card p-6 text-center text-sm text-neutral-500">
             No entries match “{q}”.
           </p>
         ) : (
@@ -239,7 +239,7 @@ export function TcLibrary() {
                   <li
                     key={entry.id}
                     data-testid="tc-entry"
-                    className="rounded-xl border border-neutral-200 bg-white p-4 shadow-xs"
+                    className="rounded-xl border border-neutral-200 bg-card p-4 shadow-xs"
                   >
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div className="min-w-0">

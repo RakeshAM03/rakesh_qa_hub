@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
+import { Brand } from "@/components/shell/brand";
 import { NavList } from "@/components/shell/nav-list";
+import { ThemePicker } from "@/components/theme/theme-picker";
 import { Button } from "@/components/ui/button";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { cn } from "@/lib/utils";
@@ -24,21 +25,17 @@ export function AppSidebar() {
       data-testid="app-sidebar"
       data-collapsed={collapsed}
       className={cn(
-        "sticky top-0 hidden h-screen shrink-0 flex-col border-r border-neutral-200 bg-neutral-100 transition-[width] duration-200 md:flex",
+        "sticky top-0 hidden h-screen shrink-0 flex-col border-r border-neutral-200 bg-[var(--sidebar-glass)] backdrop-blur-xl transition-[width] duration-200 md:flex",
         collapsed ? "w-16" : "w-72",
       )}
     >
       <div
         className={cn(
-          "flex h-14 items-center gap-2 px-4",
+          "flex h-16 items-center gap-2 px-4",
           collapsed && "justify-center px-2",
         )}
       >
-        {!collapsed && (
-          <Link href="/" className="flex-1 truncate text-base font-semibold text-neutral-900">
-            Rakesh QA Hub
-          </Link>
-        )}
+        {!collapsed && <Brand className="flex-1" />}
         <Button
           variant="ghost"
           size="icon"
@@ -50,6 +47,9 @@ export function AppSidebar() {
       </div>
       <div className={cn("flex-1 overflow-y-auto px-3 pb-4", collapsed && "px-2")}>
         <NavList collapsed={collapsed} />
+      </div>
+      <div className={cn("border-t border-neutral-200 p-3", collapsed && "flex justify-center px-2")}>
+        <ThemePicker compact={collapsed} side={collapsed ? "right" : "top"} />
       </div>
     </aside>
   );

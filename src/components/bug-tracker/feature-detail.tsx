@@ -125,7 +125,7 @@ export function FeatureDetail({ featureId, highlightId }: { featureId: string; h
     return (
       <>
         <BugTrackerTopBar backHref="/bug-tracker" backLabel="Bug Tracker" />
-        <div className="rounded-xl border border-dashed border-neutral-300 bg-white px-6 py-16 text-center text-neutral-600">
+        <div className="rounded-xl border border-dashed border-neutral-300 bg-card px-6 py-16 text-center text-neutral-600">
           This feature page doesn&apos;t exist. It may have been deleted.
         </div>
       </>
@@ -172,14 +172,14 @@ export function FeatureDetail({ featureId, highlightId }: { featureId: string; h
       </div>
 
       {issues !== null && issues.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-neutral-300 bg-white px-6 py-16 text-center">
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-neutral-300 bg-card px-6 py-16 text-center">
           <p className="text-neutral-600">No issues logged for this feature yet.</p>
           <Button onClick={() => setDialog({ open: true, issue: null })}>
             <Plus /> Add the first issue
           </Button>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-white">
+        <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-card">
           <table className="w-full min-w-[980px] text-sm">
             <thead className="border-b border-neutral-200">
               <tr>

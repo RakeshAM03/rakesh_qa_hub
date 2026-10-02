@@ -70,7 +70,7 @@ export function BugTrackerDashboard() {
                 View sheet
               </Label>
               <Select>
-                <SelectTrigger id="view-sheet" className="w-44 bg-white">
+                <SelectTrigger id="view-sheet" className="w-44 bg-card">
                   <SelectValue placeholder="Select a sheet..." />
                 </SelectTrigger>
                 <SelectContent>

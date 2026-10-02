@@ -59,12 +59,12 @@ export function GlobalSearch() {
         aria-expanded={open && !!shown}
         aria-controls="bug-search-results"
         role="combobox"
-        className="bg-white pl-9"
+        className="bg-card pl-9"
       />
       {open && shown && (
         <div
           id="bug-search-results"
-          className="absolute right-0 z-30 mt-1 max-h-96 w-full min-w-80 overflow-y-auto rounded-lg border border-neutral-200 bg-white p-1 shadow-lg"
+          className="absolute right-0 z-30 mt-1 max-h-96 w-full min-w-80 overflow-y-auto rounded-lg border border-neutral-200 bg-card p-1 shadow-lg"
         >
           {empty && <p className="px-3 py-4 text-center text-sm text-neutral-500">Nothing matches “{q}”.</p>}
           {results.features.length > 0 && (

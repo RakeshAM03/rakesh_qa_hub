@@ -92,7 +92,7 @@ export function LogEntryForm({ resources, onLogged, onManageResources }: LogEntr
   }
 
   return (
-    <section aria-labelledby="log-entry-title" className="rounded-xl border border-neutral-200 bg-white">
+    <section aria-labelledby="log-entry-title" className="rounded-xl border border-neutral-200 bg-card">
       <h3 id="log-entry-title">
         <button
           type="button"

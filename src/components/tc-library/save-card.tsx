@@ -107,7 +107,7 @@ export function SaveCard({ entry, onSaved, onClose }: SaveCardProps) {
   return (
     <section
       aria-labelledby="save-card-title"
-      className="mb-6 rounded-xl border border-t-4 border-neutral-200 border-t-teal-600 bg-white shadow-xs"
+      className="mb-6 rounded-xl border border-t-4 border-neutral-200 border-t-teal-600 bg-card shadow-xs"
     >
       <form onSubmit={submit} noValidate className="flex flex-col gap-4 p-4 sm:p-5">
         <div className="flex items-start justify-between gap-4">

@@ -124,7 +124,7 @@ export function FlagsTableCard({ refreshKey, onChanged }: { refreshKey: number; 
   const noFlagsAtAll = summary !== null && summary.total === 0;
 
   return (
-    <section aria-labelledby="all-flags-title" className="rounded-xl border border-neutral-200 bg-white shadow-xs">
+    <section aria-labelledby="all-flags-title" className="rounded-xl border border-neutral-200 bg-card shadow-xs">
       <header className="border-b border-neutral-100 px-4 py-3 sm:px-5">
         <h2 id="all-flags-title" className="text-base font-semibold text-neutral-900">
           All logged flags

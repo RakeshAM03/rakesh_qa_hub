@@ -17,7 +17,7 @@ type FeatureTableProps = {
 export function FeatureTable({ features, teamName, onNewFeature }: FeatureTableProps) {
   if (features !== null && features.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-neutral-300 bg-white px-6 py-16 text-center">
+      <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-neutral-300 bg-card px-6 py-16 text-center">
         <LayoutGrid className="size-10 text-neutral-300" aria-hidden />
         <p className="max-w-sm text-neutral-600">
           {teamName
@@ -32,7 +32,7 @@ export function FeatureTable({ features, teamName, onNewFeature }: FeatureTableP
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-white">
+    <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-card">
       <table className="w-full min-w-[560px] text-sm">
         <thead className="border-b border-neutral-200">
           <tr>

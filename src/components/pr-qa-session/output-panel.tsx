@@ -17,7 +17,7 @@ export function OutputPanel({ value, onChange, onReset }: OutputPanelProps) {
   return (
     <section
       aria-labelledby="generated-prompt-title"
-      className="overflow-hidden rounded-xl border border-t-4 border-neutral-200 border-t-purple-600 bg-white shadow-xs"
+      className="overflow-hidden rounded-xl border border-t-4 border-neutral-200 border-t-purple-600 bg-card shadow-xs"
     >
       <header className="flex flex-wrap items-center gap-2 border-b border-purple-100 bg-purple-50 px-4 py-3">
         <h2 id="generated-prompt-title" className="flex-1 text-base font-semibold text-neutral-900">

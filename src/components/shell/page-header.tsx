@@ -37,8 +37,12 @@ export function PageHeader({
       </Link>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl">
-            {Icon && <Icon className={cn("size-7 shrink-0", iconClassName)} aria-hidden />}
+          <h1 className="flex items-center gap-3 text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl">
+            {Icon && (
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 bg-card shadow-xs">
+                <Icon className={cn("size-5", iconClassName)} aria-hidden />
+              </span>
+            )}
             <span className="truncate">{title}</span>
           </h1>
           {subtitle && <p className="mt-1 text-sm text-neutral-500">{subtitle}</p>}

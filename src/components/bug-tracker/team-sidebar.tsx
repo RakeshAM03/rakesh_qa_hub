@@ -24,7 +24,7 @@ function CountBadge({ count, active }: { count: number; active?: boolean }) {
     <span
       className={cn(
         "ml-auto inline-flex h-5 min-w-6 shrink-0 items-center justify-center rounded-full px-1.5 text-xs font-medium tabular-nums",
-        active ? "bg-white/20 text-white" : "bg-neutral-100 text-neutral-600",
+        active ? "bg-primary-foreground/20 text-primary-foreground" : "bg-neutral-100 text-neutral-600",
       )}
     >
       {count}
@@ -57,7 +57,7 @@ export function TeamSidebar({ teams, features, selected, onSelect, onNewTeam }: 
       {/* Small screens: a dropdown */}
       <div className="flex items-center gap-2 lg:hidden">
         <Select value={selected ?? ALL} onValueChange={(v) => onSelect(v === ALL ? null : v)}>
-          <SelectTrigger className="w-full bg-white" aria-label="Filter by team">
+          <SelectTrigger className="w-full bg-card" aria-label="Filter by team">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -75,14 +75,14 @@ export function TeamSidebar({ teams, features, selected, onSelect, onNewTeam }: 
       </div>
 
       {/* Large screens: the sidebar */}
-      <nav aria-label="Teams" className="hidden flex-col gap-1 rounded-xl border border-neutral-200 bg-white p-2 lg:flex">
+      <nav aria-label="Teams" className="hidden flex-col gap-1 rounded-xl border border-neutral-200 bg-card p-2 lg:flex">
         <button
           type="button"
           onClick={() => onSelect(null)}
           aria-pressed={selected === null}
           className={cn(
             "flex h-9 items-center gap-2 rounded-full px-3 text-sm font-medium",
-            selected === null ? "bg-neutral-900 text-white" : "text-neutral-700 hover:bg-neutral-100",
+            selected === null ? "bg-primary text-primary-foreground" : "text-neutral-700 hover:bg-neutral-100",
           )}
         >
           All

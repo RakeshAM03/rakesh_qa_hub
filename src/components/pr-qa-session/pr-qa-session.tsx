@@ -191,7 +191,7 @@ export function PrQaSession() {
 
       <section
         aria-labelledby="session-inputs-title"
-        className="overflow-hidden rounded-xl border border-t-4 border-neutral-200 border-t-purple-600 bg-white shadow-xs"
+        className="overflow-hidden rounded-xl border border-t-4 border-neutral-200 border-t-purple-600 bg-card shadow-xs"
       >
         <header className="flex items-center gap-2 border-b border-purple-100 bg-purple-50 px-4 py-3">
           <FlaskConical className="size-4 text-purple-600" aria-hidden />

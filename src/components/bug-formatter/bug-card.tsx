@@ -54,7 +54,7 @@ export function BugCard({ bug, index, total, editing, onEdit, onDelete, onMove }
       onDragLeave={() => setDragOver(false)}
       onDrop={onDrop}
       className={cn(
-        "rounded-lg border bg-white transition-colors",
+        "rounded-lg border bg-card transition-colors",
         editing ? "border-orange-400 ring-1 ring-orange-200" : "border-neutral-200",
         dragOver && "border-orange-400 bg-orange-50/50",
       )}

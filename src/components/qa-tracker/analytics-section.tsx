@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 import {
   Bar,
   BarChart,
@@ -29,16 +30,25 @@ type Analytics = {
 };
 
 const SERIES = "#2a78d6";
-const AXIS = { fontSize: 12, fill: "#737373" };
-const GRID = "#e5e5e5";
 const PERIODS = [7, 14, 30];
 const fmtHours = (n: number) => `${Number(n.toFixed(2))} h`;
 
-const tooltipStyle = {
-  contentStyle: { borderRadius: 8, border: "1px solid #e5e5e5", fontSize: 12, boxShadow: "0 2px 8px rgb(0 0 0 / 0.08)" },
-  labelStyle: { color: "#171717", fontWeight: 600 },
-  itemStyle: { color: "#404040" },
-};
+/** Chart chrome for the current light/dark mode (SVG attributes can't use CSS variables). */
+function useChartTheme() {
+  const dark = useTheme().resolvedTheme === "dark";
+  const c = dark
+    ? { axis: "#a3a3a3", grid: "#2e2e36", label: "#d4d4d4", cursor: "#26262e", surface: "#1b1b22", border: "#33333d", text: "#f5f5f5", series: "#5598e7" }
+    : { axis: "#737373", grid: "#e5e5e5", label: "#404040", cursor: "#f5f5f5", surface: "#ffffff", border: "#e5e5e5", text: "#171717", series: SERIES };
+  return {
+    ...c,
+    tick: { fontSize: 12, fill: c.axis },
+    tooltip: {
+      contentStyle: { borderRadius: 8, border: `1px solid ${c.border}`, background: c.surface, fontSize: 12, boxShadow: "0 2px 8px rgb(0 0 0 / 0.15)" },
+      labelStyle: { color: c.text, fontWeight: 600 },
+      itemStyle: { color: c.label },
+    },
+  };
+}
 
 export function AnalyticsSection({ refreshKey }: { refreshKey: number }) {
   const [days, setDays] = useState(14);
@@ -62,6 +72,7 @@ export function AnalyticsSection({ refreshKey }: { refreshKey: number }) {
   }, [from, to, refreshKey]);
 
   const empty = data !== null && data.totals.tasks === 0;
+  const t = useChartTheme();
 
   return (
     <section aria-labelledby="analytics-title" className="flex flex-col gap-4">
@@ -116,12 +127,12 @@ export function AnalyticsSection({ refreshKey }: { refreshKey: number }) {
             <ChartCard title="Hours per resource">
               <ResponsiveContainer width="100%" height={Math.max(120, data.byResource.length * 40 + 30)}>
                 <BarChart data={data.byResource} layout="vertical" margin={{ top: 4, right: 48, bottom: 4, left: 4 }} barCategoryGap={8}>
-                  <CartesianGrid horizontal={false} stroke={GRID} />
-                  <XAxis type="number" tick={AXIS} axisLine={false} tickLine={false} />
-                  <YAxis type="category" dataKey="name" width={150} tick={AXIS} axisLine={false} tickLine={false} />
-                  <Tooltip cursor={{ fill: "#f5f5f5" }} formatter={(v) => [fmtHours(Number(v)), "Hours"]} {...tooltipStyle} />
-                  <Bar dataKey="hours" fill={SERIES} radius={[0, 4, 4, 0]} maxBarSize={24} isAnimationActive={false}>
-                    <LabelList dataKey="hours" position="right" formatter={(v) => fmtHours(Number(v))} style={{ fontSize: 12, fill: "#404040" }} />
+                  <CartesianGrid horizontal={false} stroke={t.grid} />
+                  <XAxis type="number" tick={t.tick} axisLine={false} tickLine={false} />
+                  <YAxis type="category" dataKey="name" width={150} tick={t.tick} axisLine={false} tickLine={false} />
+                  <Tooltip cursor={{ fill: t.cursor }} formatter={(v) => [fmtHours(Number(v)), "Hours"]} {...t.tooltip} />
+                  <Bar dataKey="hours" fill={t.series} radius={[0, 4, 4, 0]} maxBarSize={24} isAnimationActive={false}>
+                    <LabelList dataKey="hours" position="right" formatter={(v) => fmtHours(Number(v))} style={{ fontSize: 12, fill: t.label }} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -135,13 +146,13 @@ export function AnalyticsSection({ refreshKey }: { refreshKey: number }) {
                   margin={{ top: 4, right: 96, bottom: 4, left: 4 }}
                   barCategoryGap={8}
                 >
-                  <CartesianGrid horizontal={false} stroke={GRID} />
-                  <XAxis type="number" tick={AXIS} axisLine={false} tickLine={false} />
-                  <YAxis type="category" dataKey="label" width={96} tick={AXIS} axisLine={false} tickLine={false} />
+                  <CartesianGrid horizontal={false} stroke={t.grid} />
+                  <XAxis type="number" tick={t.tick} axisLine={false} tickLine={false} />
+                  <YAxis type="category" dataKey="label" width={96} tick={t.tick} axisLine={false} tickLine={false} />
                   <Tooltip
-                    cursor={{ fill: "#f5f5f5" }}
+                    cursor={{ fill: t.cursor }}
                     formatter={(v, _n, item) => [`${fmtHours(Number(v))} · ${item.payload.tasks} tasks`, "Time"]}
-                    {...tooltipStyle}
+                    {...t.tooltip}
                   />
                   <Bar dataKey="hours" radius={[0, 4, 4, 0]} maxBarSize={24} isAnimationActive={false}>
                     {data.byStatus.map((s) => (
@@ -153,7 +164,7 @@ export function AnalyticsSection({ refreshKey }: { refreshKey: number }) {
                       content={({ x, y, width, height, index }) => {
                         const s = data.byStatus[Number(index)];
                         return (
-                          <text x={Number(x) + Number(width) + 6} y={Number(y) + Number(height) / 2} dy={4} fontSize={12} fill="#404040">
+                          <text x={Number(x) + Number(width) + 6} y={Number(y) + Number(height) / 2} dy={4} fontSize={12} fill={t.label}>
                             {fmtHours(s.hours)} · {s.tasks} {s.tasks === 1 ? "task" : "tasks"}
                           </text>
                         );
@@ -168,29 +179,29 @@ export function AnalyticsSection({ refreshKey }: { refreshKey: number }) {
           <ChartCard title="Daily hours">
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={data.daily} margin={{ top: 8, right: 16, bottom: 4, left: -16 }}>
-                <CartesianGrid vertical={false} stroke={GRID} />
+                <CartesianGrid vertical={false} stroke={t.grid} />
                 <XAxis
                   dataKey="date"
                   tickFormatter={isoToShort}
-                  tick={AXIS}
-                  axisLine={{ stroke: GRID }}
+                  tick={t.tick}
+                  axisLine={{ stroke: t.grid }}
                   tickLine={false}
                   minTickGap={24}
                 />
-                <YAxis tick={AXIS} axisLine={false} tickLine={false} allowDecimals={false} />
+                <YAxis tick={t.tick} axisLine={false} tickLine={false} allowDecimals={false} />
                 <Tooltip
-                  cursor={{ stroke: "#a3a3a3", strokeDasharray: "3 3" }}
+                  cursor={{ stroke: t.axis, strokeDasharray: "3 3" }}
                   labelFormatter={(l) => isoToLong(String(l))}
                   formatter={(v) => [fmtHours(Number(v)), "Hours"]}
-                  {...tooltipStyle}
+                  {...t.tooltip}
                 />
                 <Line
                   type="linear"
                   dataKey="hours"
-                  stroke={SERIES}
+                  stroke={t.series}
                   strokeWidth={2}
-                  dot={days <= 14 ? { r: 3, fill: SERIES, strokeWidth: 0 } : false}
-                  activeDot={{ r: 5, stroke: "#fff", strokeWidth: 2 }}
+                  dot={days <= 14 ? { r: 3, fill: t.series, strokeWidth: 0 } : false}
+                  activeDot={{ r: 5, stroke: t.surface, strokeWidth: 2 }}
                   isAnimationActive={false}
                 />
               </LineChart>
@@ -221,7 +232,7 @@ export function AnalyticsSection({ refreshKey }: { refreshKey: number }) {
 
 function Stat({ label, value, note }: { label: string; value: string; note?: string }) {
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white p-4">
+    <div className="rounded-lg border border-neutral-200 bg-card p-4">
       <dt className="text-xs font-semibold uppercase tracking-wider text-neutral-500">{label}</dt>
       <dd className="mt-1 text-2xl font-semibold text-neutral-900 tabular-nums">{value}</dd>
       {note && <dd className="text-xs text-neutral-500">{note}</dd>}
@@ -231,7 +242,7 @@ function Stat({ label, value, note }: { label: string; value: string; note?: str
 
 function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <figure className="rounded-lg border border-neutral-200 bg-white p-4">
+    <figure className="rounded-lg border border-neutral-200 bg-card p-4">
       <figcaption className="mb-2 text-sm font-medium text-neutral-800">{title}</figcaption>
       {children}
     </figure>

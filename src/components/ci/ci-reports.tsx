@@ -139,7 +139,7 @@ export function CiReports() {
           <Skeleton className="h-64 w-full" />
         </div>
       ) : suites.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-neutral-300 bg-white px-6 py-16 text-center">
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-neutral-300 bg-card px-6 py-16 text-center">
           <GitBranch className="size-10 text-neutral-300" aria-hidden />
           <p className="text-lg font-medium text-neutral-800">No CI suites yet — add your first one</p>
           <p className="max-w-md text-sm text-neutral-500">
@@ -151,7 +151,7 @@ export function CiReports() {
         </div>
       ) : (
         <div className="flex flex-col gap-6">
-          <nav aria-label="Jump to suite" className="flex flex-wrap items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-3 shadow-xs">
+          <nav aria-label="Jump to suite" className="flex flex-wrap items-center gap-2 rounded-xl border border-neutral-200 bg-card px-4 py-3 shadow-xs">
             <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500">Jump to</span>
             {suites.map((s) => {
               const style = colorStyles(s.color);

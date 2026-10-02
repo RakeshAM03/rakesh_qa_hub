@@ -15,7 +15,7 @@ const STEPS = [
 export function HowItWorks() {
   const [open, setOpen] = useState(false);
   return (
-    <section className="rounded-xl border border-purple-100 bg-white shadow-xs">
+    <section className="rounded-xl border border-purple-100 bg-card shadow-xs">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}

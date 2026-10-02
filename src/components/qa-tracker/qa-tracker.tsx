@@ -41,14 +41,14 @@ export function QaTracker() {
   return (
     <section
       aria-labelledby="qa-tracker-card-title"
-      className="overflow-hidden rounded-xl border border-t-4 border-neutral-200 border-t-green-600 bg-white shadow-xs"
+      className="overflow-hidden rounded-xl border border-t-4 border-neutral-200 border-t-green-600 bg-card shadow-xs"
     >
       <header className="flex flex-wrap items-center gap-2 border-b border-green-100 bg-green-50 px-4 py-3">
         <ClipboardList className="size-4 text-green-700" aria-hidden />
         <h2 id="qa-tracker-card-title" className="flex-1 text-base font-semibold text-neutral-900">
           QA Tracker
         </h2>
-        <Button variant="outline" size="sm" onClick={() => setManageOpen(true)} className="bg-white">
+        <Button variant="outline" size="sm" onClick={() => setManageOpen(true)} className="bg-card">
           <Users /> Manage resources
         </Button>
       </header>

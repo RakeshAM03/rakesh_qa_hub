@@ -17,7 +17,7 @@ type CollapsibleCardProps = {
 export function CollapsibleCard({ id, title, icon, defaultOpen = true, children }: CollapsibleCardProps) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <section aria-labelledby={`${id}-title`} className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-xs">
+    <section aria-labelledby={`${id}-title`} className="overflow-hidden rounded-xl border border-neutral-200 bg-card shadow-xs">
       <h2 id={`${id}-title`}>
         <button
           type="button"

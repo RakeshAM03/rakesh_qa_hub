@@ -24,7 +24,7 @@ export function Pagination({
   size,
   total,
   onPageChange,
-  activeClassName = "bg-neutral-900 text-white hover:bg-neutral-800",
+  activeClassName = "bg-primary text-primary-foreground hover:bg-primary/90",
   showNumbers = true,
   className,
   children,

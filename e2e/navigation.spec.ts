@@ -68,6 +68,28 @@ test.describe("navigation", () => {
     await expect(drawer).toBeHidden();
   });
 
+  test("theme picker switches mode and colour theme, and remembers them", async ({ page }) => {
+    await page.goto("/");
+    const html = page.locator("html");
+    await expect(html).toHaveAttribute("data-accent", "aurora");
+
+    await page.getByRole("button", { name: /^Theme/ }).click();
+    await page.getByRole("radio", { name: "Dark" }).click();
+    await expect(html).toHaveClass(/\bdark\b/);
+    await page.getByRole("radio", { name: /^Ocean/ }).click();
+    await expect(html).toHaveAttribute("data-accent", "ocean");
+
+    await page.reload();
+    await expect(html).toHaveClass(/\bdark\b/);
+    await expect(html).toHaveAttribute("data-accent", "ocean");
+
+    await page.getByRole("button", { name: /^Theme/ }).click();
+    await page.getByRole("radio", { name: "Light" }).click();
+    await page.getByRole("radio", { name: /^Aurora/ }).click();
+    await expect(html).not.toHaveClass(/\bdark\b/);
+    await expect(html).toHaveAttribute("data-accent", "aurora");
+  });
+
   test("unknown routes show a 404 page", async ({ page }) => {
     const res = await page.goto("/does-not-exist");
     expect(res?.status()).toBe(404);

@@ -43,7 +43,7 @@ export function WorkloadView() {
       ) : rows === null ? (
         <Skeleton className="h-48 w-full" />
       ) : rows.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-neutral-300 bg-white px-6 py-16 text-center text-neutral-600">
+        <div className="rounded-xl border border-dashed border-neutral-300 bg-card px-6 py-16 text-center text-neutral-600">
           No valid issues yet. Add issues on a{" "}
           <Link href="/bug-tracker" className="font-medium underline">
             feature page
@@ -51,7 +51,7 @@ export function WorkloadView() {
           and assign them to see the workload.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-white">
+        <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-card">
           <table className="w-full min-w-[640px] text-sm">
             <thead className="border-b border-neutral-200">
               <tr>

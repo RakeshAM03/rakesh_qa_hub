@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 const itemClass =
   "flex h-9 items-center gap-3 rounded-lg px-3 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-200/60 hover:text-neutral-900";
-const activeClass = "bg-neutral-200 text-neutral-900 hover:bg-neutral-200";
+const activeClass = "nav-active hover:bg-[color-mix(in_oklab,var(--accent-1)_16%,transparent)]";
 
 type NavListProps = {
   collapsed?: boolean;
