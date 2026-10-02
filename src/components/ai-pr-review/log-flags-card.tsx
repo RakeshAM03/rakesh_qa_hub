@@ -198,7 +198,7 @@ function FromClaude({ onSave }: { onSave: (flags: FlagInput[]) => Promise<boolea
                           <SelectTrigger size="sm" className="w-44" aria-label={`Flag type for row ${i + 1}`} aria-invalid={!row.flagType}>
                             <SelectValue placeholder={row.flagTypeText || "Select..."} />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent position="popper">
                             {FLAG_TYPES.map((t) => (
                               <SelectItem key={t} value={t}>
                                 {FLAG_TYPE_LABELS[t]}
@@ -217,7 +217,7 @@ function FromClaude({ onSave }: { onSave: (flags: FlagInput[]) => Promise<boolea
                           <SelectTrigger size="sm" className="w-20" aria-label={`Severity for row ${i + 1}`} aria-invalid={!row.severity}>
                             <SelectValue placeholder={row.severityText || "—"} />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent position="popper">
                             {FLAG_SEVERITIES.map((s) => (
                               <SelectItem key={s} value={s}>
                                 {s}

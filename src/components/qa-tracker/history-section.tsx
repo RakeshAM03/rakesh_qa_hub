@@ -222,7 +222,7 @@ export function HistorySection({ resources, selectedId, onSelect, refreshKey, on
                         >
                           <StatusPill status={log.status} />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent position="popper">
                           {TASK_STATUSES.map((s) => (
                             <SelectItem key={s} value={s}>
                               <StatusPill status={s} />

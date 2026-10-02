@@ -94,7 +94,7 @@ After every phase: `npm run lint` + `npm run build` clean → check routes load
   - `src/lib/admin.ts` (x-admin-passcode), `src/lib/rate-limit.ts` (30 / 10 min / IP),
     passcode dialog + sessionStorage, zod everywhere, secrets audit.
 
-- [ ] **Phase 11 — Tests**
+- [x] **Phase 11 — Tests**
   - Playwright (POM in `e2e/pages/`) for every module's main flow, incl. empty states;
     tests create their own data (local/CI DB uses `seed:demo` where needed).
   - `.github/workflows/e2e.yml`: Postgres service → migrate + seed → lint, unit, build,

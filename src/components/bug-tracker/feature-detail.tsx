@@ -231,7 +231,7 @@ export function FeatureDetail({ featureId, highlightId }: { featureId: string; h
                           <SelectTrigger size="sm" className="w-32" aria-label={`Status of ${issue.title}`}>
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent position="popper">
                             {ISSUE_STATUSES.map((s) => (
                               <SelectItem key={s} value={s}>
                                 {ISSUE_STATUS_LABELS[s]}

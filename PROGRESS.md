@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** 10 done (protection). Next: Phase 11 — Tests.
+**Current phase:** 11 done (tests). Next: Phase 12 — Deploy to Vercel (checkpoint).
 
 ## Decisions (Phase 0)
 
@@ -144,6 +144,17 @@
   process.env in client files; client bundle only contains the GITHUB_TOKEN *name* in
   help text. Security headers in next.config.ts (nosniff, referrer policy, DENY
   framing, permissions policy), X-Powered-By off. No CSP yet (Next inline scripts).
+
+- **Phase 11:** Playwright (POM in `e2e/pages/`, 52 tests across navigation + every
+  module). Local: `npm run e2e` (build + test) against `qa_hub_test`; global setup
+  applies migrations and TRUNCATEs all app tables — refuses non-local hosts (does NOT
+  use Prisma's AI-consent bypass). Server for tests: :3100, ADMIN_PASSCODE
+  `e2e-passcode`, RATE_LIMIT_DISABLED=1, no GitHub/Anthropic keys. Live mode:
+  `BASE_URL=... npx playwright test` skips tests tagged @write unless
+  E2E_ALLOW_WRITES=1. `.github/workflows/e2e.yml`: Postgres 16 service → lint,
+  typecheck, unit, build (migrate deploy), Playwright; manual `workflow_dispatch`
+  with `base_url` runs the suite against a deployed site. Found & fixed via E2E:
+  in-table Radix selects opened off-screen → `position="popper"`.
 
 ## Open questions
 
