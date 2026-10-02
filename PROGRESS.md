@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** 8 done (Bug Tracker). Next: Phase 9 — CI Reports.
+**Current phase:** 9 done (CI Reports). Next: Phase 10 — Public-access protection.
 
 ## Decisions (Phase 0)
 
@@ -122,6 +122,19 @@
   counts valid issues only: open = Open + In Progress, closed = Resolved + Closed, plus
   open P0/P1. Issue display ID = last 6 chars of the cuid. Note: zod 4 `.partial()`
   keeps `.default()`s — patch schemas must be built without defaults.
+
+- **Phase 9:** No suite is hard-coded (`CiSuite` rows only; demo suite only via seed:demo).
+  `src/lib/ci/github.ts` (server-only): runs + jobs, workflow check, dispatch, failed
+  job log tails; GET responses cached 20 s in memory. Add/edit verifies repo + workflow
+  on GitHub when GITHUB_TOKEN is set. Dispatch sends only inputs the suite defines
+  (choice values checked) plus an optional branch (default = repo default branch).
+  Sections poll every 20 s while a run is queued/in progress. REPORT links to the run's
+  artifacts (`#artifacts`) — inferred; a per-suite report URL template could be added
+  later. AI root cause (`src/lib/ci/rca.ts`): @anthropic-ai/sdk, `claude-opus-5`,
+  structured JSON output, server-side refusal fallback (`fallbacks: "default"`),
+  cached in RootCauseCache by `repo#runId`, in-memory daily cap (RCA_DAILY_LIMIT,
+  default 50); only when ANTHROPIC_API_KEY is set (currently off → "—").
+  Verified locally with the user's `gh` token (read-only) against actions/checkout.
 
 ## Open questions
 

@@ -79,7 +79,7 @@ After every phase: `npm run lint` + `npm run build` clean → check routes load
     New Team / New Feature Page modals, "View sheet" → Coming soon, global search,
     feature detail (issues add/edit/valid toggle), Activity feed, Workload view.
 
-- [ ] **Phase 9 — CI Reports** (`/ci`)
+- [x] **Phase 9 — CI Reports** (`/ci`)
   - No hard-coded suites anywhere. `CiSuite` in DB; `src/lib/ci/github.ts` (runs, jobs,
     dispatch, repo/workflow existence check, short cache); `src/lib/ci/rca.ts`
     (Anthropic, cached in RootCauseCache, only when ANTHROPIC_API_KEY set — currently off).
