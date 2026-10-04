@@ -412,6 +412,12 @@ Spec: `prompts/MORE-MODULES-MASTER-PROMPT.md`. Phases M0–M5 in PLAN.md. All de
   (ListChecks, blue) at the end of Planning, Test Data Generator (Database, teal) at the end
   of Automation Tools; home cards follow `navGroups`. Placeholder pages for both routes.
   Nav unit test and navigation E2E updated (Planning 3, Automation Tools 5).
+  QA Digest removed (user request, part of M1): sidebar + home card, `src/app/qa-digest`
+  deleted, `/qa-digest` → `/` via a temporary (307) redirect in `next.config.ts` (not
+  permanent, so browsers don't cache it if the module comes back), nav unit test, navigation
+  E2E (now asserts the redirect), README module table, contrast sweep scripts. Insights now
+  has only Automation ROI (group kept). The original specs in `prompts/` still mention it
+  as history.
 
 ## Open questions / next steps
 
@@ -421,6 +427,6 @@ Spec: `prompts/MORE-MODULES-MASTER-PROMPT.md`. Phases M0–M5 in PLAN.md. All de
   in `src/config/ai.ts`) and `GITHUB_TOKEN` (CI Reports, CI-green gate, Failure
   Analyzer "From CI", ROI run counts). Without them the app falls back gracefully.
 - Optional: turn Deployment Protection fully off if preview URLs should be public too.
-- Ideas: QA Digest (still "Coming soon"); Release Readiness could link a Risk Plan's
+- Ideas: Release Readiness could link a Risk Plan's
   accepted risks into "Known issues"; a CSP header (Next inline scripts need nonces);
   Prisma 7 config file (`package.json#prisma` deprecation warning in builds).

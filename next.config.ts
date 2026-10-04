@@ -9,6 +9,10 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  async redirects() {
+    // QA Digest was removed; keep old links working. Temporary so browsers don't cache it.
+    return [{ source: "/qa-digest", destination: "/", permanent: false }];
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

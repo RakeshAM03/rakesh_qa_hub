@@ -24,7 +24,8 @@ After every phase: `npm run lint` + `npm run build` clean → check routes load
   - `src/components/shell/` — `Sidebar` (collapsible, icons-only when collapsed),
     `MobileNav` (Sheet drawer), `PageHeader` (`< Home`, icon, title, subtitle, actions).
   - `src/app/page.tsx` — home with a card per module.
-  - Placeholder pages for every route incl. `/qa-digest` ("Coming soon").
+  - Placeholder pages for every route. (`/qa-digest` was later removed in Phase M1 and
+    redirects to `/`.)
   - `<Toaster />` (sonner) in root layout. `.gitignore` keeps `.env`, `.env*.local`.
   - Vitest set up (`npm test`).
 
@@ -153,6 +154,8 @@ full-app pass (no `dark:` palette classes; `-700` text; `-700` bg / `-50` text b
 - [x] **Phase M1 — Prisma models** — one additive migration: `DataSchema`,
   `TestCaseGeneration` (+ `TcGenMode` enum). Placeholder pages for both routes; nav
   (Test Data Generator → Automation Tools, Test Case Generator → Planning) and home cards.
+  Also (user request): QA Digest removed — sidebar, home card, `/qa-digest` page (now a
+  temporary redirect to `/`), nav config, tests, README. Insights keeps Automation ROI.
 - [ ] **Phase M2 — Test Data Generator** (`/test-data-generator`, `src/lib/testdata/`):
   presets, schema builder (all field types, options, blank %, unique, drag reorder),
   edge-case library + data modes, safe formula/template evaluator, regex subset,

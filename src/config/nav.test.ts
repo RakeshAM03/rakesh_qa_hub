@@ -54,7 +54,6 @@ describe("navItems", () => {
       "/api-playground",
       "/test-data-generator",
       "/automation-roi",
-      "/qa-digest",
     ]);
   });
 
@@ -63,7 +62,7 @@ describe("navItems", () => {
       ["Testing", 7],
       ["Planning", 3],
       ["Automation Tools", 5],
-      ["Insights", 2],
+      ["Insights", 1],
     ]);
   });
 });

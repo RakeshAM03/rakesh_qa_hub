@@ -5,7 +5,6 @@ import { BasePage } from "./pages/base-page";
 const MODULES = [
   { link: "CI Reports", path: "/ci", heading: "CI Reports" },
   { link: "QA Tracker", path: "/qa-tracker", heading: "QA Tracker" },
-  { link: "QA Digest", path: "/qa-digest", heading: "QA Digest" },
   { link: "PR QA Session", path: "/pr-qa-session", heading: "PR QA Session" },
   { link: "AI PR Review", path: "/ai-pr-review", heading: "AI PR Review" },
   { link: "TC Library", path: "/tc-library", heading: "TC Library" },
@@ -25,7 +24,7 @@ const GROUPS = [
   { name: "Testing", cards: 7 },
   { name: "Planning", cards: 3 },
   { name: "Automation Tools", cards: 5 },
-  { name: "Insights", cards: 2 },
+  { name: "Insights", cards: 1 },
 ];
 
 test.describe("navigation", () => {
@@ -73,9 +72,10 @@ test.describe("navigation", () => {
     }
   });
 
-  test("QA Digest is a coming-soon placeholder", async ({ page }) => {
+  test("the removed QA Digest route redirects home", async ({ page }) => {
     await page.goto("/qa-digest");
-    await expect(page.getByText("Coming soon")).toBeVisible();
+    await expect(page).toHaveURL("/");
+    await expect(page.getByRole("heading", { level: 1, name: "Rakesh QA Hub" })).toBeVisible();
   });
 
   test("sidebar collapses to icons and remembers it", async ({ page }) => {

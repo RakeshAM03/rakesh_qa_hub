@@ -1,7 +1,6 @@
 import {
   ArrowRightLeft,
   BookMarked,
-  CalendarDays,
   ClipboardList,
   Crosshair,
   Database,
@@ -185,13 +184,6 @@ export const navGroups: NavGroup[] = [
         icon: TrendingUp,
         description: "Track how much time automation saves and how coverage is growing.",
         tone: "bg-emerald-100 text-emerald-700",
-      },
-      {
-        title: "QA Digest",
-        href: "/qa-digest",
-        icon: CalendarDays,
-        description: "A periodic summary of QA activity. Coming soon.",
-        tone: "bg-neutral-100 text-neutral-600",
       },
     ],
   },

@@ -47,7 +47,6 @@ The sidebar groups modules the same way as the tables below.
 | Module | Route | What it does |
 |---|---|---|
 | Automation ROI | `/automation-roi` | Hours saved, ROI, break-even, coverage growth and CI pass rate for the automation projects you add, using real CI runs when linked and estimates otherwise. |
-| QA Digest | `/qa-digest` | Coming soon. |
 
 Everything starts empty, except the one generic "Standard release" checklist template. Suites, teams, feature pages, people, releases, plans and projects are added in the app.
 
