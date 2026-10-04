@@ -138,3 +138,35 @@ module E2E, browser check (Playwright MCP), commit + push, PROGRESS.md, short su
 - [x] **Phase N9 — Full test pass + deploy** 🛑 unit + E2E, push, `vercel deploy --prod --scope rakesh-qa`,
   live smoke test, live-mode Playwright.
 - [x] **Phase N10 — Wrap-up** README (modules, screenshots), PROGRESS.md, PLAN.md, final summary.
+
+---
+
+# More modules (2) — Plan
+
+Source: `prompts/MORE-MODULES-MASTER-PROMPT.md` + `TestDataGenerator-prompt.md` +
+`TestCaseGenerator-prompt.md`. Same per-phase routine as the N-phases: lint, typecheck,
+unit tests, `build:app` (no Supabase migrate), module E2E, browser check (Playwright MCP),
+commit + push, PROGRESS.md, short summary. New UI follows the contrast rules from the
+full-app pass (no `dark:` palette classes; `-700` text; `-700` bg / `-50` text buttons).
+
+- [x] **Phase M0 — Read and plan** 🛑 clarifying questions, this plan.
+- [x] **Phase M1 — Prisma models** — one additive migration: `DataSchema`,
+  `TestCaseGeneration` (+ `TcGenMode` enum). Placeholder pages for both routes; nav
+  (Test Data Generator → Automation Tools, Test Case Generator → Planning) and home cards.
+- [ ] **Phase M2 — Test Data Generator** (`/test-data-generator`, `src/lib/testdata/`):
+  presets, schema builder (all field types, options, blank %, unique, drag reorder),
+  edge-case library + data modes, safe formula/template evaluator, regex subset,
+  seeded generation in a Web Worker (progress + cancel), exporters (CSV/TSV, JSON,
+  JSON Lines, Excel, SQL ×5 dialects, XML, YAML, zip), preview + stats, saved schemas
+  (API + passcode delete), schema JSON import/export, "Use in automation" snippets.
+- [ ] **Phase M3 — Test Case Generator** (`/test-case-generator`, `src/lib/tcgen/`):
+  input tabs (requirement / API definition / upload) + context, test-type chips and
+  presets, options; three modes (AI route with zod + one retry, Copy prompt + Import
+  with JSON/Markdown fallback, Checklist with templates + field detection + OpenAPI /
+  cURL cases); editable table (filters, sort, bulk, drawer, coverage view, pagination);
+  exports (Excel, CSV, Markdown, Gherkin, Postman), Save to TC Library, Send to API
+  Playground, history (API + passcode delete).
+- [ ] **Phase M4 — Full test pass + deploy** 🛑 unit + E2E, push, `vercel deploy --prod
+  --scope rakesh-qa`, live smoke on both routes, live-mode Playwright, contrast sweep
+  incl. the new pages.
+- [ ] **Phase M5 — Wrap-up** README, PROGRESS.md, PLAN.md, final summary.

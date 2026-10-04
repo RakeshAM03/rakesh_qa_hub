@@ -47,10 +47,12 @@ describe("navItems", () => {
       "/bug-formatter",
       "/release-readiness",
       "/risk-planner",
+      "/test-case-generator",
       "/locator-helper",
       "/selenium-to-playwright",
       "/failure-analyzer",
       "/api-playground",
+      "/test-data-generator",
       "/automation-roi",
       "/qa-digest",
     ]);
@@ -59,8 +61,8 @@ describe("navItems", () => {
   it("groups modules into Testing, Planning, Automation Tools and Insights", () => {
     expect(navGroups.map((g) => [g.title, g.items.length])).toEqual([
       ["Testing", 7],
-      ["Planning", 2],
-      ["Automation Tools", 4],
+      ["Planning", 3],
+      ["Automation Tools", 5],
       ["Insights", 2],
     ]);
   });

@@ -17,12 +17,14 @@ const MODULES = [
   { link: "Test Failure Analyzer", path: "/failure-analyzer", heading: "Test Failure Analyzer" },
   { link: "API Test Playground", path: "/api-playground", heading: "API Test Playground" },
   { link: "Automation ROI", path: "/automation-roi", heading: "Automation ROI Dashboard" },
+  { link: "Test Case Generator", path: "/test-case-generator", heading: "Test Case Generator" },
+  { link: "Test Data Generator", path: "/test-data-generator", heading: "Test Data Generator" },
 ];
 
 const GROUPS = [
   { name: "Testing", cards: 7 },
-  { name: "Planning", cards: 2 },
-  { name: "Automation Tools", cards: 4 },
+  { name: "Planning", cards: 3 },
+  { name: "Automation Tools", cards: 5 },
   { name: "Insights", cards: 2 },
 ];
 

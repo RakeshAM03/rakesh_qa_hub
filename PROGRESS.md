@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** All done — original 13 phases plus new-module phases N0–N10. Live at https://rakesh-qa-hub.vercel.app. Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** More modules — Phase M2 (Test Data Generator). Original 13 phases and N0–N10 done; live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -375,6 +375,43 @@ Spec: `prompts/NEW-MODULES-MASTER-PROMPT.md`. Phases N0–N10 in PLAN.md.
   placeholder, a few faint labels/dashes. Hidden-state sweep (47 states: dialogs,
   validation errors, passcode prompt, drawers, menus, popovers, mobile nav, collapsed
   sidebar) × light/dark × 5 themes: 0 violations, plus 0 on the 270 page checks.
+
+## More modules (2) — decisions (Phase M0, 2026-10-04)
+
+Spec: `prompts/MORE-MODULES-MASTER-PROMPT.md`. Phases M0–M5 in PLAN.md. All defaults accepted.
+
+1. New deps: `@faker-js/faker` (one locale loaded at a time, in the Web Worker), `exceljs`
+   (loaded only on export), `js-yaml` (YAML export + OpenAPI YAML). Reuse `fflate`.
+2. No other deps: own regex-subset generator, native drag reorder (Bug Formatter pattern +
+   keyboard), pagination (50/page) instead of virtualisation.
+3. Locales: en_IN (default), en_US, en_GB, de, fr, es, ja, ar.
+4. Aadhaar masked by default; unmasked option always fails the Verhoeff check digit.
+   PAN/GSTIN/IFSC format-only with the "not real" note; cards = sandbox numbers + Luhn-valid
+   reserved test ranges, labelled "test".
+5. Saved schemas: unique names; "Save as preset" (`isPreset`) → preset chip row. Load / save /
+   rename / duplicate open; delete needs passcode.
+6. 100,000 rows max; clipboard copy off above 5 MB; zip built in the worker.
+7. Test Case Generator AI: hidden without a key; route uses `AI_MODEL`, zod + one retry,
+   10/hour, cancellable; unit-tested with a mocked client.
+8. OpenAPI 3.x + Swagger 2.0 (JSON/YAML), local `$ref` only; basic cURL parsing.
+9. Save to TC Library → `TestPlanEntry` (module name + date, optional PR ref, Markdown table,
+   createdBy = Your name).
+10. Send to API Playground → new collection "<module> test cases (<date>)", relative endpoints
+    → `{{baseUrl}}/path`, status (+ header) assertions; hidden if the module is absent.
+11. Coverage view refs = acceptance-criteria lines (numbered/bulleted, "AC…", Given/When/Then).
+12. History: save/update open, delete passcode; unsaved-changes warning.
+13. Order M1 → M2 → M3; push per phase, deploy only in M4 (migration reaches Supabase via
+    the Vercel build).
+14. Accents: teal (Test Data Generator), blue (Test Case Generator); contrast rules from the
+    full-app pass; M4 re-runs the contrast sweep including the new pages.
+
+### More-module phase notes
+
+- **M1:** migration `more_modules` — `DataSchema` (unique name, `isPreset`) and
+  `TestCaseGeneration` (+ `TcGenMode` enum); additive only. Nav: Test Case Generator
+  (ListChecks, blue) at the end of Planning, Test Data Generator (Database, teal) at the end
+  of Automation Tools; home cards follow `navGroups`. Placeholder pages for both routes.
+  Nav unit test and navigation E2E updated (Planning 3, Automation Tools 5).
 
 ## Open questions / next steps
 

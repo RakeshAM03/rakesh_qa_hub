@@ -506,3 +506,48 @@ model CoverageSnapshot {
 
   @@index([projectId, date])
 }
+
+// ---------- Test Data Generator ----------
+
+/// Saved schema (field list + options). Built-in presets live in src/lib/testdata/presets.ts.
+model DataSchema {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  fields    Json
+  options   Json
+  /// Shown in the preset chip row instead of "My schemas".
+  isPreset  Boolean  @default(false)
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([updatedAt])
+}
+
+// ---------- Test Case Generator ----------
+
+enum TcGenMode {
+  AI
+  IMPORTED
+  CHECKLIST
+}
+
+model TestCaseGeneration {
+  id            String    @id @default(cuid())
+  name          String
+  requirement   String
+  apiInput      String?
+  context       Json
+  options       Json
+  selectedTypes String[]
+  mode          TcGenMode
+  summary       String?
+  assumptions   String[]
+  questions     String[]
+  testCases     Json
+  createdBy     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([updatedAt])
+}
