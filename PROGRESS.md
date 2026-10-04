@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** New modules — Phase N9 done, waiting at the checkpoint before N10 (wrap-up). Live at https://rakesh-qa-hub.vercel.app. Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** All done — original 13 phases plus new-module phases N0–N10. Live at https://rakesh-qa-hub.vercel.app. Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -332,9 +332,20 @@ Spec: `prompts/NEW-MODULES-MASTER-PROMPT.md`. Phases N0–N10 in PLAN.md.
   first run 59/60 — the converter's note-highlight step lost a race with the lazily
   loaded editor on a cold start; fixed (`CodeEditor` tracks the view via
   `onCreateEditor`), redeployed, live suite 60/60 passed + 1 skipped.
+- **N10 Wrap-up:** README updated (modules grouped like the sidebar, "New modules at a
+  glance" screenshots in `docs/`, refreshed home light/dark, AI-optional note, stack,
+  protection incl. SSRF and new rate limits, env var uses, test notes). Screenshots taken
+  from the local test DB with generic sample data ("Checkout revamp", "Sprint 42",
+  "Checkout regression", "Demo API").
 
-## Open questions
+## Open questions / next steps
 
 - Install the Vercel GitHub app for RakeshAM03/rakesh_qa_hub, then run
-  `vercel git connect --scope rakesh-qa` so pushes to main auto-deploy.
+  `vercel git connect --scope rakesh-qa` so pushes to main auto-deploy (still manual).
+- Optional keys in Vercel: `ANTHROPIC_API_KEY` (all AI features; model `claude-sonnet-5-5`
+  in `src/config/ai.ts`) and `GITHUB_TOKEN` (CI Reports, CI-green gate, Failure
+  Analyzer "From CI", ROI run counts). Without them the app falls back gracefully.
 - Optional: turn Deployment Protection fully off if preview URLs should be public too.
+- Ideas: QA Digest (still "Coming soon"); Release Readiness could link a Risk Plan's
+  accepted risks into "Known issues"; a CSP header (Next inline scripts need nonces);
+  Prisma 7 config file (`package.json#prisma` deprecation warning in builds).
