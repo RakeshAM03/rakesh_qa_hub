@@ -128,7 +128,7 @@ module E2E, browser check (Playwright MCP), commit + push, PROGRESS.md, short su
 - [x] **Phase N3 — Selenium → Playwright Converter** (`/selenium-to-playwright`, `src/lib/converter/`).
 - [x] **Phase N4 — Test Failure Analyzer** (`/failure-analyzer`, parsers + classifier + clustering,
   Send to Bug Formatter, known issues, saved analyses, From CI).
-- [ ] **Phase N5 — API Test Playground** (`/api-playground`, SSRF-safe send route + unit tests,
+- [x] **Phase N5 — API Test Playground** (`/api-playground`, SSRF-safe send route + unit tests,
   collections, environments, assertions, cURL, history).
 - [ ] **Phase N6 — Release Readiness** (`/release-readiness`, score/verdict, auto gates,
   sign-offs, decision snapshot, activity log, templates, summary + print).

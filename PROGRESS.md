@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** New modules — Phase N5 (API Test Playground). Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** New modules — Phase N6 (Release Readiness). Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -257,6 +257,26 @@ Spec: `prompts/NEW-MODULES-MASTER-PROMPT.md`. Phases N0–N10 in PLAN.md.
   Cross-module: `src/lib/handoff.ts` — one-shot sessionStorage hand-off read with
   useSyncExternalStore (no effects); Bug Formatter opens the Manual tab pre-filled with a
   "Pre-filled from …" notice (only addition to Bug Formatter; its E2E suite unchanged).
+- **N5 API Playground:** SSRF guard `src/lib/api-playground/ssrf.ts` — allow-list: only
+  ipaddr.js `unicast` addresses (IPv4-mapped IPv6 checked as IPv4); blocked names
+  (localhost, *.localhost, *.local, *.internal, *.home.arpa, metadata); http(s) only; no
+  userinfo. `guardedLookup` is the socket's DNS lookup: refuses if ANY resolved address is
+  blocked and hands the checked address to the socket (no rebinding gap). `send.ts`
+  (node:http/https, agent:false): manual redirects (max 5, each hop re-validated, 303 /
+  POST→GET, Authorization/Cookie dropped cross-origin), 15 s overall deadline, 2 MB cap
+  applied after gzip/deflate/br decompression (bomb-safe), 1 MB request body, hop-by-hop
+  headers stripped, header CR/LF neutralised, nothing logged. Only playground-built
+  headers are sent (visitor cookies never forwarded). 62 unit tests incl. a local server
+  for redirects/size/timeout (`server-only` aliased to its empty build in vitest).
+  Client libs: variables, params↔URL sync (keeps {{vars}} readable), auth (bearer /
+  basic / API key header|query), body (JSON with format/validate, form, raw), cURL,
+  JSONPath subset ($ . [n] [-n] [*] ['k']), assertions. Unknown variables are listed in
+  red under the URL and red-bordered in tables [simplified vs inline highlight].
+  Environment choice in localStorage `qa-hub:api-playground:env`; history (20) in
+  `qa-hub:api-playground:history`. Import/export: `{ name, requests: [...] }` JSON.
+  Small screens: sidebar → a Select of saved requests. E2E mocks the send route; the
+  SSRF E2E uses the real route; `@network` test runs only with E2E_NETWORK=1 (passed
+  locally against httpbin.org).
 
 ## Open questions
 

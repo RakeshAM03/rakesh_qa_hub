@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Send } from "lucide-react";
 
-import { ComingSoon } from "@/components/shell/coming-soon";
+import { ApiPlayground } from "@/components/api-playground/api-playground";
 import { PageHeader } from "@/components/shell/page-header";
 
 export const metadata: Metadata = { title: "API Test Playground" };
@@ -15,7 +15,7 @@ export default function ApiPlaygroundPage() {
         icon={Send}
         iconClassName="text-indigo-600"
       />
-      <ComingSoon message="Coming soon" />
+      <ApiPlayground />
     </>
   );
 }
