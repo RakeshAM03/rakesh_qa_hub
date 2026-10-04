@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
-import type { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import { EditorView, Decoration, type DecorationSet } from "@codemirror/view";
 import { StateEffect, StateField, type Extension } from "@codemirror/state";
 import { html } from "@codemirror/lang-html";
@@ -88,7 +87,8 @@ export function CodeEditor({
   onKeyDown,
 }: CodeEditorProps) {
   const { resolvedTheme } = useTheme();
-  const ref = useRef<ReactCodeMirrorRef>(null);
+  // The editor loads lazily, so remember its view once created (a highlight may be requested before that).
+  const [view, setView] = useState<EditorView | null>(null);
   const extensions = useMemo(
     () => [
       ...LANGS[language](),
@@ -101,14 +101,13 @@ export function CodeEditor({
   );
 
   useEffect(() => {
-    const view = ref.current?.view;
     if (!view) return;
     const effects: StateEffect<unknown>[] = [setHighlight.of(highlightLine)];
     if (highlightLine && highlightLine <= view.state.doc.lines) {
       effects.push(EditorView.scrollIntoView(view.state.doc.line(highlightLine).from, { y: "center" }));
     }
     view.dispatch({ effects });
-  }, [highlightLine, value]);
+  }, [view, highlightLine, value]);
 
   return (
     <div
@@ -116,7 +115,7 @@ export function CodeEditor({
       onKeyDown={onKeyDown}
     >
       <CodeMirror
-        ref={ref}
+        onCreateEditor={setView}
         value={value}
         onChange={onChange}
         extensions={extensions}
