@@ -131,7 +131,7 @@ export function ManualTab({ editing, prefill, onAdd, onSave, onCancelEdit }: Man
           aria-describedby={titleMissing ? "bf-title-error" : undefined}
         />
         {titleMissing && (
-          <p id="bf-title-error" className="text-xs text-red-600">
+          <p id="bf-title-error" className="text-xs text-red-700">
             Required
           </p>
         )}
@@ -150,7 +150,7 @@ export function ManualTab({ editing, prefill, onAdd, onSave, onCancelEdit }: Man
               className={cn(
                 "h-8 rounded-full border px-4 text-sm font-medium transition-colors",
                 form.severity === s
-                  ? "border-orange-500 bg-orange-500 text-white"
+                  ? "border-orange-700 bg-orange-700 text-orange-50"
                   : "border-neutral-300 text-neutral-600 hover:border-orange-300",
               )}
             >
@@ -187,12 +187,12 @@ export function ManualTab({ editing, prefill, onAdd, onSave, onCancelEdit }: Man
           <Button type="button" variant="outline" className="flex-1" onClick={onCancelEdit}>
             Cancel
           </Button>
-          <Button type="submit" className="flex-1 bg-orange-500 text-white hover:bg-orange-600">
+          <Button type="submit" className="flex-1 bg-orange-700 text-orange-50 hover:bg-orange-800">
             <Save /> Save changes
           </Button>
         </div>
       ) : (
-        <Button type="submit" className="w-full bg-orange-500 text-white hover:bg-orange-600">
+        <Button type="submit" className="w-full bg-orange-700 text-orange-50 hover:bg-orange-800">
           <Plus /> Add Bug
         </Button>
       )}

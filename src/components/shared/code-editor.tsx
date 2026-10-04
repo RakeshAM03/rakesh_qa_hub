@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import { EditorView, Decoration, type DecorationSet } from "@codemirror/view";
 import { StateEffect, StateField, type Extension } from "@codemirror/state";
+import { defaultHighlightStyle, HighlightStyle, syntaxHighlighting } from "@codemirror/language";
 import { html } from "@codemirror/lang-html";
 import { java } from "@codemirror/lang-java";
 import { javascript } from "@codemirror/lang-javascript";
@@ -48,6 +49,15 @@ const highlightField = StateField.define<DecorationSet>({
   },
   provide: (f) => EditorView.decorations.from(f),
 });
+
+/**
+ * CodeMirror's default light syntax colours, except three that fall below 4.5:1
+ * contrast (on white or the active-line tint): darker versions of the same hues.
+ */
+const LIGHT_FIXES: Record<string, string> = { "#085": "#006b42", "#e40": "#b42d00", "#f00": "#c00000" };
+const lightHighlighting = syntaxHighlighting(
+  HighlightStyle.define(defaultHighlightStyle.specs.map((spec) => (spec.color && LIGHT_FIXES[spec.color] ? { ...spec, color: LIGHT_FIXES[spec.color] } : spec))),
+);
 
 const baseTheme = EditorView.theme({
   "&": { fontSize: "13px", height: "100%", backgroundColor: "transparent" },
@@ -93,15 +103,17 @@ export function CodeEditor({
   const { resolvedTheme } = useTheme();
   // The editor loads lazily, so remember its view once created (a highlight may be requested before that).
   const [view, setView] = useState<EditorView | null>(null);
+  const dark = resolvedTheme === "dark";
   const extensions = useMemo(
     () => [
       ...LANGS[language](),
+      ...(dark ? [] : [lightHighlighting]),
       baseTheme,
       highlightField,
       EditorView.lineWrapping,
       EditorView.contentAttributes.of({ "aria-label": ariaLabel }),
     ],
-    [language, ariaLabel],
+    [language, ariaLabel, dark],
   );
 
   useEffect(() => {
@@ -123,7 +135,7 @@ export function CodeEditor({
         value={value}
         onChange={onChange}
         extensions={extensions}
-        theme={resolvedTheme === "dark" ? oneDark : "light"}
+        theme={dark ? oneDark : "light"}
         placeholder={placeholder}
         readOnly={readOnly}
         editable={!readOnly}

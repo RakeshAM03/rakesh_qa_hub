@@ -14,7 +14,7 @@ import { PasteTab } from "./paste-tab";
 import { useBugs } from "./use-bugs";
 
 const triggerClass =
-  "h-11 flex-1 gap-2 rounded-none border-0 border-b-2 border-transparent text-neutral-500 shadow-none data-[state=active]:border-orange-500 data-[state=active]:bg-orange-50 data-[state=active]:text-orange-600 data-[state=active]:shadow-none";
+  "h-11 flex-1 gap-2 rounded-none border-0 border-b-2 border-transparent text-neutral-500 shadow-none data-[state=active]:border-orange-500 data-[state=active]:bg-orange-50 data-[state=active]:text-orange-700 data-[state=active]:shadow-none";
 
 type Tab = "paste" | "manual" | "csv";
 

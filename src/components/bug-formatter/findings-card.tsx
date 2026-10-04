@@ -98,7 +98,7 @@ export function FindingsCard({ bugs, editingId, onEdit, onDelete, onMove, onClea
               variant="ghost"
               size="sm"
               onClick={() => setConfirmClear(true)}
-              className="ml-auto text-red-600 hover:bg-red-50 hover:text-red-700"
+              className="ml-auto text-red-700 hover:bg-red-50 hover:text-red-800"
             >
               <Trash2 /> Clear all
             </Button>

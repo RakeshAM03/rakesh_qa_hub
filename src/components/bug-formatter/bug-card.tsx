@@ -110,7 +110,7 @@ export function BugCard({ bug, index, total, editing, onEdit, onDelete, onMove }
           {bug.environmentUrl && (
             <Detail label="Environment">
               {isHttpUrl(bug.environmentUrl) ? (
-                <a href={bug.environmentUrl} target="_blank" rel="noopener noreferrer" className="break-all text-orange-600 hover:underline">
+                <a href={bug.environmentUrl} target="_blank" rel="noopener noreferrer" className="break-all text-orange-700 hover:underline">
                   {bug.environmentUrl}
                 </a>
               ) : (

@@ -95,7 +95,7 @@ export function SuiteSection(props: SuiteSectionProps) {
           <h2 id={`suite-${suite.id}-title`} className="truncate text-base font-semibold text-neutral-900">
             CI Reports — {suite.name}
           </h2>
-          <p className="truncate font-mono text-xs text-neutral-500">
+          <p className="truncate font-mono text-xs text-neutral-600">
             {suite.repo} · {suite.workflowFile}
           </p>
         </div>

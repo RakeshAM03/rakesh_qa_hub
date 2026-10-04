@@ -256,7 +256,7 @@ function FromClaude({ onSave }: { onSave: (flags: FlagInput[]) => Promise<boolea
         </div>
       )}
       {!text && (
-        <p className="flex items-center gap-1.5 text-xs text-neutral-400">
+        <p className="flex items-center gap-1.5 text-xs text-neutral-500">
           <ClipboardPaste className="size-3.5" /> Tip: generate the prompt above so Claude outputs the table in the right format.
         </p>
       )}

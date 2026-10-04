@@ -54,7 +54,7 @@ export function CsvTab({ onAdd }: { onAdd: (bugs: BugInput[]) => void }) {
         <button
           type="button"
           onClick={() => downloadText("bug-template.csv", bugCsvTemplate(), "text/csv")}
-          className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-orange-600 hover:text-orange-700"
+          className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-orange-700 hover:text-orange-800"
         >
           <Download className="size-4" /> Template
         </button>

@@ -350,7 +350,7 @@ export function PrQaSession() {
                   pressed={draft.steps.includes(step.id)}
                   onClick={() => update({ steps: toggle(draft.steps, step.id as number), template: null })}
                 >
-                  <span className="opacity-70">{step.id}.</span> {step.name}
+                  <span>{step.id}.</span> {step.name}
                 </Chip>
               ))}
             </div>

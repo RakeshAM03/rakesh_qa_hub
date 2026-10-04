@@ -354,6 +354,20 @@ Spec: `prompts/NEW-MODULES-MASTER-PROMPT.md`. Phases N0–N10 in PLAN.md.
   home screenshot retaken (the earlier one used the wrong storage key) and new-page
   screenshots refreshed.
 
+- **Full-app contrast pass (2026-10-04):** an axe-core sweep of every page and key UI
+  state (27) × light/dark × 5 colour themes = 270 checks found 1,231 issues app-wide —
+  more than the earlier new-pages-only sweep showed. User approved fixing everything.
+  Fixes: dark-mode `--color-neutral-500` 55.6% → 64% lightness (theme-palette.css);
+  shared `--primary` deepened in light (accent 78% + black, white text) and lightened
+  in dark (accent 62% + white, dark text) so primary buttons/links pass in every theme;
+  rich-colour toast text darker in light mode (`[data-sonner-theme="light"]`); targeted
+  class changes in CI (repo line), QA Tracker (hours suffix), AI PR Review (hint), PR QA
+  Session (step numbers no longer 70% opacity), TC Library and Bug Formatter buttons
+  (`-700` bg / `-50` text), Bug Formatter active tab, CSV link, environment link, Clear
+  all and title error (`-700`); Risk Planner deferred rows use a tint instead of 60%
+  opacity; CodeMirror light syntax colours `#085/#e40/#f00` → `#006b42/#b42d00/#c00000`
+  (≥5.2:1 even on the selection colour). Result: 0 violations across all 270 checks.
+
 ## Open questions / next steps
 
 - Install the Vercel GitHub app for RakeshAM03/rakesh_qa_hub, then run

@@ -326,7 +326,7 @@ export function PlanDetail({ id }: { id: string }) {
                   const c = byId.get(a.id)!;
                   const sug = suggestions[a.id];
                   return (
-                    <tr key={a.id} id={`area-${a.id}`} className={cn("border-b border-neutral-200 align-middle last:border-0", a.deferred && "opacity-60")} data-testid="area-row" data-area={a.name}>
+                    <tr key={a.id} id={`area-${a.id}`} className={cn("border-b border-neutral-200 align-middle last:border-0", a.deferred && "bg-neutral-100")} data-testid="area-row" data-area={a.name}>
                       <td className="py-2 pr-2">
                         <Input
                           id={`area-name-${a.id}`}

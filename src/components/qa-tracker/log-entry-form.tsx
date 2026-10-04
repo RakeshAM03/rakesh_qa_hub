@@ -218,7 +218,7 @@ export function LogEntryForm({ resources, onLogged, onManageResources }: LogEntr
                           aria-invalid={!!errors.hours}
                           aria-describedby={errors.hours ? id("hours-error") : undefined}
                         />
-                        <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-neutral-400">
+                        <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-neutral-500">
                           hrs
                         </span>
                       </div>

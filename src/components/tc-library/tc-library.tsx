@@ -136,7 +136,7 @@ export function TcLibrary() {
             <Button
               onClick={() => setCard({ mode: "create" })}
               disabled={card.mode !== "closed"}
-              className="bg-teal-600 text-white hover:bg-teal-700"
+              className="bg-teal-700 text-teal-50 hover:bg-teal-800"
             >
               <Plus /> New Entry
             </Button>
@@ -222,7 +222,7 @@ export function TcLibrary() {
             <Button
               onClick={() => setCard({ mode: "create" })}
               disabled={card.mode !== "closed"}
-              className="bg-teal-600 text-white hover:bg-teal-700"
+              className="bg-teal-700 text-teal-50 hover:bg-teal-800"
             >
               <Plus /> New Entry
             </Button>
@@ -295,7 +295,7 @@ export function TcLibrary() {
                 size={PAGE_SIZE}
                 total={data.total}
                 onPageChange={setPage}
-                activeClassName="bg-teal-600 text-white hover:bg-teal-700"
+                activeClassName="bg-teal-700 text-teal-50 hover:bg-teal-800"
               />
             </>
           )

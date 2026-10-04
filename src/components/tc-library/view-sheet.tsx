@@ -43,7 +43,7 @@ export function ViewSheet({ open, entry, onOpenChange }: ViewSheetProps) {
           {entry && (
             <Button
               size="sm"
-              className="mt-2 w-fit bg-teal-600 text-white hover:bg-teal-700"
+              className="mt-2 w-fit bg-teal-700 text-teal-50 hover:bg-teal-800"
               onClick={() => copyText(entry.output, "Output copied — paste it into Claude Code")}
             >
               <Copy /> Copy output

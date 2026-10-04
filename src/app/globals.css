@@ -193,14 +193,16 @@
 }
 
 :root {
-  --primary: var(--accent-1);
+  /* Deepened so white text keeps ≥4.5:1 contrast with every colour theme. */
+  --primary: color-mix(in oklab, var(--accent-1) 78%, black);
   --primary-foreground: oklch(0.99 0 0);
   --ring: color-mix(in oklab, var(--accent-1) 60%, transparent);
   --sidebar-glass: color-mix(in oklab, var(--color-neutral-100) 82%, transparent);
 }
 .dark {
-  --primary: color-mix(in oklab, var(--accent-1) 85%, white);
-  --primary-foreground: oklch(0.99 0 0);
+  /* Lightened with dark text so primary buttons and links stay readable in dark mode. */
+  --primary: color-mix(in oklab, var(--accent-1) 62%, white);
+  --primary-foreground: oklch(0.15 0.012 275);
 }
 [data-accent="mono"] {
   --primary-foreground: var(--background);
@@ -282,4 +284,12 @@
 .markdown pre {
   background-color: oklch(0.2 0.01 275);
   color: oklch(0.93 0 0);
+}
+
+/* Rich-colour toasts in light mode: darker text than sonner's defaults so each type passes 4.5:1. */
+html [data-sonner-toaster][data-sonner-theme="light"] {
+  --success-text: hsl(140, 100%, 20%);
+  --info-text: hsl(210, 92%, 35%);
+  --warning-text: hsl(31, 92%, 30%);
+  --error-text: hsl(360, 100%, 38%);
 }

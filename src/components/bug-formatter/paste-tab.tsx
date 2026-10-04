@@ -48,7 +48,7 @@ export function PasteTab({ onAdd }: { onAdd: (bugs: BugInput[]) => void }) {
       <Button
         onClick={parse}
         disabled={!text.trim()}
-        className="w-full bg-orange-500 text-white hover:bg-orange-600"
+        className="w-full bg-orange-700 text-orange-50 hover:bg-orange-800"
       >
         <ClipboardList /> Parse Findings
       </Button>

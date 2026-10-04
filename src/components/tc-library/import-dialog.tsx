@@ -144,7 +144,7 @@ export function ImportDialog({ open, onOpenChange, onImported }: ImportDialogPro
           <Button
             onClick={runImport}
             disabled={!count || importing}
-            className="bg-teal-600 text-white hover:bg-teal-700"
+            className="bg-teal-700 text-teal-50 hover:bg-teal-800"
           >
             {importing ? "Importing…" : `Import${count ? ` ${count}` : ""}`}
           </Button>
