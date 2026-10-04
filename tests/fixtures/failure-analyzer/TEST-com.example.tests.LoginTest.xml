@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.tests.LoginTest" tests="4" failures="1" errors="1" skipped="1" time="6.2">
+  <testcase name="logsInWithValidUser" classname="com.example.tests.LoginTest" time="1.4"/>
+  <testcase name="showsErrorForWrongPassword" classname="com.example.tests.LoginTest" time="2.3">
+    <failure message="Timeout 10000ms exceeded waiting for .error-banner" type="org.openqa.selenium.TimeoutException">org.openqa.selenium.TimeoutException: Expected condition failed: waiting for visibility of element located by By.cssSelector: .error-banner (tried for 10 second(s) with 500 milliseconds interval)
+	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
+	at com.example.tests.LoginTest.showsErrorForWrongPassword(LoginTest.java:37)
+</failure>
+  </testcase>
+  <testcase name="locksAccountAfterRetries" classname="com.example.tests.LoginTest" time="0.9">
+    <error message="Cannot invoke &quot;String.trim()&quot; because &quot;user&quot; is null" type="java.lang.NullPointerException">java.lang.NullPointerException: Cannot invoke "String.trim()" because "user" is null
+	at com.example.data.UserFactory.lockedUser(UserFactory.java:19)
+	at com.example.tests.LoginTest.locksAccountAfterRetries(LoginTest.java:52)
+</error>
+  </testcase>
+  <testcase name="resetsPassword" classname="com.example.tests.LoginTest" time="0">
+    <skipped/>
+  </testcase>
+</testsuite>

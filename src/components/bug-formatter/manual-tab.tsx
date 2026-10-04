@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { Plus, Save } from "lucide-react";
+import { Info, Plus, Save } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,15 +60,19 @@ function toInput(form: Form): BugInput {
 
 const labelClass = "text-xs font-semibold uppercase tracking-wider text-neutral-500";
 
+/** A bug sent from another module (e.g. Test Failure Analyzer) to review before adding. */
+export type ManualPrefill = { id: string; bug: BugInput; source: string };
+
 type ManualTabProps = {
   /** When set, the form edits this bug instead of adding a new one. */
   editing?: Bug;
+  prefill?: ManualPrefill | null;
   onAdd: (bug: BugInput) => void;
   onSave: (id: string, bug: BugInput) => void;
   onCancelEdit: () => void;
 };
 
-export function ManualTab({ editing, onAdd, onSave, onCancelEdit }: ManualTabProps) {
+export function ManualTab({ editing, prefill, onAdd, onSave, onCancelEdit }: ManualTabProps) {
   const [form, setForm] = useState<Form>(() => (editing ? fromBug(editing) : EMPTY));
   const [submitted, setSubmitted] = useState(false);
   // Load the bug when a different one is picked for editing.
@@ -76,6 +80,15 @@ export function ManualTab({ editing, onAdd, onSave, onCancelEdit }: ManualTabPro
   if (editing?.id !== editingId) {
     setEditingId(editing?.id);
     setForm(editing ? fromBug(editing) : EMPTY);
+    setSubmitted(false);
+  }
+  // Fill the form once per bug sent from another module.
+  const [prefillId, setPrefillId] = useState<string | null>(null);
+  const [prefillSource, setPrefillSource] = useState<string | null>(null);
+  if (prefill && prefill.id !== prefillId && !editing) {
+    setPrefillId(prefill.id);
+    setPrefillSource(prefill.source);
+    setForm(fromBug({ ...prefill.bug, id: "", source: "MANUAL", createdAt: "" }));
     setSubmitted(false);
   }
 
@@ -90,6 +103,7 @@ export function ManualTab({ editing, onAdd, onSave, onCancelEdit }: ManualTabPro
       onSave(editing.id, toInput(form));
     } else {
       onAdd(toInput(form));
+      setPrefillSource(null);
       // Keep severity and environment for the next bug.
       setForm({ ...EMPTY, severity: form.severity, environmentUrl: form.environmentUrl });
     }
@@ -98,6 +112,12 @@ export function ManualTab({ editing, onAdd, onSave, onCancelEdit }: ManualTabPro
 
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-4">
+      {prefillSource && !editing && (
+        <p role="status" className="flex items-start gap-2 rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-sm text-orange-900 dark:border-orange-900 dark:bg-orange-950/40 dark:text-orange-100">
+          <Info className="mt-0.5 size-4 shrink-0" aria-hidden />
+          Pre-filled from {prefillSource} — review the details, then click Add Bug.
+        </p>
+      )}
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="bf-title" className={labelClass}>
           Title <span className="text-red-500">*</span>

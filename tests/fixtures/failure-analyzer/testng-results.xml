@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="1" failed="2" total="5" passed="2">
+  <suite name="Demo Suite" duration-ms="5120">
+    <test name="Regression">
+      <class name="com.example.tests.CheckoutTest">
+        <test-method status="PASS" signature="setUp()" name="setUp" is-config="true" duration-ms="900"/>
+        <test-method status="PASS" signature="addsItemToCart()" name="addsItemToCart" duration-ms="1200"/>
+        <test-method status="FAIL" signature="appliesCoupon()" name="appliesCoupon" duration-ms="2100">
+          <exception class="java.lang.AssertionError">
+            <message><![CDATA[expected [Total: $90.00] but found [Total: $100.00]]]></message>
+            <full-stacktrace><![CDATA[java.lang.AssertionError: expected [Total: $90.00] but found [Total: $100.00]
+	at org.testng.Assert.fail(Assert.java:110)
+	at org.testng.Assert.assertEquals(Assert.java:652)
+	at com.example.tests.CheckoutTest.appliesCoupon(CheckoutTest.java:48)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+]]></full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="FAIL" signature="opensPaymentPage()" name="opensPaymentPage" duration-ms="10400">
+          <exception class="org.openqa.selenium.NoSuchElementException">
+            <message><![CDATA[no such element: Unable to locate element: {"method":"css selector","selector":"#pay-now"}
+  (Session info: chrome=128.0.6613.84)]]></message>
+            <full-stacktrace><![CDATA[org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {"method":"css selector","selector":"#pay-now"}
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:350)
+	at com.example.pages.PaymentPage.open(PaymentPage.java:22)
+	at com.example.tests.CheckoutTest.opensPaymentPage(CheckoutTest.java:61)
+]]></full-stacktrace>
+          </exception>
+        </test-method>
+        <test-method status="PASS" signature="removesItem()" name="removesItem" duration-ms="800"/>
+        <test-method status="SKIP" signature="refundsOrder()" name="refundsOrder" duration-ms="0"/>
+      </class>
+    </test>
+  </suite>
+</testng-results>

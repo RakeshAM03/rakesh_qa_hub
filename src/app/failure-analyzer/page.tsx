@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Stethoscope } from "lucide-react";
 
-import { ComingSoon } from "@/components/shell/coming-soon";
+import { FailureAnalyzer } from "@/components/failure-analyzer/failure-analyzer";
 import { PageHeader } from "@/components/shell/page-header";
 
 export const metadata: Metadata = { title: "Test Failure Analyzer" };
@@ -15,7 +15,7 @@ export default function FailureAnalyzerPage() {
         icon={Stethoscope}
         iconClassName="text-rose-600"
       />
-      <ComingSoon message="Coming soon" />
+      <FailureAnalyzer />
     </>
   );
 }

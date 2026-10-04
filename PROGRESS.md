@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** New modules — Phase N4 (Test Failure Analyzer). Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** New modules — Phase N5 (API Test Playground). Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -241,6 +241,22 @@ Spec: `prompts/NEW-MODULES-MASTER-PROMPT.md`. Phases N0–N10 in PLAN.md.
   output (files + notes), 50 KB cap, cancellable (AbortController → req.signal),
   maxDuration 300 s; without a key → "Build prompt for Claude" (asks for a fixed JSON
   notes block).
+- **N4 Failure Analyzer:** `src/lib/failure-analyzer/` — `rules.ts` (editable config;
+  evaluation order environment → locator → API status mismatch → assertion → timing →
+  data → API generic, so e.g. RestAssured status mismatches thrown as AssertionError
+  land in API), `parsers.ts` (TestNG, JUnit/Surefire, Playwright JSON, plain text incl.
+  TestNG/Surefire console and Playwright list output; strips ANSI and GitHub log
+  timestamps; 5 MB / 2,000 failures), `analyze.ts` (normalise + top app frame →
+  FNV-1a signature; verdict; Markdown; Bug Formatter bug; AI prompt). NPE /
+  IllegalArgument → test data [inferred]. Fixtures in `tests/fixtures/failure-analyzer/`.
+  Client-side parsing only. Saved analyses keep clusters with a 40-line sample stack
+  (no raw logs). Known issues by signature (409 on duplicates). AI explanations cached in
+  AiExplanationCache. From CI lists failed runs via the CI Reports APIs and reuses
+  `failedJobLogs` (larger tail). Charts use `useChartTheme()` (new shared hook with the
+  validated categorical palette; Unknown = neutral).
+  Cross-module: `src/lib/handoff.ts` — one-shot sessionStorage hand-off read with
+  useSyncExternalStore (no effects); Bug Formatter opens the Manual tab pre-filled with a
+  "Pre-filled from …" notice (only addition to Bug Formatter; its E2E suite unchanged).
 
 ## Open questions
 

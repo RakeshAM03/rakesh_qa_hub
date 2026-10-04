@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ClipboardList, Pencil, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CsvTab } from "./csv-tab";
 import { FindingsCard } from "./findings-card";
-import { ManualTab } from "./manual-tab";
+import { clearHandoff, parseHandoff, useHandoff } from "@/lib/handoff";
+import type { BugInput } from "@/lib/bug-formatter/types";
+import { ManualTab, type ManualPrefill } from "./manual-tab";
 import { PasteTab } from "./paste-tab";
 import { useBugs } from "./use-bugs";
 
@@ -21,6 +23,19 @@ export function BugFormatter() {
   const [tab, setTab] = useState<Tab>("paste");
   const [editingId, setEditingId] = useState<string>();
   const editing = bugs.find((b) => b.id === editingId);
+
+  // A bug sent from another module opens the Manual tab, pre-filled.
+  const rawHandoff = useHandoff("bug-formatter");
+  const handoff = useMemo(() => parseHandoff<{ bug: BugInput; source: string }>(rawHandoff), [rawHandoff]);
+  const [prefill, setPrefill] = useState<ManualPrefill | null>(null);
+  if (handoff && handoff.handoffId !== prefill?.id) {
+    setPrefill({ id: handoff.handoffId, bug: handoff.bug, source: handoff.source });
+    setTab("manual");
+    setEditingId(undefined);
+  }
+  useEffect(() => {
+    if (handoff) clearHandoff("bug-formatter");
+  }, [handoff]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
@@ -43,6 +58,7 @@ export function BugFormatter() {
           <TabsContent value="manual" forceMount className="p-4 data-[state=inactive]:hidden sm:p-5">
             <ManualTab
               editing={editing}
+              prefill={prefill}
               onAdd={(bug) => {
                 add([bug], "MANUAL");
                 toast.success("Added");
