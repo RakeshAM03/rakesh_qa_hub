@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Rocket } from "lucide-react";
 
-import { ComingSoon } from "@/components/shell/coming-soon";
+import { ReleasesList } from "@/components/release-readiness/releases-list";
 import { PageHeader } from "@/components/shell/page-header";
 
 export const metadata: Metadata = { title: "Release Readiness" };
@@ -15,7 +15,7 @@ export default function ReleaseReadinessPage() {
         icon={Rocket}
         iconClassName="text-green-600"
       />
-      <ComingSoon message="Coming soon" />
+      <ReleasesList />
     </>
   );
 }

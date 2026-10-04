@@ -25,7 +25,7 @@ export function AppSidebar() {
       data-testid="app-sidebar"
       data-collapsed={collapsed}
       className={cn(
-        "sticky top-0 hidden h-screen shrink-0 flex-col border-r border-neutral-200 bg-[var(--sidebar-glass)] backdrop-blur-xl transition-[width] duration-200 md:flex",
+        "sticky top-0 hidden h-screen shrink-0 flex-col print:hidden border-r border-neutral-200 bg-[var(--sidebar-glass)] backdrop-blur-xl transition-[width] duration-200 md:flex",
         collapsed ? "w-16" : "w-72",
       )}
     >

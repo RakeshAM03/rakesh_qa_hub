@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** New modules — Phase N6 (Release Readiness). Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** New modules — Phase N7 (Risk-Based Test Planner). Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -277,6 +277,22 @@ Spec: `prompts/NEW-MODULES-MASTER-PROMPT.md`. Phases N0–N10 in PLAN.md.
   Small screens: sidebar → a Select of saved requests. E2E mocks the send route; the
   SSRF E2E uses the real route; `@network` test runs only with E2E_NETWORK=1 (passed
   locally against httpbin.org).
+- **N6 Release Readiness:** pure logic in `src/lib/readiness.ts` (effective status =
+  override → successful auto check → manual value; score = weighted PASS share of
+  non-N/A gates, blockers ×3; verdict rules; auto rules; snapshot; summary). Auto rules
+  count only valid, open (Open/In progress) issues [inferred]; valid-rate with 0 issues
+  and unlinked sources → "Can't check" (gate stays manual). NO_P0_FLAGS counts P0 flags
+  by flag date (flags have no resolved state). CI green = latest *completed* run of each
+  linked suite (GitHub, 20 most recent runs). Auto gates refresh on page open
+  (`GET …/releases/[id]?refresh=1`, avoids the write rate limit) and on "Refresh checks";
+  changed results log AUTO_CHECK events. Overriding a computed result needs a note.
+  New releases get the default sign-off roles QA / Dev lead / Product. Decision →
+  status + frozen snapshot; changing it needs the passcode (DECISION_CHANGED event).
+  "Mark as released" only after Go / Go-with-issues. Extra route: `/duplicate`.
+  Linked-data pickers reuse `/api/ci/suites`, `/api/bug-tracker/features`,
+  `/api/ai-pr-review/flags/summary`. Print = `window.print()`; sidebar and mobile nav
+  got `print:hidden` (only shell change). Shared DatePicker got an opt-in `allowFuture`
+  prop (default unchanged — QA Tracker E2E re-run green).
 
 ## Open questions
 

@@ -14,10 +14,12 @@ type DatePickerProps = {
   value: string;
   onChange: (iso: string) => void;
   className?: string;
+  /** Allow picking future days (default: past and today only). */
+  allowFuture?: boolean;
 };
 
 /** Single date as YYYY-MM-DD, shown like "Oct 2, 2026". */
-export function DatePicker({ id, value, onChange, className }: DatePickerProps) {
+export function DatePicker({ id, value, onChange, className, allowFuture = false }: DatePickerProps) {
   const [open, setOpen] = useState(false);
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -36,7 +38,7 @@ export function DatePicker({ id, value, onChange, className }: DatePickerProps) 
             if (d) onChange(toLocalIso(d));
             setOpen(false);
           }}
-          disabled={{ after: new Date() }}
+          disabled={allowFuture ? undefined : { after: new Date() }}
         />
       </PopoverContent>
     </Popover>

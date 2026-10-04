@@ -21,7 +21,7 @@ export function MobileNav() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center gap-2 border-b border-neutral-200 bg-[var(--sidebar-glass)] px-4 backdrop-blur-xl md:hidden">
+    <header className="sticky top-0 z-40 flex h-14 print:hidden items-center gap-2 border-b border-neutral-200 bg-[var(--sidebar-glass)] px-4 backdrop-blur-xl md:hidden">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" aria-label="Open navigation">

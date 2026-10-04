@@ -130,7 +130,7 @@ module E2E, browser check (Playwright MCP), commit + push, PROGRESS.md, short su
   Send to Bug Formatter, known issues, saved analyses, From CI).
 - [x] **Phase N5 — API Test Playground** (`/api-playground`, SSRF-safe send route + unit tests,
   collections, environments, assertions, cURL, history).
-- [ ] **Phase N6 — Release Readiness** (`/release-readiness`, score/verdict, auto gates,
+- [x] **Phase N6 — Release Readiness** (`/release-readiness`, score/verdict, auto gates,
   sign-offs, decision snapshot, activity log, templates, summary + print).
 - [ ] **Phase N7 — Risk-Based Test Planner** (`/risk-planner`, `src/lib/risk.ts`, matrix,
   suggestions, allocation, exports, Send to PR QA Session).
