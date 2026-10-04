@@ -214,7 +214,7 @@ export function FlagsTableCard({ refreshKey, onChanged }: { refreshKey: number; 
             size={size}
             total={data?.total ?? 0}
             onPageChange={setPage}
-            activeClassName="bg-purple-600 text-white hover:bg-purple-700"
+            activeClassName="bg-purple-700 text-purple-50 hover:bg-purple-800"
           >
             <label className="flex items-center gap-2">
               Rows per page
@@ -308,7 +308,7 @@ export function FlagsTableCard({ refreshKey, onChanged }: { refreshKey: number; 
                   <Button type="button" variant="outline" onClick={() => setEditing(null)}>
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={submitting} className="bg-purple-600 text-white hover:bg-purple-700">
+                  <Button type="submit" disabled={submitting} className="bg-purple-700 text-purple-50 hover:bg-purple-800">
                     {submitting ? "Saving…" : "Save changes"}
                   </Button>
                 </DialogFooter>
@@ -326,7 +326,7 @@ export function FlagsTableCard({ refreshKey, onChanged }: { refreshKey: number; 
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 text-white hover:bg-red-700">
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-700 text-red-50 hover:bg-red-800">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

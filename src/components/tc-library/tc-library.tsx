@@ -322,7 +322,7 @@ export function TcLibrary() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 text-white hover:bg-red-700">
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-700 text-red-50 hover:bg-red-800">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

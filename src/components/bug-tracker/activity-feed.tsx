@@ -30,7 +30,7 @@ const ICONS: Record<Event["type"], { icon: LucideIcon; className: string }> = {
   STATUS_CHANGED: { icon: RefreshCw, className: "bg-violet-50 text-violet-600" },
   MARKED_VALID: { icon: CheckCircle2, className: "bg-green-50 text-green-600" },
   MARKED_INVALID: { icon: XCircle, className: "bg-rose-50 text-rose-600" },
-  DELETED: { icon: Trash2, className: "bg-red-50 text-red-600" },
+  DELETED: { icon: Trash2, className: "bg-red-50 text-red-700" },
 };
 
 const statusLabel = (v: string | null) => (v ? (ISSUE_STATUS_LABELS[v as IssueStatus] ?? v) : "—");

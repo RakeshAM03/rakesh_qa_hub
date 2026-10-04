@@ -121,7 +121,7 @@ export function FindingsCard({ bugs, editingId, onEdit, onDelete, onMove, onClea
                 onClear();
                 toast.success("All findings cleared");
               }}
-              className="bg-red-600 text-white hover:bg-red-700"
+              className="bg-red-700 text-red-50 hover:bg-red-800"
             >
               Clear all
             </AlertDialogAction>

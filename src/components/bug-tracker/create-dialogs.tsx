@@ -50,7 +50,7 @@ export function NewTeamDialog({ open, onOpenChange, onCreated }: BaseProps & { o
           </DialogHeader>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="team-name">
-              Team name <span className="text-red-500">*</span>
+              Team name <span className="text-red-700">*</span>
             </Label>
             <Input
               id="team-name"
@@ -62,7 +62,7 @@ export function NewTeamDialog({ open, onOpenChange, onCreated }: BaseProps & { o
               aria-describedby={error ? "team-name-error" : undefined}
               autoFocus
             />
-            {error && <p id="team-name-error" className="text-xs text-red-600">{error}</p>}
+            {error && <p id="team-name-error" className="text-xs text-red-700">{error}</p>}
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
@@ -124,7 +124,7 @@ export function NewFeatureDialog({ open, onOpenChange, teams, defaultTeamId, onC
           <DialogDescription className="sr-only">Create a feature page to log its QA issues.</DialogDescription>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="feature-name">
-              Feature Name <span className="text-red-500">*</span>
+              Feature Name <span className="text-red-700">*</span>
             </Label>
             <Input
               id="feature-name"
@@ -136,7 +136,7 @@ export function NewFeatureDialog({ open, onOpenChange, teams, defaultTeamId, onC
               aria-describedby={error ? "feature-name-error" : undefined}
               autoFocus
             />
-            {error && <p id="feature-name-error" className="text-xs text-red-600">{error}</p>}
+            {error && <p id="feature-name-error" className="text-xs text-red-700">{error}</p>}
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="feature-team">Team</Label>

@@ -111,7 +111,7 @@ export function GlobalSearch() {
 function ResultGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="py-1">
-      <p className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-neutral-400">{label}</p>
+      <p className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">{label}</p>
       {children}
     </div>
   );

@@ -293,7 +293,7 @@ function DetailDrawer({ cluster, onClose }: { cluster: Cluster | null; onClose: 
                 <h3 className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-600">Stack trace</h3>
                 <pre className="overflow-x-auto rounded-lg bg-neutral-100 p-3 font-mono text-xs leading-5" data-testid="fa-stack">
                   {cluster.sample.stack.map((l, i) => (
-                    <div key={i} className={isAppFrame(l) ? "font-semibold text-neutral-900" : "text-neutral-500"}>
+                    <div key={i} className={isAppFrame(l) ? "font-semibold text-neutral-900" : "text-neutral-600"}>
                       {l}
                     </div>
                   ))}

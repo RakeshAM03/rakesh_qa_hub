@@ -120,7 +120,7 @@ export function ManualTab({ editing, prefill, onAdd, onSave, onCancelEdit }: Man
       )}
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="bf-title" className={labelClass}>
-          Title <span className="text-red-500">*</span>
+          Title <span className="text-red-700">*</span>
         </Label>
         <Input
           id="bf-title"

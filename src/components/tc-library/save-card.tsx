@@ -128,7 +128,7 @@ export function SaveCard({ entry, onSaved, onClose }: SaveCardProps) {
         <div className="grid gap-4 md:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="tc-name" className={labelClass}>
-              Name <span className="text-red-500">*</span>
+              Name <span className="text-red-700">*</span>
             </Label>
             <Input
               id="tc-name"
@@ -141,7 +141,7 @@ export function SaveCard({ entry, onSaved, onClose }: SaveCardProps) {
               aria-describedby="tc-name-hint"
             />
             <div id="tc-name-hint">
-              {nameMissing && <p className="text-xs text-red-600">Required</p>}
+              {nameMissing && <p className="text-xs text-red-700">Required</p>}
               {!nameMissing && nameTaken && form.name.trim() && (
                 <p className="flex items-center gap-1 text-xs text-amber-700">
                   <Info className="size-3.5" /> An entry with this name already exists. You can still save.
@@ -162,7 +162,7 @@ export function SaveCard({ entry, onSaved, onClose }: SaveCardProps) {
               aria-describedby={refInvalid ? "tc-pr-error" : undefined}
             />
             {refInvalid && (
-              <p id="tc-pr-error" className="text-xs text-red-600">
+              <p id="tc-pr-error" className="text-xs text-red-700">
                 Use <code>repo #number</code> or a GitHub pull request URL.
               </p>
             )}
@@ -171,7 +171,7 @@ export function SaveCard({ entry, onSaved, onClose }: SaveCardProps) {
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="tc-output" className={labelClass}>
-            Step 1 + Step 2 Output <span className="text-red-500">*</span>
+            Step 1 + Step 2 Output <span className="text-red-700">*</span>
           </Label>
           <Textarea
             id="tc-output"
@@ -184,8 +184,8 @@ export function SaveCard({ entry, onSaved, onClose }: SaveCardProps) {
             aria-describedby="tc-output-hint"
           />
           <div id="tc-output-hint">
-            {outputMissing && <p className="text-xs text-red-600">Required</p>}
-            {outputTooBig && <p className="text-xs text-red-600">The output is larger than 1 MB. Trim it before saving.</p>}
+            {outputMissing && <p className="text-xs text-red-700">Required</p>}
+            {outputTooBig && <p className="text-xs text-red-700">The output is larger than 1 MB. Trim it before saving.</p>}
           </div>
         </div>
 
@@ -215,7 +215,7 @@ export function SaveCard({ entry, onSaved, onClose }: SaveCardProps) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Keep editing</AlertDialogCancel>
-            <AlertDialogAction onClick={onClose} className="bg-red-600 text-white hover:bg-red-700">
+            <AlertDialogAction onClick={onClose} className="bg-red-700 text-red-50 hover:bg-red-800">
               Discard
             </AlertDialogAction>
           </AlertDialogFooter>

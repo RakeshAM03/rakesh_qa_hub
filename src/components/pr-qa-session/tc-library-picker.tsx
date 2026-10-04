@@ -67,7 +67,7 @@ export function TcLibraryPicker({ open, onOpenChange, onPick }: TcLibraryPickerP
         </div>
         <div className="max-h-80 overflow-y-auto">
           {failed ? (
-            <p className="py-6 text-center text-sm text-red-600">Couldn&apos;t load the library.</p>
+            <p className="py-6 text-center text-sm text-red-700">Couldn&apos;t load the library.</p>
           ) : entries === null ? (
             <div className="flex flex-col gap-2">
               <Skeleton className="h-12 w-full" />

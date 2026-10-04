@@ -111,7 +111,7 @@ export function LogEntryForm({ resources, onLogged, onManageResources }: LogEntr
           <div className="flex flex-col items-center gap-3 py-6 text-center">
             <Users className="size-8 text-green-200" aria-hidden />
             <p className="text-sm text-neutral-600">Add a resource to start logging.</p>
-            <Button onClick={onManageResources} className="bg-green-600 text-white hover:bg-green-700">
+            <Button onClick={onManageResources} className="bg-green-700 text-green-50 hover:bg-green-800">
               <Plus /> Add a resource
             </Button>
           </div>
@@ -120,7 +120,7 @@ export function LogEntryForm({ resources, onLogged, onManageResources }: LogEntr
             <div className="grid gap-4 sm:grid-cols-2 lg:max-w-2xl">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="log-resource" className={labelClass}>
-                  Resource <span className="text-red-500">*</span>
+                  Resource <span className="text-red-700">*</span>
                 </Label>
                 <Select value={resourceId} onValueChange={setResourceId}>
                   <SelectTrigger
@@ -140,7 +140,7 @@ export function LogEntryForm({ resources, onLogged, onManageResources }: LogEntr
                   </SelectContent>
                 </Select>
                 {attempted && resourceMissing && (
-                  <p id="log-resource-error" className="text-xs text-red-600">
+                  <p id="log-resource-error" className="text-xs text-red-700">
                     Required
                   </p>
                 )}
@@ -178,7 +178,7 @@ export function LogEntryForm({ resources, onLogged, onManageResources }: LogEntr
                         aria-describedby={errors.description ? id("desc-error") : undefined}
                       />
                       {errors.description && (
-                        <p id={id("desc-error")} className="text-xs text-red-600">
+                        <p id={id("desc-error")} className="text-xs text-red-700">
                           {errors.description}
                         </p>
                       )}
@@ -223,7 +223,7 @@ export function LogEntryForm({ resources, onLogged, onManageResources }: LogEntr
                         </span>
                       </div>
                       {errors.hours && (
-                        <p id={id("hours-error")} className="text-xs text-red-600">
+                        <p id={id("hours-error")} className="text-xs text-red-700">
                           {errors.hours}
                         </p>
                       )}

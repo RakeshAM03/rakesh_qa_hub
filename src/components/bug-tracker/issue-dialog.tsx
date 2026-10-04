@@ -87,7 +87,7 @@ export function IssueDialog({ open, onOpenChange, issue, onSubmit }: IssueDialog
           </DialogHeader>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="issue-title">
-              Title <span className="text-red-500">*</span>
+              Title <span className="text-red-700">*</span>
             </Label>
             <Input
               id="issue-title"
@@ -102,7 +102,7 @@ export function IssueDialog({ open, onOpenChange, issue, onSubmit }: IssueDialog
               aria-describedby={error ? "issue-title-error" : undefined}
               autoFocus
             />
-            {error && <p id="issue-title-error" className="text-xs text-red-600">{error}</p>}
+            {error && <p id="issue-title-error" className="text-xs text-red-700">{error}</p>}
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="issue-description">Description</Label>

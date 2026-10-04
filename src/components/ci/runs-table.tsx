@@ -98,7 +98,7 @@ export function RunsTable({ suiteId, runs, aiEnabled, onRcaLoaded }: RunsTablePr
                         {run.conclusion ? (
                           <span className={cn(pill, CONCLUSION[run.conclusion] ?? "bg-neutral-100 text-neutral-700")}>{run.conclusion}</span>
                         ) : (
-                          <span className="text-neutral-400">—</span>
+                          <span className="text-neutral-500">—</span>
                         )}
                       </td>
                       <td className="px-3 py-2.5 whitespace-nowrap">
@@ -120,12 +120,12 @@ export function RunsTable({ suiteId, runs, aiEnabled, onRcaLoaded }: RunsTablePr
                             {run.jobs.passed}/{run.jobs.total}
                           </button>
                         ) : (
-                          <span className="text-neutral-400">—</span>
+                          <span className="text-neutral-500">—</span>
                         )}
                       </td>
                       <td className="max-w-64 px-3 py-2.5">
                         {run.conclusion !== "failure" || !aiEnabled ? (
-                          <span className="text-neutral-400">—</span>
+                          <span className="text-neutral-500">—</span>
                         ) : run.rcaSummary ? (
                           <button type="button" onClick={() => openRca(run)} className="line-clamp-2 text-left text-neutral-800 hover:underline">
                             {run.rcaSummary}

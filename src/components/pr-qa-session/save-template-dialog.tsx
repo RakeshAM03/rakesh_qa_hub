@@ -63,7 +63,7 @@ export function SaveTemplateDialog({ open, onOpenChange, onSave }: SaveTemplateD
           </DialogHeader>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="template-name">
-              Template name <span className="text-red-500">*</span>
+              Template name <span className="text-red-700">*</span>
             </Label>
             <Input
               id="template-name"
@@ -79,7 +79,7 @@ export function SaveTemplateDialog({ open, onOpenChange, onSave }: SaveTemplateD
               autoFocus
             />
             {error && (
-              <p id="template-name-error" className="text-xs text-red-600">
+              <p id="template-name-error" className="text-xs text-red-700">
                 {error}
               </p>
             )}
@@ -88,7 +88,7 @@ export function SaveTemplateDialog({ open, onOpenChange, onSave }: SaveTemplateD
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={saving} className="bg-purple-600 text-white hover:bg-purple-700">
+            <Button type="submit" disabled={saving} className="bg-purple-700 text-purple-50 hover:bg-purple-800">
               <Save /> {saving ? "Saving…" : "Save template"}
             </Button>
           </DialogFooter>

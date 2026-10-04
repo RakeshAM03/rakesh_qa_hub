@@ -144,11 +144,11 @@ export function ManageResourcesDialog({ open, onOpenChange, onChanged }: ManageR
             </div>
           </div>
           {addError && (
-            <p id="new-resource-error" className="text-xs text-red-600">
+            <p id="new-resource-error" className="text-xs text-red-700">
               {addError}
             </p>
           )}
-          <Button type="submit" size="sm" className="w-fit bg-green-600 text-white hover:bg-green-700">
+          <Button type="submit" size="sm" className="w-fit bg-green-700 text-green-50 hover:bg-green-800">
             <Plus /> Add resource
           </Button>
         </form>
@@ -205,7 +205,7 @@ export function ManageResourcesDialog({ open, onOpenChange, onChanged }: ManageR
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 text-white hover:bg-red-700">
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-700 text-red-50 hover:bg-red-800">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -803,7 +803,7 @@ function DecisionDialog({ open, onOpenChange, changing, onSubmit }: { open: bool
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="dec-comment">
-              Comment <span className="text-red-500">*</span>
+              Comment <span className="text-red-700">*</span>
             </Label>
             <Textarea id="dec-comment" value={comment} onChange={(e) => setComment(e.target.value)} maxLength={5000} aria-invalid={submitted && !comment.trim()} />
             {submitted && !comment.trim() && <p className="text-xs text-red-700">A comment is required</p>}

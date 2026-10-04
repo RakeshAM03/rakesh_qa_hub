@@ -113,7 +113,7 @@ export function ImportDialog({ open, onOpenChange, onImported }: ImportDialogPro
           }}
         />
 
-        {preview?.error && <p className="text-sm text-red-600">{preview.error}</p>}
+        {preview?.error && <p className="text-sm text-red-700">{preview.error}</p>}
         {preview && !preview.error && (
           <div className="flex flex-col gap-2 text-sm">
             <p className="font-medium text-neutral-800" aria-live="polite">

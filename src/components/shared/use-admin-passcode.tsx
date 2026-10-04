@@ -118,7 +118,7 @@ export function useAdminPasscode() {
               autoFocus
             />
             {error && (
-              <p id="admin-passcode-error" className="text-xs text-red-600">
+              <p id="admin-passcode-error" className="text-xs text-red-700">
                 {error}
               </p>
             )}

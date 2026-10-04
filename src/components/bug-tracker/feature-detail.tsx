@@ -162,7 +162,7 @@ export function FeatureDetail({ featureId, highlightId }: { featureId: string; h
           )}
         </div>
         <div className="flex shrink-0 gap-2">
-          <Button variant="outline" onClick={() => setDeleteFeature(true)} disabled={!feature} className="text-red-600 hover:bg-red-50 hover:text-red-700">
+          <Button variant="outline" onClick={() => setDeleteFeature(true)} disabled={!feature} className="text-red-700 hover:bg-red-50 hover:text-red-700">
             <Trash2 /> Delete page
           </Button>
           <Button onClick={() => setDialog({ open: true, issue: null })} disabled={!feature}>
@@ -290,7 +290,7 @@ export function FeatureDetail({ featureId, highlightId }: { featureId: string; h
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDeleteIssue} className="bg-red-600 text-white hover:bg-red-700">
+            <AlertDialogAction onClick={confirmDeleteIssue} className="bg-red-700 text-red-50 hover:bg-red-800">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -306,7 +306,7 @@ export function FeatureDetail({ featureId, highlightId }: { featureId: string; h
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDeleteFeature} className="bg-red-600 text-white hover:bg-red-700">
+            <AlertDialogAction onClick={confirmDeleteFeature} className="bg-red-700 text-red-50 hover:bg-red-800">
               Delete page
             </AlertDialogAction>
           </AlertDialogFooter>

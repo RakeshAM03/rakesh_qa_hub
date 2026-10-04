@@ -23,7 +23,7 @@ export function OutputPanel({ value, onChange, onReset }: OutputPanelProps) {
         <h2 id="generated-prompt-title" className="flex-1 text-base font-semibold text-neutral-900">
           Generated prompt
         </h2>
-        <Button size="sm" onClick={() => copyText(value)} className="bg-purple-600 text-white hover:bg-purple-700">
+        <Button size="sm" onClick={() => copyText(value)} className="bg-purple-700 text-purple-50 hover:bg-purple-800">
           <Copy /> Copy
         </Button>
         <Button size="sm" variant="outline" onClick={onReset}>

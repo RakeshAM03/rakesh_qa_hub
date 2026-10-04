@@ -109,7 +109,7 @@ export function FlagForm({ idPrefix, initial = EMPTY_FLAG_FORM, onSubmit, footer
 
   const err = (key: keyof FlagFormValues) =>
     errors[key] ? (
-      <p id={id(`${key}-error`)} className="text-xs text-red-600">
+      <p id={id(`${key}-error`)} className="text-xs text-red-700">
         {errors[key]}
       </p>
     ) : null;
@@ -123,14 +123,14 @@ export function FlagForm({ idPrefix, initial = EMPTY_FLAG_FORM, onSubmit, footer
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor={id("repo")} className={labelClass}>
-            Repo <span className="text-red-500">*</span>
+            Repo <span className="text-red-700">*</span>
           </Label>
           <Input id={id("repo")} value={values.repo} onChange={(e) => set("repo", e.target.value)} placeholder="owner/name" {...a11y("repo")} />
           {err("repo")}
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor={id("type")} className={labelClass}>
-            Flag Type <span className="text-red-500">*</span>
+            Flag Type <span className="text-red-700">*</span>
           </Label>
           <Select value={values.flagType} onValueChange={(v) => set("flagType", v as FlagTypeKey)}>
             <SelectTrigger id={id("type")} className="w-full" {...a11y("flagType")}>
@@ -164,7 +164,7 @@ export function FlagForm({ idPrefix, initial = EMPTY_FLAG_FORM, onSubmit, footer
         </div>
         <fieldset className="flex flex-col gap-1.5">
           <legend className={cn(labelClass, "mb-1.5")}>
-            Severity <span className="text-red-500">*</span>
+            Severity <span className="text-red-700">*</span>
           </legend>
           <div className="flex gap-2" role="radiogroup" aria-label="Severity">
             {FLAG_SEVERITIES.map((s) => (
@@ -190,7 +190,7 @@ export function FlagForm({ idPrefix, initial = EMPTY_FLAG_FORM, onSubmit, footer
       </div>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor={id("detail")} className={labelClass}>
-          Detail <span className="text-red-500">*</span>
+          Detail <span className="text-red-700">*</span>
         </Label>
         <Textarea
           id={id("detail")}

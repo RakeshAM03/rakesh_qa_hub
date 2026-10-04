@@ -62,7 +62,7 @@ export function Pagination({
                 {item}
               </Button>
             ) : (
-              <span key={item} className="px-1 text-neutral-400" aria-hidden>
+              <span key={item} className="px-1 text-neutral-500" aria-hidden>
                 …
               </span>
             ),

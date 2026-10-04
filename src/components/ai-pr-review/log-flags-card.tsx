@@ -89,7 +89,7 @@ export function LogFlagsCard({ onSaved }: { onSaved: () => void }) {
               return true;
             }}
             footer={({ submitting }) => (
-              <Button type="submit" disabled={submitting} className="w-fit bg-purple-600 text-white hover:bg-purple-700">
+              <Button type="submit" disabled={submitting} className="w-fit bg-purple-700 text-purple-50 hover:bg-purple-800">
                 <Plus /> {submitting ? "Adding…" : "Add flag"}
               </Button>
             )}
@@ -160,7 +160,7 @@ function FromClaude({ onSave }: { onSave: (flags: FlagInput[]) => Promise<boolea
         className="min-h-40 resize-y font-mono text-xs"
       />
       {debounced.trim() && !parsed.found && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className="text-sm text-red-700" role="alert">
           No flag table found. It needs a markdown table with Flag Type, Detail and Severity columns.
         </p>
       )}
@@ -168,7 +168,7 @@ function FromClaude({ onSave }: { onSave: (flags: FlagInput[]) => Promise<boolea
         <div className="flex flex-col gap-2">
           <p className="text-sm font-medium text-neutral-800" aria-live="polite">
             {rows.length} {rows.length === 1 ? "flag" : "flags"} found
-            {invalidCount > 0 && <span className="text-red-600"> · {invalidCount} need fixing</span>}
+            {invalidCount > 0 && <span className="text-red-700"> · {invalidCount} need fixing</span>}
           </p>
           {rows.length > 0 && (
             <div className="overflow-x-auto rounded-lg border border-neutral-200">
@@ -192,7 +192,7 @@ function FromClaude({ onSave }: { onSave: (flags: FlagInput[]) => Promise<boolea
                       data-testid="preview-flag"
                       className={problems[i] ? "bg-red-50/60" : "border-t border-neutral-100"}
                     >
-                      <td className="px-3 py-2 align-top">{row.repo || <span className="text-red-600">—</span>}</td>
+                      <td className="px-3 py-2 align-top">{row.repo || <span className="text-red-700">—</span>}</td>
                       <td className="px-3 py-2 align-top">
                         <Select value={row.flagType ?? ""} onValueChange={(v) => update(row.key, { flagType: v as FlagTypeKey })}>
                           <SelectTrigger size="sm" className="w-44" aria-label={`Flag type for row ${i + 1}`} aria-invalid={!row.flagType}>
@@ -210,7 +210,7 @@ function FromClaude({ onSave }: { onSave: (flags: FlagInput[]) => Promise<boolea
                       <td className="max-w-48 px-3 py-2 align-top font-mono text-xs break-all">{row.location}</td>
                       <td className="max-w-80 px-3 py-2 align-top">
                         <p className="line-clamp-3 whitespace-pre-wrap">{row.detail}</p>
-                        {problems[i] && <p className="mt-1 text-xs text-red-600">{problems[i]}</p>}
+                        {problems[i] && <p className="mt-1 text-xs text-red-700">{problems[i]}</p>}
                       </td>
                       <td className="px-3 py-2 align-top">
                         <Select value={row.severity ?? ""} onValueChange={(v) => update(row.key, { severity: v as FlagSeverity })}>
@@ -249,7 +249,7 @@ function FromClaude({ onSave }: { onSave: (flags: FlagInput[]) => Promise<boolea
           <Button
             onClick={save}
             disabled={rows.length === 0 || invalidCount > 0 || saving}
-            className="w-fit bg-purple-600 text-white hover:bg-purple-700"
+            className="w-fit bg-purple-700 text-purple-50 hover:bg-purple-800"
           >
             <Save /> {saving ? "Saving…" : `Save ${rows.length || ""} ${rows.length === 1 ? "flag" : "flags"}`}
           </Button>
@@ -291,7 +291,7 @@ function FromClaude({ onSave }: { onSave: (flags: FlagInput[]) => Promise<boolea
                   <Button type="button" variant="outline" onClick={() => setEditing(null)}>
                     Cancel
                   </Button>
-                  <Button type="submit" className="bg-purple-600 text-white hover:bg-purple-700">
+                  <Button type="submit" className="bg-purple-700 text-purple-50 hover:bg-purple-800">
                     Apply
                   </Button>
                 </DialogFooter>

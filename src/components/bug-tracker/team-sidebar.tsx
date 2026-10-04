@@ -122,7 +122,7 @@ export function TeamSidebar({ teams, features, selected, onSelect, onNewTeam }: 
               {open && (
                 <ul className="mt-1 mb-1 ml-5 flex flex-col gap-0.5 border-l border-neutral-200 pl-3">
                   {teamFeatures.length === 0 ? (
-                    <li className="py-1 text-xs text-neutral-400">No feature pages yet</li>
+                    <li className="py-1 text-xs text-neutral-500">No feature pages yet</li>
                   ) : (
                     teamFeatures.map((f) => (
                       <li key={f.id}>

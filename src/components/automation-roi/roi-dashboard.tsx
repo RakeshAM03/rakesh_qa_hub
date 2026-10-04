@@ -611,7 +611,7 @@ function ProjectForm({
   const field = (k: keyof FormValues, label: string, hint?: string, required = false) => (
     <div className="flex flex-col gap-1.5">
       <Label htmlFor={`roi-${k}`}>
-        {label} {required && <span className="text-red-500">*</span>}
+        {label} {required && <span className="text-red-700">*</span>}
       </Label>
       <Input id={`roi-${k}`} type="number" min={0} step="any" value={v[k]} onChange={(e) => set(k, e.target.value)} />
       {hint && <p className="text-xs text-neutral-600">{hint}</p>}
@@ -629,7 +629,7 @@ function ProjectForm({
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="roi-name">
-                Name <span className="text-red-500">*</span>
+                Name <span className="text-red-700">*</span>
               </Label>
               <Input id="roi-name" value={v.name} onChange={(e) => set("name", e.target.value)} placeholder="Checkout regression" maxLength={200} />
             </div>

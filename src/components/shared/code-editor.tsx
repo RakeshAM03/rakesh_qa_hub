@@ -66,6 +66,7 @@ const baseTheme = EditorView.theme({
   "&.cm-editor, & .cm-scroller": { backgroundColor: "transparent" },
   // Readable line numbers in both modes (the app remaps neutral-600 for dark mode).
   "&.cm-editor .cm-gutters": { color: "var(--color-neutral-600)" },
+  "&.cm-editor .cm-placeholder": { color: "var(--color-neutral-600)" },
   ".cm-review-line": { backgroundColor: "color-mix(in oklab, #f59e0b 22%, transparent)" },
   "&.cm-focused": { outline: "none" },
 });

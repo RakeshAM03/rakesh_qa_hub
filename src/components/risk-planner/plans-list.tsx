@@ -180,7 +180,7 @@ function NewPlanDialog({ open, onOpenChange, plans, onCreated }: { open: boolean
           </DialogHeader>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="rp-name">
-              Name <span className="text-red-500">*</span>
+              Name <span className="text-red-700">*</span>
             </Label>
             <Input id="rp-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Sprint 42" maxLength={200} aria-invalid={submitted && !name.trim()} />
             {submitted && !name.trim() && <p className="text-xs text-red-700">Required</p>}
@@ -198,7 +198,7 @@ function NewPlanDialog({ open, onOpenChange, plans, onCreated }: { open: boolean
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="rp-hours">
-                Available testing hours <span className="text-red-500">*</span>
+                Available testing hours <span className="text-red-700">*</span>
               </Label>
               <Input id="rp-hours" type="number" min={0} step={0.5} value={hours} onChange={(e) => setHours(e.target.value)} />
             </div>

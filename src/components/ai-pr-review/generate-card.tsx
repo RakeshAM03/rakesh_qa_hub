@@ -38,14 +38,14 @@ export function GenerateCard() {
           aria-invalid={invalid.length > 0}
         />
         {invalid.length > 0 && (
-          <p id="review-pr-urls-error" className="text-xs text-red-600">
+          <p id="review-pr-urls-error" className="text-xs text-red-700">
             Not a GitHub pull request URL: {invalid.join(", ")}
           </p>
         )}
         <Button
           onClick={() => setPrompt(buildReviewPrompt([...new Set(valid)]))}
           disabled={valid.length === 0 || invalid.length > 0}
-          className="w-fit bg-purple-600 text-white hover:bg-purple-700"
+          className="w-fit bg-purple-700 text-purple-50 hover:bg-purple-800"
         >
           <Wand2 /> Generate
         </Button>

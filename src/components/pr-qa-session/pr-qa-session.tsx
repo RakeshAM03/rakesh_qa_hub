@@ -273,7 +273,7 @@ export function PrQaSession() {
                 </Button>
               </div>
             ))}
-            <p className={cn("text-xs", attempted && !hasPr ? "text-red-600" : "text-neutral-500")}>
+            <p className={cn("text-xs", attempted && !hasPr ? "text-red-700" : "text-neutral-500")}>
               At least one PR URL is required. Provide both for contract mismatch analysis.
             </p>
             <Button
@@ -403,7 +403,7 @@ export function PrQaSession() {
             onClick={build}
             disabled={!hasPr || building}
             size="lg"
-            className="w-full bg-purple-600 text-white hover:bg-purple-700 sm:w-fit sm:self-end"
+            className="w-full bg-purple-700 text-purple-50 hover:bg-purple-800 sm:w-fit sm:self-end"
           >
             <FlaskConical /> Build Prompt
           </Button>
@@ -466,7 +466,7 @@ function UrlField({ id, label, hideLabel, value, error, onChange, onBlur }: UrlF
         aria-describedby={error ? `${id}-error` : undefined}
       />
       {error && (
-        <p id={`${id}-error`} className="text-xs text-red-600">
+        <p id={`${id}-error`} className="text-xs text-red-700">
           {error}
         </p>
       )}

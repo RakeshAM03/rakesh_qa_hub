@@ -83,7 +83,7 @@ export function ThemePicker({ compact = false, side = "top" }: ThemePickerProps)
                 onClick={() => setTheme(id)}
                 className={cn(
                   "flex h-8 items-center justify-center gap-1.5 rounded-md text-xs font-medium transition-colors",
-                  active ? "bg-card text-neutral-900 shadow-sm" : "text-neutral-500 hover:text-neutral-900",
+                  active ? "bg-card text-neutral-900 shadow-sm" : "text-neutral-600 hover:text-neutral-900",
                 )}
               >
                 <Icon className="size-3.5" /> {label}
@@ -114,7 +114,7 @@ export function ThemePicker({ compact = false, side = "top" }: ThemePickerProps)
                 />
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm font-medium text-neutral-900">{a.name}</span>
-                  <span className="block truncate text-xs text-neutral-500">{a.description}</span>
+                  <span className="block truncate text-xs text-neutral-600">{a.description}</span>
                 </span>
                 {active && <Check className="size-4 text-neutral-700" />}
               </button>

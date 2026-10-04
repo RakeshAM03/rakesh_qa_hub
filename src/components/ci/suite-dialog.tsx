@@ -102,7 +102,7 @@ export function SuiteDialog({ open, onOpenChange, suite, githubConnected, onSubm
   const field = (key: "name" | "repo" | "workflowFile", label: string, placeholder: string, hint?: string) => (
     <div className="flex flex-col gap-1.5">
       <Label htmlFor={`suite-${key}`}>
-        {label} <span className="text-red-500">*</span>
+        {label} <span className="text-red-700">*</span>
       </Label>
       <Input
         id={`suite-${key}`}
@@ -114,7 +114,7 @@ export function SuiteDialog({ open, onOpenChange, suite, githubConnected, onSubm
         className={key === "name" ? undefined : "font-mono text-sm"}
       />
       {errors[key] ? (
-        <p id={`suite-${key}-error`} className="text-xs text-red-600">
+        <p id={`suite-${key}-error`} className="text-xs text-red-700">
           {errors[key]}
         </p>
       ) : (
@@ -174,7 +174,7 @@ export function SuiteDialog({ open, onOpenChange, suite, githubConnected, onSubm
             <p className="-mt-1 text-xs text-neutral-500">
               Inputs your workflow&apos;s <code>workflow_dispatch</code> accepts. They&apos;re shown before each run.
             </p>
-            {errors["inputs."] && <p className="text-xs text-red-600">{errors["inputs."]}</p>}
+            {errors["inputs."] && <p className="text-xs text-red-700">{errors["inputs."]}</p>}
             {values.inputs.map((row, i) => (
               <div key={i} data-testid="dispatch-input-row" className="flex flex-col gap-2 rounded-lg border border-neutral-200 p-3">
                 <div className="grid gap-2 sm:grid-cols-[1fr_1fr_7rem_auto]">
@@ -205,7 +205,7 @@ export function SuiteDialog({ open, onOpenChange, suite, githubConnected, onSubm
                   )}
                   <Input value={row.default} onChange={(e) => setInput(i, { default: e.target.value })} placeholder="Default (optional)" aria-label={`Input ${i + 1} default`} />
                 </div>
-                {errors[`inputs.${i}`] && <p className="text-xs text-red-600">{errors[`inputs.${i}`]}</p>}
+                {errors[`inputs.${i}`] && <p className="text-xs text-red-700">{errors[`inputs.${i}`]}</p>}
               </div>
             ))}
             {values.inputs.length < 10 && (

@@ -367,6 +367,14 @@ Spec: `prompts/NEW-MODULES-MASTER-PROMPT.md`. Phases N0–N10 in PLAN.md.
   all and title error (`-700`); Risk Planner deferred rows use a tint instead of 60%
   opacity; CodeMirror light syntax colours `#085/#e40/#f00` → `#006b42/#b42d00/#c00000`
   (≥5.2:1 even on the selection colour). Result: 0 violations across all 270 checks.
+  Follow-up: the live sweep and a static scan found issues only visible in hidden states
+  (empty states, validation errors, dialogs, hover). Fixed: validation-error text and
+  required asterisks (`text-red-500/600` → `red-700`), QA Tracker green buttons, buttons
+  whose `hover:bg-*-700` turned light under the dark remap (→ `-700` bg / `-50` text /
+  `hover:-800`), theme-picker descriptions, Failure Analyzer drawer frames, CodeMirror
+  placeholder, a few faint labels/dashes. Hidden-state sweep (47 states: dialogs,
+  validation errors, passcode prompt, drawers, menus, popovers, mobile nav, collapsed
+  sidebar) × light/dark × 5 themes: 0 violations, plus 0 on the 270 page checks.
 
 ## Open questions / next steps
 

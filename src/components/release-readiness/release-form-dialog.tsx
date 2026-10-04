@@ -108,7 +108,7 @@ export function ReleaseFormDialog({ open, onOpenChange, initial, title, submitLa
           <div className="grid gap-3 sm:grid-cols-[2fr_1fr]">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="rr-name">
-                Name <span className="text-red-500">*</span>
+                Name <span className="text-red-700">*</span>
               </Label>
               <Input id="rr-name" value={v.name} onChange={(e) => set("name", e.target.value)} placeholder="Checkout revamp" maxLength={200} aria-invalid={submitted && !v.name.trim()} />
               {submitted && !v.name.trim() && <p className="text-xs text-red-700">Required</p>}
