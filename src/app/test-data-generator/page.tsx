@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Database } from "lucide-react";
 
-import { ComingSoon } from "@/components/shell/coming-soon";
 import { PageHeader } from "@/components/shell/page-header";
+import { TestDataGenerator } from "@/components/test-data-generator/test-data-generator";
 
 export const metadata: Metadata = { title: "Test Data Generator" };
 
@@ -15,7 +15,7 @@ export default function TestDataGeneratorPage() {
         icon={Database}
         iconClassName="text-teal-600"
       />
-      <ComingSoon />
+      <TestDataGenerator />
     </>
   );
 }

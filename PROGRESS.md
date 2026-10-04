@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** More modules — Phase M2 (Test Data Generator). Original 13 phases and N0–N10 done; live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** More modules — Phase M3 (Test Case Generator). Original 13 phases and N0–N10 done; live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -418,6 +418,37 @@ Spec: `prompts/MORE-MODULES-MASTER-PROMPT.md`. Phases M0–M5 in PLAN.md. All de
   E2E (now asserts the redirect), README module table, contrast sweep scripts. Insights now
   has only Automation ROI (group kept). The original specs in `prompts/` still mention it
   as history.
+- **M2 Test Data Generator:** pure engine in `src/lib/testdata/` — `field-types.ts` (one
+  catalogue: group, option specs, edge kind, SQL kind, generator, variety for unique
+  checks; 80 types), `formats.ts` (Luhn, sandbox cards, PAN/GSTIN with the portal's mod-36
+  check char/IFSC/pincode/vehicle, Aadhaar via Verhoeff — unmasked numbers always FAIL the
+  check digit), `regex.ts` (own subset generator + variety), `formula.ts` (tokenizer +
+  recursive-descent parser: refs, numbers, quoted strings, + - * / ( ); no eval),
+  `edge-cases.ts`, `validate.ts` (names, ranges, dates, regex/formula errors, unknown refs,
+  cycles via topological order, impossible unique), `generate.ts`, `export.ts` (CSV/TSV,
+  JSON, JSON Lines, YAML, XML, SQL × 5 dialects), `excel.ts` (exceljs, dynamic import),
+  `presets.ts`, `schema.ts` (zod), `schema-ops.ts`, `snippets.ts`, `locales.ts`.
+  Decisions made while building [inferred]: dates are relative to a "Dates relative to" day
+  (default today, saved with the schema) so seeded runs stay reproducible across days; a
+  random run shows the seed it used. Edge-only mode applies to every field that has edge
+  cases (toggle ignored); Mixed uses each field's toggle + % (default 20). Blanks and edge
+  values don't count against Unique. Templates/formulas reference fields at the same level;
+  foreign keys are top-level only and filled after all rows. Nested values are JSON strings
+  in CSV/Excel/SQL. SQL column types fall back to text when a column holds edge cases,
+  non-ISO dates or text amounts, so every INSERT runs; Oracle uses INSERT ALL; SQL Server
+  batches are capped at 1,000 and strings are N'…'; MySQL also escapes backslashes. XML
+  replaces characters XML 1.0 can't hold (e.g. null byte) with U+FFFD. CSV isn't
+  formula-escaped (it's raw test data, and would break negative numbers). URL/avatar/image
+  values use example.com. Card numbers: sandbox list by default, or Luhn-valid numbers on
+  sandbox prefixes ("format testing") — can't promise those prefixes are unissued, so they're
+  labelled as test data. Extra type "Password (invalid variants)" for the Login preset.
+  Worker (`generator.worker.ts`): generates, keeps the last dataset, builds files on demand
+  (format settings changed after a run apply without regenerating), zip via fflate.
+  100,000 rows × 9 fields in ~1.3 s locally. Draft in localStorage
+  `qa-hub:test-data-generator:draft`. API: schemas GET/POST, [id] GET/PATCH/DELETE
+  (passcode). 157 unit tests; E2E 9 (spec flow + seed reproducibility, errors, presets,
+  Excel/zip/JSON import, snippets, save/load/delete, saved presets). Contrast sweep of 10
+  page states × light/dark × 5 themes: 0 after darkening the "(empty)" marker.
 
 ## Open questions / next steps
 
