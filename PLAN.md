@@ -125,7 +125,7 @@ module E2E, browser check (Playwright MCP), commit + push, PROGRESS.md, short su
     AutomationProject/CoverageSnapshot, AppSetting) + "Standard release" template row.
   - Shared AI config constant + `isAiEnabled()`; placeholder pages for the 7 routes.
 - [x] **Phase N2 — Locator Helper** (`/locator-helper`, client-only, `src/lib/locators/`).
-- [ ] **Phase N3 — Selenium → Playwright Converter** (`/selenium-to-playwright`, `src/lib/converter/`).
+- [x] **Phase N3 — Selenium → Playwright Converter** (`/selenium-to-playwright`, `src/lib/converter/`).
 - [ ] **Phase N4 — Test Failure Analyzer** (`/failure-analyzer`, parsers + classifier + clustering,
   Send to Bug Formatter, known issues, saved analyses, From CI).
 - [ ] **Phase N5 — API Test Playground** (`/api-playground`, SSRF-safe send route + unit tests,

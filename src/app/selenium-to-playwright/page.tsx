@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ArrowRightLeft } from "lucide-react";
 
-import { ComingSoon } from "@/components/shell/coming-soon";
+import { Converter } from "@/components/selenium-to-playwright/converter";
 import { PageHeader } from "@/components/shell/page-header";
 
 export const metadata: Metadata = { title: "Selenium → Playwright Converter" };
@@ -15,7 +15,7 @@ export default function SeleniumToPlaywrightPage() {
         icon={ArrowRightLeft}
         iconClassName="text-violet-600"
       />
-      <ComingSoon message="Coming soon" />
+      <Converter />
     </>
   );
 }

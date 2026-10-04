@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** New modules — Phase N3 (Selenium → Playwright). Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** New modules — Phase N4 (Test Failure Analyzer). Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -224,6 +224,23 @@ Spec: `prompts/NEW-MODULES-MASTER-PROMPT.md`. Phases N0–N10 in PLAN.md.
   failure AI 20/h, API send 30/10 min). AI suggestions are re-scored locally
   ("AI suggestion", base 70; 0 if they don't select the element). No key → "Copy
   prompt for Claude" (element + ancestors, max 8 KB).
+- **N3 Converter:** `src/lib/converter/` — `java.ts` (string-aware scanning, balanced
+  calls, chain detection, statement splitting), `rules.ts` (By→locator map, expression
+  rewrites, assertions per framework arg order, await insertion, statement rules with
+  confidence), `convert.ts` (class/member parser; page objects → Locator fields set in
+  the constructor; tests → test.describe + test()/hooks; data providers / @ValueSource /
+  @CsvSource → for-of loops). 44 unit tests. Selenium `getText()` → `innerText()`
+  (visible text, returns string). Awaits are added for page/locator chains and for
+  methods on page-object variables. Removed block openers (e.g. `if (driver != null) {`)
+  drop their closing brace; hooks left empty are removed. Unconvertible lines stay as
+  `// TODO(convert): …` with an attention note. Multiple classes → one file each
+  (`X.page.ts`, `Y.spec.ts`), shown concatenated, downloaded as a zip (fflate).
+  Output style only changes snippets (bare statements): classes keep their kind
+  [inferred]. Helper methods in test classes become `async function x(page, …)`.
+  History: last 10 in localStorage `qa-hub:converter:history`. AI mode: structured
+  output (files + notes), 50 KB cap, cancellable (AbortController → req.signal),
+  maxDuration 300 s; without a key → "Build prompt for Claude" (asks for a fixed JSON
+  notes block).
 
 ## Open questions
 
