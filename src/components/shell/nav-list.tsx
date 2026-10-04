@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
-import { isActivePath, isNavChildActive, navItems, type NavItem } from "@/config/nav";
+import { isActivePath, isNavChildActive, navGroups, type NavGroup as NavGroupConfig, type NavItem } from "@/config/nav";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
@@ -18,31 +19,109 @@ type NavListProps = {
   onNavigate?: () => void;
 };
 
+const CLOSED_GROUPS_KEY = "qa-hub:nav-groups-closed";
+
 export function NavList({ collapsed = false, onNavigate }: NavListProps) {
   const pathname = usePathname();
+  const [stored, setStored] = useLocalStorage(CLOSED_GROUPS_KEY);
+  const closed = parseClosed(stored);
+
+  function toggleSection(title: string) {
+    setStored((prev) => {
+      const set = new Set(parseClosed(prev));
+      if (set.has(title)) set.delete(title);
+      else set.add(title);
+      return JSON.stringify([...set]);
+    });
+  }
 
   return (
     <nav aria-label="Main" className="flex flex-col gap-1">
-      {navItems.map((item) =>
-        item.children ? (
-          <NavGroup
-            key={item.href}
-            item={item}
-            pathname={pathname}
-            collapsed={collapsed}
-            onNavigate={onNavigate}
-          />
-        ) : (
-          <NavItemLink
-            key={item.href}
-            item={item}
-            active={isActivePath(pathname, item.href)}
-            collapsed={collapsed}
-            onNavigate={onNavigate}
-          />
-        ),
-      )}
+      {navGroups.map((group, i) => (
+        <NavSection
+          key={group.title}
+          group={group}
+          first={i === 0}
+          open={collapsed || !closed.includes(group.title)}
+          onToggle={() => toggleSection(group.title)}
+          pathname={pathname}
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+      ))}
     </nav>
+  );
+}
+
+function parseClosed(raw: string | null): string[] {
+  if (!raw) return [];
+  try {
+    const value: unknown = JSON.parse(raw);
+    return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+/** A collapsible group heading (Testing, Planning, …) and its modules. */
+function NavSection({
+  group,
+  first,
+  open,
+  onToggle,
+  pathname,
+  collapsed,
+  onNavigate,
+}: {
+  group: NavGroupConfig;
+  first: boolean;
+  open: boolean;
+  onToggle: () => void;
+  pathname: string;
+  collapsed: boolean;
+  onNavigate?: () => void;
+}) {
+  const sectionId = `nav-section-${group.title.toLowerCase().replace(/[^a-z]+/g, "-")}`;
+  return (
+    <div className={cn(!first && "mt-3")}>
+      {collapsed ? (
+        !first && <div role="separator" className="mx-2 mb-3 border-t border-neutral-200" />
+      ) : (
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={open}
+          aria-controls={sectionId}
+          className="flex h-7 w-full items-center gap-1 rounded-md px-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500 hover:text-neutral-800"
+        >
+          <span className="flex-1 text-left">{group.title}</span>
+          <ChevronDown className={cn("size-3.5 transition-transform", !open && "-rotate-90")} aria-hidden />
+        </button>
+      )}
+      {open && (
+        <div id={sectionId} className="mt-1 flex flex-col gap-1">
+          {group.items.map((item) =>
+            item.children ? (
+              <NavGroup
+                key={item.href}
+                item={item}
+                pathname={pathname}
+                collapsed={collapsed}
+                onNavigate={onNavigate}
+              />
+            ) : (
+              <NavItemLink
+                key={item.href}
+                item={item}
+                active={isActivePath(pathname, item.href)}
+                collapsed={collapsed}
+                onNavigate={onNavigate}
+              />
+            ),
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 

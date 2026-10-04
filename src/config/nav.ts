@@ -1,12 +1,19 @@
 import {
+  ArrowRightLeft,
   BookMarked,
   CalendarDays,
   ClipboardList,
+  Crosshair,
   FileSignature,
   FlaskConical,
   GitBranch,
   LayoutGrid,
+  Rocket,
+  Send,
+  ShieldAlert,
   ShieldCheck,
+  Stethoscope,
+  TrendingUp,
   type LucideIcon,
 } from "lucide-react";
 
@@ -27,74 +34,154 @@ export type NavItem = NavLink & {
   children?: NavLink[];
 };
 
-export const navItems: NavItem[] = [
+export type NavGroup = {
+  title: string;
+  items: NavItem[];
+};
+
+export const navGroups: NavGroup[] = [
   {
-    title: "CI Reports",
-    href: "/ci",
-    icon: GitBranch,
-    description: "Trigger and monitor the GitHub Actions regression suites you add.",
-    tone: "bg-blue-100 text-blue-700",
-    ai: true,
-  },
-  {
-    title: "Bug Tracker",
-    href: "/bug-tracker",
-    icon: LayoutGrid,
-    description: "Track QA issues per feature and team, with % valid at a glance.",
-    tone: "bg-rose-100 text-rose-700",
-    children: [
-      { title: "Dashboard", href: "/bug-tracker" },
-      { title: "Activity", href: "/bug-tracker/activity" },
-      { title: "Workload", href: "/bug-tracker/workload" },
+    title: "Testing",
+    items: [
+      {
+        title: "CI Reports",
+        href: "/ci",
+        icon: GitBranch,
+        description: "Trigger and monitor the GitHub Actions regression suites you add.",
+        tone: "bg-blue-100 text-blue-700",
+        ai: true,
+      },
+      {
+        title: "Bug Tracker",
+        href: "/bug-tracker",
+        icon: LayoutGrid,
+        description: "Track QA issues per feature and team, with % valid at a glance.",
+        tone: "bg-rose-100 text-rose-700",
+        children: [
+          { title: "Dashboard", href: "/bug-tracker" },
+          { title: "Activity", href: "/bug-tracker/activity" },
+          { title: "Workload", href: "/bug-tracker/workload" },
+        ],
+      },
+      {
+        title: "QA Tracker",
+        href: "/qa-tracker",
+        icon: ClipboardList,
+        description: "Log daily QA tasks and time spent, with analytics and history.",
+        tone: "bg-green-100 text-green-700",
+      },
+      {
+        title: "PR QA Session",
+        href: "/pr-qa-session",
+        icon: FlaskConical,
+        description: "Build a full QA session prompt for Claude Code from PR URLs.",
+        tone: "bg-purple-100 text-purple-700",
+        ai: true,
+      },
+      {
+        title: "AI PR Review",
+        href: "/ai-pr-review",
+        icon: ShieldCheck,
+        description: "Generate a code review prompt and log the flags Claude finds.",
+        tone: "bg-violet-100 text-violet-700",
+        ai: true,
+      },
+      {
+        title: "TC Library",
+        href: "/tc-library",
+        icon: BookMarked,
+        description: "Save approved PR analyses and test plans to reuse later.",
+        tone: "bg-teal-100 text-teal-700",
+        ai: true,
+      },
+      {
+        title: "Bug Formatter",
+        href: "/bug-formatter",
+        icon: FileSignature,
+        description: "Turn findings, forms or CSVs into clean Markdown for Jira or Slack.",
+        tone: "bg-orange-100 text-orange-700",
+        ai: true,
+      },
     ],
   },
   {
-    title: "QA Tracker",
-    href: "/qa-tracker",
-    icon: ClipboardList,
-    description: "Log daily QA tasks and time spent, with analytics and history.",
-    tone: "bg-green-100 text-green-700",
+    title: "Planning",
+    items: [
+      {
+        title: "Release Readiness",
+        href: "/release-readiness",
+        icon: Rocket,
+        description: "Track quality gates per release and record the Go / No-Go decision.",
+        tone: "bg-green-100 text-green-700",
+      },
+      {
+        title: "Risk-Based Test Planner",
+        href: "/risk-planner",
+        icon: ShieldAlert,
+        description: "Score features by risk and get a prioritised test plan for your sprint.",
+        tone: "bg-amber-100 text-amber-700",
+      },
+    ],
   },
   {
-    title: "QA Digest",
-    href: "/qa-digest",
-    icon: CalendarDays,
-    description: "A periodic summary of QA activity. Coming soon.",
-    tone: "bg-neutral-100 text-neutral-600",
+    title: "Automation Tools",
+    items: [
+      {
+        title: "Locator Helper",
+        href: "/locator-helper",
+        icon: Crosshair,
+        description: "Paste HTML, pick an element, and get stable Selenium and Playwright locators.",
+        tone: "bg-cyan-100 text-cyan-700",
+        ai: true,
+      },
+      {
+        title: "Selenium → Playwright",
+        href: "/selenium-to-playwright",
+        icon: ArrowRightLeft,
+        description: "Convert Selenium Java tests and page objects to Playwright TypeScript.",
+        tone: "bg-violet-100 text-violet-700",
+        ai: true,
+      },
+      {
+        title: "Test Failure Analyzer",
+        href: "/failure-analyzer",
+        icon: Stethoscope,
+        description: "Group test failures by root cause: script issues vs likely product bugs.",
+        tone: "bg-rose-100 text-rose-700",
+        ai: true,
+      },
+      {
+        title: "API Test Playground",
+        href: "/api-playground",
+        icon: Send,
+        description: "Build and send HTTP requests, assert on responses, save them in collections.",
+        tone: "bg-indigo-100 text-indigo-700",
+      },
+    ],
   },
   {
-    title: "PR QA Session",
-    href: "/pr-qa-session",
-    icon: FlaskConical,
-    description: "Build a full QA session prompt for Claude Code from PR URLs.",
-    tone: "bg-purple-100 text-purple-700",
-    ai: true,
-  },
-  {
-    title: "AI PR Review",
-    href: "/ai-pr-review",
-    icon: ShieldCheck,
-    description: "Generate a code review prompt and log the flags Claude finds.",
-    tone: "bg-violet-100 text-violet-700",
-    ai: true,
-  },
-  {
-    title: "TC Library",
-    href: "/tc-library",
-    icon: BookMarked,
-    description: "Save approved PR analyses and test plans to reuse later.",
-    tone: "bg-teal-100 text-teal-700",
-    ai: true,
-  },
-  {
-    title: "Bug Formatter",
-    href: "/bug-formatter",
-    icon: FileSignature,
-    description: "Turn findings, forms or CSVs into clean Markdown for Jira or Slack.",
-    tone: "bg-orange-100 text-orange-700",
-    ai: true,
+    title: "Insights",
+    items: [
+      {
+        title: "Automation ROI",
+        href: "/automation-roi",
+        icon: TrendingUp,
+        description: "Track how much time automation saves and how coverage is growing.",
+        tone: "bg-emerald-100 text-emerald-700",
+      },
+      {
+        title: "QA Digest",
+        href: "/qa-digest",
+        icon: CalendarDays,
+        description: "A periodic summary of QA activity. Coming soon.",
+        tone: "bg-neutral-100 text-neutral-600",
+      },
+    ],
   },
 ];
+
+/** Every module, in sidebar order. */
+export const navItems: NavItem[] = navGroups.flatMap((g) => g.items);
 
 /** True when `pathname` is `href` or one of its sub-routes. */
 export function isActivePath(pathname: string, href: string, exact = false) {

@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** All 13 phases done. Live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** New modules — Phase N2 (Locator Helper). Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -170,6 +170,44 @@
   env var names, tests, deployment). Secret scan: `.env` never in git history; no
   `ghp_` / `github_pat_` / `sk-ant-` anywhere; `postgresql://` only placeholders,
   the CI throwaway DB and the local test DB.
+
+## New modules (7) — decisions (Phase N0, 2026-10-04)
+
+Spec: `prompts/NEW-MODULES-MASTER-PROMPT.md`. Phases N0–N10 in PLAN.md.
+
+1. Per-phase builds use `npm run build:app` (no migrate) against the local `qa_hub_test`
+   DB; Supabase gets the new migration only in the Phase N9 Vercel build.
+2. One model constant `AI_MODEL = "claude-sonnet-5-5"` in `src/config/ai.ts` (user's
+   choice: cheaper; these features don't need Opus). CI Reports root cause uses it too.
+3. Cross-module prefill (Send to Bug Formatter / PR QA Session) via a one-shot
+   sessionStorage handoff read on page load — nothing sensitive in URLs.
+4. Every DELETE still needs ADMIN_PASSCODE (incl. gates, risk areas, known issues, environments).
+5. "Standard release" template inserted by the `new_modules` migration SQL
+   (id `builtin_standard_release`); E2E global setup re-inserts it after TRUNCATE.
+6. API Playground SSRF: block beyond spec (0/8, 100.64/10, multicast/reserved,
+   IPv4-mapped IPv6, fc00::/7, fe80::/10); check the resolved IP inside the socket
+   lookup (no DNS-rebinding gap); manual redirects (max 5), re-checked per hop.
+7. API Playground E2E mocks the send route; real-network test only with `E2E_NETWORK=1`.
+8. CodeMirror 6 for code inputs; `fast-xml-parser`; `fflate` for the converter zip.
+9. Converter = regex/line rules with brace tracking (no Java AST); TODO(convert) fallback.
+10. No ANTHROPIC_API_KEY → AI buttons hidden, "Copy prompt for Claude" instead (all AI modules).
+11. ROI: create project + snapshot open; edit/delete + currency change need passcode;
+    CI data capped at 1,000 runs per suite per period.
+12. Failure Analyzer parses client-side only (no optional server parse route); From CI
+    reuses CI Reports' failed-job log code.
+13. Push after every phase; deploy only in N9 (`vercel deploy --prod --scope rakesh-qa`).
+14. All 7 modules, in phase order.
+
+### New-module phase notes
+
+- **N1:** `navGroups` in `src/config/nav.ts` (Testing / Planning / Automation Tools /
+  Insights); `navItems` is the flattened list. Sidebar group headings collapse, state in
+  localStorage `qa-hub:nav-groups-closed`; with the sidebar collapsed to icons, groups
+  show as separators. Home cards grouped the same way (one list per group).
+  Migration `new_modules`: 17 additive tables + AppSetting; links to Bug Tracker
+  feature pages / CI suites are soft (plain ids, no FK) so existing models are untouched.
+  Gate weight [inferred]: effective weight = weight × 3 for blockers.
+  NO_P0_FLAGS default window 14 days [inferred]. Placeholder pages for the 7 routes.
 
 ## Open questions
 

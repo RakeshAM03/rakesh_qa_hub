@@ -107,3 +107,34 @@ After every phase: `npm run lint` + `npm run build` clean → check routes load
 - [x] **Phase 13 — Wrap-up**
   - README (live link, screenshot, modules, stack, setup, env names, tests),
     secret scan, final summary.
+
+---
+
+# New modules (7) — Plan
+
+Source: `prompts/NEW-MODULES-MASTER-PROMPT.md` + the 7 module specs.
+After every phase: lint, typecheck, unit tests, `build:app` (no Supabase migrate),
+module E2E, browser check (Playwright MCP), commit + push, PROGRESS.md, short summary.
+
+- [x] **Phase N0 — Read and plan** 🛑 clarifying questions, this plan.
+- [x] **Phase N1 — Sidebar groups + home cards + Prisma models**
+  - Nav grouped: Testing / Planning / Automation Tools / Insights (collapsible headings);
+    every existing route unchanged. Home cards grouped the same way.
+  - One migration adding all new models (Release*, ChecklistTemplate, RiskPlan/RiskArea,
+    FailureAnalysis/KnownIssue/AiExplanationCache, ApiCollection/ApiRequest/ApiEnvironment,
+    AutomationProject/CoverageSnapshot, AppSetting) + "Standard release" template row.
+  - Shared AI config constant + `isAiEnabled()`; placeholder pages for the 7 routes.
+- [ ] **Phase N2 — Locator Helper** (`/locator-helper`, client-only, `src/lib/locators/`).
+- [ ] **Phase N3 — Selenium → Playwright Converter** (`/selenium-to-playwright`, `src/lib/converter/`).
+- [ ] **Phase N4 — Test Failure Analyzer** (`/failure-analyzer`, parsers + classifier + clustering,
+  Send to Bug Formatter, known issues, saved analyses, From CI).
+- [ ] **Phase N5 — API Test Playground** (`/api-playground`, SSRF-safe send route + unit tests,
+  collections, environments, assertions, cURL, history).
+- [ ] **Phase N6 — Release Readiness** (`/release-readiness`, score/verdict, auto gates,
+  sign-offs, decision snapshot, activity log, templates, summary + print).
+- [ ] **Phase N7 — Risk-Based Test Planner** (`/risk-planner`, `src/lib/risk.ts`, matrix,
+  suggestions, allocation, exports, Send to PR QA Session).
+- [ ] **Phase N8 — Automation ROI Dashboard** (`/automation-roi`, `src/lib/roi.ts`, KPIs, charts, CSV).
+- [ ] **Phase N9 — Full test pass + deploy** 🛑 unit + E2E, push, `vercel deploy --prod --scope rakesh-qa`,
+  live smoke test, live-mode Playwright.
+- [x] **Phase N10 — Wrap-up** README (modules, screenshots), PROGRESS.md, PLAN.md, final summary.

@@ -2,9 +2,12 @@ import { execSync } from "node:child_process";
 
 import { PrismaClient } from "@prisma/client";
 
+import { STANDARD_TEMPLATE_NAME, STANDARD_TEMPLATE_SECTIONS } from "../src/config/release-templates";
+
 /**
  * Prepares the throwaway E2E database: applies migrations, then empties every
- * app table so each run starts from the real "first visit" state.
+ * app table so each run starts from the real "first visit" state (plus the
+ * built-in "Standard release" template, which production gets from a migration).
  * Refuses to touch anything that isn't a local/CI database.
  */
 export default async function globalSetup() {
@@ -24,6 +27,10 @@ export default async function globalSetup() {
       const list = tables.map((t) => `"public"."${t.tablename.replace(/"/g, '""')}"`).join(", ");
       await db.$executeRawUnsafe(`TRUNCATE TABLE ${list} RESTART IDENTITY CASCADE`);
     }
+    // The built-in checklist template is inserted by a migration on real databases.
+    await db.checklistTemplate.create({
+      data: { id: "builtin_standard_release", name: STANDARD_TEMPLATE_NAME, sections: STANDARD_TEMPLATE_SECTIONS },
+    });
   } finally {
     await db.$disconnect();
   }

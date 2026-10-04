@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isActivePath, isNavChildActive, navItems } from "./nav";
+import { isActivePath, isNavChildActive, navGroups, navItems } from "./nav";
 
 const bugTracker = navItems.find((i) => i.href === "/bug-tracker")!;
 const [dashboard, activity, workload] = bugTracker.children!;
@@ -41,11 +41,27 @@ describe("navItems", () => {
       "/ci",
       "/bug-tracker",
       "/qa-tracker",
-      "/qa-digest",
       "/pr-qa-session",
       "/ai-pr-review",
       "/tc-library",
       "/bug-formatter",
+      "/release-readiness",
+      "/risk-planner",
+      "/locator-helper",
+      "/selenium-to-playwright",
+      "/failure-analyzer",
+      "/api-playground",
+      "/automation-roi",
+      "/qa-digest",
+    ]);
+  });
+
+  it("groups modules into Testing, Planning, Automation Tools and Insights", () => {
+    expect(navGroups.map((g) => [g.title, g.items.length])).toEqual([
+      ["Testing", 7],
+      ["Planning", 2],
+      ["Automation Tools", 4],
+      ["Insights", 2],
     ]);
   });
 });

@@ -10,14 +10,43 @@ const MODULES = [
   { link: "AI PR Review", path: "/ai-pr-review", heading: "AI PR Review" },
   { link: "TC Library", path: "/tc-library", heading: "TC Library" },
   { link: "Bug Formatter", path: "/bug-formatter", heading: "Bug Report Formatter" },
+  { link: "Release Readiness", path: "/release-readiness", heading: "Release Readiness" },
+  { link: "Risk-Based Test Planner", path: "/risk-planner", heading: "Risk-Based Test Planner" },
+  { link: "Locator Helper", path: "/locator-helper", heading: "Locator Helper" },
+  { link: "Selenium → Playwright", path: "/selenium-to-playwright", heading: "Selenium → Playwright Converter" },
+  { link: "Test Failure Analyzer", path: "/failure-analyzer", heading: "Test Failure Analyzer" },
+  { link: "API Test Playground", path: "/api-playground", heading: "API Test Playground" },
+  { link: "Automation ROI", path: "/automation-roi", heading: "Automation ROI Dashboard" },
+];
+
+const GROUPS = [
+  { name: "Testing", cards: 7 },
+  { name: "Planning", cards: 2 },
+  { name: "Automation Tools", cards: 4 },
+  { name: "Insights", cards: 2 },
 ];
 
 test.describe("navigation", () => {
   test("home lists a card for every module", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1, name: "Rakesh QA Hub" })).toBeVisible();
-    const cards = page.getByRole("list", { name: "Modules" }).getByRole("link");
-    await expect(cards).toHaveCount(8);
+    for (const g of GROUPS) {
+      await expect(page.getByRole("list", { name: g.name }).getByRole("link")).toHaveCount(g.cards);
+    }
+  });
+
+  test("sidebar group headings collapse and remember it", async ({ page }) => {
+    const base = new BasePage(page, "/");
+    await base.goto();
+    const heading = base.sidebar.getByRole("button", { name: "Planning" });
+    await expect(heading).toHaveAttribute("aria-expanded", "true");
+    await heading.click();
+    await expect(heading).toHaveAttribute("aria-expanded", "false");
+    await expect(base.sidebarLink("Release Readiness")).toBeHidden();
+    await page.reload();
+    await expect(base.sidebar.getByRole("button", { name: "Planning" })).toHaveAttribute("aria-expanded", "false");
+    await base.sidebar.getByRole("button", { name: "Planning" }).click();
+    await expect(base.sidebarLink("Release Readiness")).toBeVisible();
   });
 
   for (const m of MODULES) {

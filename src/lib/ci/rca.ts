@@ -2,13 +2,13 @@ import "server-only";
 
 import Anthropic from "@anthropic-ai/sdk";
 
+import { AI_MODEL, aiEnabled } from "@/config/ai";
 import { db } from "@/lib/db";
 import { failedJobLogs } from "./github";
 
 /** AI root cause runs only when an Anthropic key is configured. */
-export const rcaEnabled = () => Boolean(process.env.ANTHROPIC_API_KEY);
+export const rcaEnabled = aiEnabled;
 
-const MODEL = "claude-opus-5";
 const DAILY_LIMIT = Number(process.env.RCA_DAILY_LIMIT ?? 50);
 let budget = { day: "", used: 0 };
 
@@ -59,7 +59,7 @@ export async function rootCause(repo: string, runId: number) {
 
   const client = new Anthropic();
   const response = await client.beta.messages.create({
-    model: MODEL,
+    model: AI_MODEL,
     max_tokens: 16000,
     betas: ["server-side-fallback-2026-07-01"],
     fallbacks: "default",

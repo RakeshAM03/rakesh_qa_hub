@@ -207,3 +207,302 @@ model RootCauseCache {
   detail    String
   createdAt DateTime @default(now())
 }
+
+// ---------- App settings ----------
+
+/// Simple global key/value settings (e.g. the ROI currency symbol).
+model AppSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+// ---------- Release Readiness ----------
+
+enum ReleaseStatus {
+  PLANNED
+  IN_TESTING
+  GO
+  NO_GO
+  GO_WITH_ISSUES
+  RELEASED
+}
+
+enum GateType {
+  MANUAL
+  CI_GREEN
+  NO_P0
+  NO_P1
+  VALID_RATE
+  NO_P0_FLAGS
+}
+
+enum GateStatus {
+  PENDING
+  PASS
+  FAIL
+  NA
+}
+
+enum SignoffDecision {
+  PENDING
+  APPROVE
+  REJECT
+}
+
+enum ReleaseDecisionType {
+  GO
+  NO_GO
+  GO_WITH_ISSUES
+}
+
+model Release {
+  id                   String            @id @default(cuid())
+  name                 String
+  version              String?
+  targetDate           DateTime?         @db.Date
+  releasedAt           DateTime?         @db.Date
+  owner                String?
+  description          String?
+  status               ReleaseStatus     @default(PLANNED)
+  linkedCiSuiteIds     String[]
+  linkedFeaturePageIds String[]
+  linkedRepos          String[]
+  gates                ReleaseGate[]
+  signoffs             ReleaseSignoff[]
+  decisions            ReleaseDecision[]
+  events               ReleaseEvent[]
+  riskPlans            RiskPlan[]
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  @@index([createdAt])
+}
+
+model ReleaseGate {
+  id          String     @id @default(cuid())
+  releaseId   String
+  release     Release    @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  section     String
+  title       String
+  type        GateType   @default(MANUAL)
+  /// Per-type settings, e.g. { maxAllowed } for NO_P1, { threshold } for VALID_RATE, { days } for NO_P0_FLAGS.
+  config      Json?
+  status      GateStatus @default(PENDING)
+  isBlocker   Boolean    @default(false)
+  weight      Int        @default(1)
+  owner       String?
+  evidenceUrl String?
+  note        String?
+  /// Auto gates: { status, note, by, at } when a person overrides the computed result.
+  override    Json?
+  /// Auto gates: { status, detail, checkedAt } from the last check.
+  autoResult  Json?
+  sortOrder   Int        @default(0)
+  updatedBy   String?
+  updatedAt   DateTime   @updatedAt
+
+  @@index([releaseId, sortOrder])
+}
+
+model ReleaseSignoff {
+  id        String          @id @default(cuid())
+  releaseId String
+  release   Release         @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  role      String
+  name      String?
+  decision  SignoffDecision @default(PENDING)
+  comment   String?
+  signedAt  DateTime?
+  sortOrder Int             @default(0)
+
+  @@index([releaseId])
+}
+
+model ReleaseDecision {
+  id          String              @id @default(cuid())
+  releaseId   String
+  release     Release             @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  decision    ReleaseDecisionType
+  comment     String
+  knownIssues String[]
+  /// Frozen copy of the checklist, score and sign-offs at decision time.
+  snapshot    Json
+  decidedBy   String?
+  createdAt   DateTime            @default(now())
+
+  @@index([releaseId, createdAt])
+}
+
+model ReleaseEvent {
+  id        String   @id @default(cuid())
+  releaseId String
+  release   Release  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  type      String
+  detail    Json
+  actor     String?
+  createdAt DateTime @default(now())
+
+  @@index([releaseId, createdAt])
+}
+
+model ChecklistTemplate {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  /// [{ name, gates: [{ title, type, isBlocker, weight, config? }] }]
+  sections  Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------- Risk-Based Test Planner ----------
+
+enum ChangeSize {
+  NONE
+  SMALL
+  MEDIUM
+  LARGE
+  NEW_FEATURE
+}
+
+model RiskPlan {
+  id             String     @id @default(cuid())
+  name           String
+  startDate      DateTime?  @db.Date
+  endDate        DateTime?  @db.Date
+  availableHours Float      @default(0)
+  testers        Int?
+  notes          String?
+  releaseId      String?
+  release        Release?   @relation(fields: [releaseId], references: [id], onDelete: SetNull)
+  /// Scoring weights; empty object = defaults.
+  settings       Json       @default("{}")
+  areas          RiskArea[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@index([createdAt])
+}
+
+model RiskArea {
+  id             String     @id @default(cuid())
+  planId         String
+  plan           RiskPlan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+  name           String
+  /// Bug Tracker feature page (soft link; may point at a deleted page).
+  featurePageId  String?
+  changeSize     ChangeSize @default(MEDIUM)
+  complexity     Int        @default(3)
+  defectHistory  Int        @default(3)
+  dependencies   Int        @default(3)
+  businessImpact Int        @default(3)
+  usageFrequency Int        @default(3)
+  depthOverride  String?
+  hoursOverride  Float?
+  deferred       Boolean    @default(false)
+  deferReason    String?
+  sortOrder      Int        @default(0)
+  createdAt      DateTime   @default(now())
+
+  @@index([planId, sortOrder])
+}
+
+// ---------- Test Failure Analyzer ----------
+
+model FailureAnalysis {
+  id             String   @id @default(cuid())
+  name           String
+  source         String
+  totalFailures  Int
+  passed         Int?
+  skipped        Int?
+  categoryCounts Json
+  clusters       Json
+  createdBy      String?
+  createdAt      DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model KnownIssue {
+  id        String   @id @default(cuid())
+  signature String   @unique
+  label     String
+  notes     String?
+  createdAt DateTime @default(now())
+}
+
+model AiExplanationCache {
+  signature   String   @id
+  explanation Json
+  createdAt   DateTime @default(now())
+}
+
+// ---------- API Test Playground ----------
+
+model ApiCollection {
+  id        String       @id @default(cuid())
+  name      String
+  sortOrder Int          @default(0)
+  requests  ApiRequest[]
+  createdAt DateTime     @default(now())
+}
+
+model ApiRequest {
+  id           String        @id @default(cuid())
+  collectionId String
+  collection   ApiCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  name         String
+  method       String
+  url          String
+  params       Json          @default("[]")
+  headers      Json          @default("[]")
+  auth         Json          @default("{}")
+  body         Json          @default("{}")
+  assertions   Json          @default("[]")
+  sortOrder    Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([collectionId, sortOrder])
+}
+
+model ApiEnvironment {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  /// [{ key, value }]
+  variables Json     @default("[]")
+  createdAt DateTime @default(now())
+}
+
+// ---------- Automation ROI ----------
+
+model AutomationProject {
+  id                       String             @id @default(cuid())
+  name                     String             @unique
+  /// CI Reports suite (soft link; may point at a deleted suite).
+  ciSuiteId                String?
+  totalTests               Int
+  automatedTests           Int
+  manualMinutesPerTest     Float
+  automatedSecondsPerTest  Float?
+  runsPerMonth             Float?
+  buildHours               Float
+  maintenanceHoursPerMonth Float              @default(0)
+  hourlyCost               Float?
+  snapshots                CoverageSnapshot[]
+  createdAt                DateTime           @default(now())
+  updatedAt                DateTime           @updatedAt
+}
+
+model CoverageSnapshot {
+  id             String            @id @default(cuid())
+  projectId      String
+  project        AutomationProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  date           DateTime          @db.Date
+  totalTests     Int
+  automatedTests Int
+  createdAt      DateTime          @default(now())
+
+  @@index([projectId, date])
+}

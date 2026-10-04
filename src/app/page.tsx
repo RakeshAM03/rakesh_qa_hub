@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Bot, CheckCircle2, Sparkles, Workflow } from "lucide-react";
 
-import { navItems } from "@/config/nav";
+import { navGroups } from "@/config/nav";
 import { cn } from "@/lib/utils";
 
 const HIGHLIGHTS = [
@@ -9,6 +9,8 @@ const HIGHLIGHTS = [
   { icon: Workflow, text: "GitHub Actions in one place" },
   { icon: CheckCircle2, text: "Playwright-tested" },
 ];
+
+const groupId = (title: string) => `home-group-${title.toLowerCase().replace(/[^a-z]+/g, "-")}`;
 
 export default function HomePage() {
   return (
@@ -70,32 +72,44 @@ export default function HomePage() {
             <span className="ai-gradient size-2 rounded-full" aria-hidden /> AI-powered
           </span>
         </div>
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-label="Modules">
-          {navItems.map(({ title, href, icon: Icon, description, tone, ai }) => (
-            <li key={href}>
-              <Link
-                href={href}
-                className="glow-card group flex h-full flex-col gap-3 rounded-xl border border-neutral-200 bg-card/80 p-5 shadow-xs backdrop-blur-sm transition hover:-translate-y-0.5"
+        <div className="flex flex-col gap-8">
+          {navGroups.map((group) => (
+            <div key={group.title} role="group" aria-labelledby={groupId(group.title)}>
+              <h3
+                id={groupId(group.title)}
+                className="mb-3 text-xs font-semibold uppercase tracking-wider text-neutral-500"
               >
-                <div className="flex items-center gap-3">
-                  <span className={cn("flex size-10 items-center justify-center rounded-lg", tone)}>
-                    <Icon className="size-5" aria-hidden />
-                  </span>
-                  <h3 className="flex-1 text-base font-semibold text-neutral-900">{title}</h3>
-                  {ai && (
-                    <span className="ai-chip inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold">
-                      <Sparkles className="size-3" aria-hidden /> AI
-                    </span>
-                  )}
-                </div>
-                <p className="flex-1 text-sm text-neutral-500">{description}</p>
-                <span className="inline-flex items-center gap-1 text-sm font-medium text-neutral-700 group-hover:text-neutral-900">
-                  Open <ArrowRight className="size-4 transition group-hover:translate-x-0.5" aria-hidden />
-                </span>
-              </Link>
-            </li>
+                {group.title}
+              </h3>
+              <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-label={group.title}>
+                {group.items.map(({ title, href, icon: Icon, description, tone, ai }) => (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      className="glow-card group flex h-full flex-col gap-3 rounded-xl border border-neutral-200 bg-card/80 p-5 shadow-xs backdrop-blur-sm transition hover:-translate-y-0.5"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className={cn("flex size-10 items-center justify-center rounded-lg", tone)}>
+                          <Icon className="size-5" aria-hidden />
+                        </span>
+                        <h4 className="flex-1 text-base font-semibold text-neutral-900">{title}</h4>
+                        {ai && (
+                          <span className="ai-chip inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold">
+                            <Sparkles className="size-3" aria-hidden /> AI
+                          </span>
+                        )}
+                      </div>
+                      <p className="flex-1 text-sm text-neutral-500">{description}</p>
+                      <span className="inline-flex items-center gap-1 text-sm font-medium text-neutral-700 group-hover:text-neutral-900">
+                        Open <ArrowRight className="size-4 transition group-hover:translate-x-0.5" aria-hidden />
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
-        </ul>
+        </div>
       </section>
     </div>
   );
