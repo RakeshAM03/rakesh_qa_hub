@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** New modules — Phase N2 (Locator Helper). Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** New modules — Phase N3 (Selenium → Playwright). Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -208,6 +208,22 @@ Spec: `prompts/NEW-MODULES-MASTER-PROMPT.md`. Phases N0–N10 in PLAN.md.
   feature pages / CI suites are soft (plain ids, no FK) so existing models are untouched.
   Gate weight [inferred]: effective weight = weight × 3 for blockers.
   NO_P0_FLAGS default window 14 days [inferred]. Placeholder pages for the 7 routes.
+- **N2 Locator Helper:** client-only engine in `src/lib/locators/` (quote, autogen, dom,
+  match, strategies, page-object, tree, ai-prompt); 35 unit tests run on jsdom documents
+  (devDependency). Pasted HTML goes through DOMParser only (inert) and is shown as a
+  text tree. Uniqueness for role/label/placeholder uses Playwright's default matching
+  (case-insensitive substring); text uses exact deepest-element matching. Accessible
+  name is simplified [inferred] (aria-labelledby, aria-label, label, value, content,
+  alt, title). "Short CSS" scopes to a classed ancestor, else falls back to
+  :nth-of-type (penalised). Draft (editor text, parsed HTML, selected path) in
+  localStorage `qa-hub:locator-helper:draft`. Tree renders max 1,500 rows.
+  Shared: `src/lib/ai/claude.ts` (structured JSON call, server-side refusal fallback,
+  effort medium), `GET /api/ai/status`, `useAiEnabled()`, `CodeEditor` (CodeMirror 6,
+  lazy-loaded, line highlight), `CopyButton`. Rate limits: AI routes and API send get
+  their own limits instead of the generic write limit (locator AI 20/h, converter 10/h,
+  failure AI 20/h, API send 30/10 min). AI suggestions are re-scored locally
+  ("AI suggestion", base 70; 0 if they don't select the element). No key → "Copy
+  prompt for Claude" (element + ancestors, max 8 KB).
 
 ## Open questions
 

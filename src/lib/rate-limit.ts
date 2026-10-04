@@ -11,7 +11,23 @@ export const RULES = {
   dispatch: { name: "dispatch", limit: 5, windowMs: 60 * 60_000 },
   /** AI root-cause analyses (each costs an API call). */
   rca: { name: "rca", limit: 10, windowMs: 60 * 60_000 },
+  /** Locator Helper "Ask AI for alternatives". */
+  locatorAi: { name: "locator-ai", limit: 20, windowMs: 60 * 60_000 },
+  /** Selenium → Playwright AI conversions. */
+  converterAi: { name: "converter-ai", limit: 10, windowMs: 60 * 60_000 },
+  /** Test Failure Analyzer "Explain with AI". */
+  failureAi: { name: "failure-ai", limit: 20, windowMs: 60 * 60_000 },
+  /** API Test Playground outbound sends. */
+  apiSend: { name: "api-send", limit: 30, windowMs: 10 * 60_000 },
 } satisfies Record<string, Rule>;
+
+/** POST routes with their own limit instead of the generic write limit. */
+const OWN_LIMIT: [RegExp, Rule][] = [
+  [/^\/api\/locator-helper\/ai\/?$/, RULES.locatorAi],
+  [/^\/api\/selenium-to-playwright\/ai\/?$/, RULES.converterAi],
+  [/^\/api\/failure-analyzer\/ai\/?$/, RULES.failureAi],
+  [/^\/api\/api-playground\/send\/?$/, RULES.apiSend],
+];
 
 export function createLimiter(now: () => number = Date.now) {
   const hits = new Map<string, number[]>();
@@ -46,6 +62,8 @@ export function createLimiter(now: () => number = Date.now) {
 export function rulesFor(method: string, pathname: string): Rule[] {
   if (!pathname.startsWith("/api/")) return [];
   const rules: Rule[] = [];
+  const own = method === "POST" ? OWN_LIMIT.find(([re]) => re.test(pathname))?.[1] : undefined;
+  if (own) return [own];
   if (method === "POST" || method === "PATCH") rules.push(RULES.write);
   if (method === "POST" && /^\/api\/ci\/suites\/[^/]+\/dispatch\/?$/.test(pathname)) rules.push(RULES.dispatch);
   if (method === "GET" && /^\/api\/ci\/suites\/[^/]+\/runs\/[^/]+\/rca\/?$/.test(pathname)) rules.push(RULES.rca);

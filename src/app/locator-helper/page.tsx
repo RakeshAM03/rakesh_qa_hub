@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Crosshair } from "lucide-react";
 
-import { ComingSoon } from "@/components/shell/coming-soon";
+import { LocatorHelper } from "@/components/locator-helper/locator-helper";
 import { PageHeader } from "@/components/shell/page-header";
 
 export const metadata: Metadata = { title: "Locator Helper" };
@@ -15,7 +15,7 @@ export default function LocatorHelperPage() {
         icon={Crosshair}
         iconClassName="text-cyan-600"
       />
-      <ComingSoon message="Coming soon" />
+      <LocatorHelper />
     </>
   );
 }
