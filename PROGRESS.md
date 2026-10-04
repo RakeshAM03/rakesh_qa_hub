@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** New modules — Phase N7 (Risk-Based Test Planner). Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** New modules — Phase N8 (Automation ROI Dashboard). Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -293,6 +293,21 @@ Spec: `prompts/NEW-MODULES-MASTER-PROMPT.md`. Phases N0–N10 in PLAN.md.
   `/api/ai-pr-review/flags/summary`. Print = `window.print()`; sidebar and mobile nav
   got `print:hidden` (only shell change). Shared DatePicker got an opt-in `allowFuture`
   prop (default unchanged — QA Tracker E2E re-run green).
+- **N7 Risk Planner:** pure logic in `src/lib/risk.ts` (likelihood/impact weighted
+  averages to one decimal, score = L × I, thresholds, depth, allocation with 0.5 h
+  floors and largest-remainder rounding so totals match, overrides kept, deferred get
+  0; suggestions; Markdown/CSV with formula-injection escaping). Settings per plan
+  (merged over defaults; drawer with reset). Inline edits update locally and auto-save
+  per area after 600 ms ("Saving… / Saved"). Defect-history suggestion counts valid
+  issues in the last 90 days (P0/P1 double) [inferred: valid only]; complexity bump uses
+  the linked release's AI PR Review repos (plans have no repo field) [inferred].
+  Suggestions never apply silently (💡 per field + "Apply all"). Matrix is a CSS-grid
+  heat map (accessible grid cells, chips scroll to the row) rather than Recharts
+  [inferred]. "Send to PR QA Session" maps top factors → focus areas [inferred mapping:
+  dependencies→Contract, size/complexity→UI/UX, business impact 5→Security,
+  usage→Performance, defects/High+→Regression] via the hand-off; PR QA Session reads it
+  (only change there; its E2E suite unchanged and green). MultiSelect moved to
+  `components/shared`.
 
 ## Open questions
 

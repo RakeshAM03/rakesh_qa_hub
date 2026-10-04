@@ -18,6 +18,7 @@ import {
 } from "@/config/pr-qa-templates";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { isGithubPrUrl } from "@/lib/github";
+import { clearHandoff, parseHandoff, useHandoff } from "@/lib/handoff";
 import { buildPrompt, type SessionInputs } from "@/lib/pr-qa-session/build-prompt";
 import { cn } from "@/lib/utils";
 import { Chip } from "./chip";
@@ -76,6 +77,17 @@ export function PrQaSession() {
   const draft = useMemo(() => parseDraft(raw), [raw]);
   const update = (patch: Partial<Draft>) =>
     setRaw((prev) => JSON.stringify({ ...parseDraft(prev), ...patch }));
+
+  // Context and focus areas sent from another module (e.g. Risk-Based Test Planner).
+  const rawHandoff = useHandoff("pr-qa-session");
+  useEffect(() => {
+    const h = parseHandoff<{ context: string; focusAreas: string[]; source: string }>(rawHandoff);
+    if (!h) return;
+    const focusAreas = (FOCUS_AREAS as readonly string[]).filter((f) => h.focusAreas.includes(f)) as Draft["focusAreas"];
+    setRaw((prev) => JSON.stringify({ ...parseDraft(prev), context: h.context, focusAreas, template: null }));
+    clearHandoff("pr-qa-session");
+    toast.success(`Context and focus areas pre-filled from ${h.source}`);
+  }, [rawHandoff, setRaw]);
 
   const [customTemplates, setCustomTemplates] = useState<SessionTemplateConfig[]>([]);
   const [saveOpen, setSaveOpen] = useState(false);

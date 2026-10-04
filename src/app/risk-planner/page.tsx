@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ShieldAlert } from "lucide-react";
 
-import { ComingSoon } from "@/components/shell/coming-soon";
+import { PlansList } from "@/components/risk-planner/plans-list";
 import { PageHeader } from "@/components/shell/page-header";
 
 export const metadata: Metadata = { title: "Risk-Based Test Planner" };
@@ -15,7 +15,7 @@ export default function RiskPlannerPage() {
         icon={ShieldAlert}
         iconClassName="text-amber-600"
       />
-      <ComingSoon message="Coming soon" />
+      <PlansList />
     </>
   );
 }
