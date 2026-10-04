@@ -52,7 +52,7 @@ export function PlansList() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Button className="self-start bg-amber-600 text-white hover:bg-amber-700" onClick={() => setOpen(true)}>
+      <Button className="self-start bg-amber-700 text-amber-50 hover:bg-amber-800" onClick={() => setOpen(true)}>
         <Plus className="size-4" aria-hidden /> New Plan
       </Button>
       {plans === null ? (
@@ -65,7 +65,7 @@ export function PlansList() {
       ) : (
         <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-card shadow-xs">
           <table className="w-full text-left text-sm" aria-label="Test plans">
-            <thead className="border-b border-neutral-200 text-xs uppercase tracking-wider text-neutral-500">
+            <thead className="border-b border-neutral-200 text-xs uppercase tracking-wider text-neutral-600">
               <tr>
                 {["Plan", "Period", "Areas", "High-risk areas", "Available hours", "Created", ""].map((h) => (
                   <th key={h} className="px-4 py-3 font-semibold">
@@ -81,11 +81,11 @@ export function PlansList() {
                     <Link href={`/risk-planner/${p.id}`} className="font-semibold text-neutral-900 hover:underline">
                       {p.name}
                     </Link>
-                    {p.releaseName && <span className="ml-2 text-xs text-neutral-500">· {p.releaseName}</span>}
+                    {p.releaseName && <span className="ml-2 text-xs text-neutral-600">· {p.releaseName}</span>}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-neutral-700">{p.startDate || p.endDate ? `${p.startDate ? isoToShort(p.startDate) : "…"} – ${p.endDate ? isoToShort(p.endDate) : "…"}` : "—"}</td>
                   <td className="px-4 py-3 text-neutral-700">{p.areas}</td>
-                  <td className={cn("px-4 py-3", p.highRisk ? "font-semibold text-red-600" : "text-neutral-700")}>{p.highRisk}</td>
+                  <td className={cn("px-4 py-3", p.highRisk ? "font-semibold text-red-700" : "text-neutral-700")}>{p.highRisk}</td>
                   <td className="px-4 py-3 text-neutral-700">
                     {p.availableHours} h{p.testers ? ` · ${p.testers} tester${p.testers === 1 ? "" : "s"}` : ""}
                   </td>
@@ -183,7 +183,7 @@ function NewPlanDialog({ open, onOpenChange, plans, onCreated }: { open: boolean
               Name <span className="text-red-500">*</span>
             </Label>
             <Input id="rp-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Sprint 42" maxLength={200} aria-invalid={submitted && !name.trim()} />
-            {submitted && !name.trim() && <p className="text-xs text-red-600">Required</p>}
+            {submitted && !name.trim() && <p className="text-xs text-red-700">Required</p>}
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
@@ -222,7 +222,7 @@ function NewPlanDialog({ open, onOpenChange, plans, onCreated }: { open: boolean
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-xs text-neutral-500">Linking a release lets suggestions use its AI PR Review repos.</p>
+            <p className="text-xs text-neutral-600">Linking a release lets suggestions use its AI PR Review repos.</p>
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="rp-notes">Notes</Label>
@@ -262,7 +262,7 @@ function NewPlanDialog({ open, onOpenChange, plans, onCreated }: { open: boolean
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={busy} className="bg-amber-600 text-white hover:bg-amber-700">
+            <Button type="submit" disabled={busy} className="bg-amber-700 text-amber-50 hover:bg-amber-800">
               Create
             </Button>
           </DialogFooter>

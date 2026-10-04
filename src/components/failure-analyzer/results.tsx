@@ -77,7 +77,7 @@ function Summary({ analysis, source, savedName, onSave }: { analysis: Analysis; 
           <h2 id="fa-summary" className="text-base font-semibold text-neutral-900">
             {savedName ?? "Results"}
           </h2>
-          <p className="text-xs text-neutral-500">Source: {source}</p>
+          <p className="text-xs text-neutral-600">Source: {source}</p>
         </div>
         {onSave && (
           <Button size="sm" variant="outline" onClick={onSave}>
@@ -101,7 +101,7 @@ function Summary({ analysis, source, savedName, onSave }: { analysis: Analysis; 
             <span className="text-3xl font-bold text-neutral-900" data-testid="fa-total">
               {analysis.total}
             </span>
-            <span className="text-xs text-neutral-500">failures</span>
+            <span className="text-xs text-neutral-600">failures</span>
           </div>
         </div>
         <div className="flex flex-col gap-3">
@@ -109,7 +109,7 @@ function Summary({ analysis, source, savedName, onSave }: { analysis: Analysis; 
             {analysis.verdict}
           </p>
           {(analysis.passed !== undefined || analysis.skipped !== undefined) && (
-            <p className="text-xs text-neutral-500">
+            <p className="text-xs text-neutral-600">
               {analysis.passed ?? 0} passed · {analysis.skipped ?? 0} skipped
             </p>
           )}
@@ -151,17 +151,17 @@ function CategorySection({
         <CollapsibleTrigger className="group flex w-full items-center gap-3 px-4 py-3 text-left sm:px-5">
           <span className="size-3 shrink-0 rounded-sm" style={{ background: color(category) }} aria-hidden />
           <h3 className="flex-1 text-sm font-semibold text-neutral-900">
-            {cat.label} <span className="font-normal text-neutral-500">· {count}</span>
+            {cat.label} <span className="font-normal text-neutral-600">· {count}</span>
           </h3>
           <span
             className={cn(
               "rounded-full px-2 py-0.5 text-xs font-medium",
-              cat.productBug ? "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200" : "bg-neutral-100 text-neutral-700",
+              cat.productBug ? "bg-red-100 text-red-800" : "bg-neutral-100 text-neutral-700",
             )}
           >
             {cat.owner}
           </span>
-          <ChevronDown className="size-4 text-neutral-500 transition-transform group-data-[state=open]:rotate-180" aria-hidden />
+          <ChevronDown className="size-4 text-neutral-600 transition-transform group-data-[state=open]:rotate-180" aria-hidden />
         </CollapsibleTrigger>
         <CollapsibleContent>
           <ul className="flex flex-col divide-y divide-neutral-200 border-t border-neutral-200">
@@ -205,7 +205,7 @@ function ClusterRow({ cluster: c, known, onDetail, onMarkKnown }: { cluster: Clu
           {c.message.length > 220 ? `${c.message.slice(0, 220)}…` : c.message}
         </code>
         {known && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-800 dark:bg-violet-900/40 dark:text-violet-200">
+          <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-800">
             <Tag className="size-3" aria-hidden /> Known: {known.label}
           </span>
         )}
@@ -216,16 +216,16 @@ function ClusterRow({ cluster: c, known, onDetail, onMarkKnown }: { cluster: Clu
       <p className="text-xs text-neutral-600">
         {tests.join(", ")}
         {c.tests.length > 5 && (
-          <button type="button" className="ml-1 font-medium text-rose-700 hover:underline dark:text-rose-300" onClick={() => setShowAll(!showAll)}>
+          <button type="button" className="ml-1 font-medium text-rose-700 hover:underline" onClick={() => setShowAll(!showAll)}>
             {showAll ? "Show fewer" : `Show all ${c.tests.length}`}
           </button>
         )}
       </p>
-      <p className="text-xs text-neutral-500">
+      <p className="text-xs text-neutral-600">
         <span className="font-semibold text-neutral-700">Suggested fix:</span> {cat.fix}
       </p>
       {ai && (
-        <div className="rounded-lg border border-violet-200 bg-violet-50 p-3 text-xs text-violet-950 dark:border-violet-900 dark:bg-violet-950/40 dark:text-violet-100">
+        <div className="rounded-lg border border-violet-200 bg-violet-50 p-3 text-xs text-violet-950">
           <p>
             <strong>Likely root cause:</strong> {ai.rootCause}
           </p>
@@ -286,21 +286,21 @@ function DetailDrawer({ cluster, onClose }: { cluster: Cluster | null; onClose: 
             </SheetHeader>
             <div className="flex flex-col gap-4 px-4 pb-6">
               <div>
-                <h3 className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">Message</h3>
+                <h3 className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-600">Message</h3>
                 <pre className="whitespace-pre-wrap break-words rounded-lg bg-neutral-100 p-3 font-mono text-xs text-neutral-800">{cluster.sample.message}</pre>
               </div>
               <div>
-                <h3 className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">Stack trace</h3>
+                <h3 className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-600">Stack trace</h3>
                 <pre className="overflow-x-auto rounded-lg bg-neutral-100 p-3 font-mono text-xs leading-5" data-testid="fa-stack">
                   {cluster.sample.stack.map((l, i) => (
-                    <div key={i} className={isAppFrame(l) ? "font-semibold text-neutral-900" : "text-neutral-400"}>
+                    <div key={i} className={isAppFrame(l) ? "font-semibold text-neutral-900" : "text-neutral-500"}>
                       {l}
                     </div>
                   ))}
                 </pre>
               </div>
               <div>
-                <h3 className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">Tests ({cluster.tests.length})</h3>
+                <h3 className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-600">Tests ({cluster.tests.length})</h3>
                 <ul className="list-disc pl-5 text-sm text-neutral-700">
                   {cluster.tests.map((t) => (
                     <li key={t}>{t}</li>

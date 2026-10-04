@@ -5,11 +5,11 @@ import { cn } from "@/lib/utils";
 
 const STATUS_TONE: Record<ReleaseStatus, string> = {
   PLANNED: "bg-neutral-100 text-neutral-700",
-  IN_TESTING: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200",
-  GO: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200",
-  GO_WITH_ISSUES: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200",
-  NO_GO: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200",
-  RELEASED: "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-200",
+  IN_TESTING: "bg-blue-100 text-blue-800",
+  GO: "bg-green-100 text-green-800",
+  GO_WITH_ISSUES: "bg-green-100 text-green-800",
+  NO_GO: "bg-red-100 text-red-800",
+  RELEASED: "bg-purple-100 text-purple-800",
 };
 
 export function StatusPill({ status }: { status: ReleaseStatus }) {
@@ -17,9 +17,9 @@ export function StatusPill({ status }: { status: ReleaseStatus }) {
 }
 
 const VERDICT_TONE: Record<Verdict, { ring: string; text: string }> = {
-  READY: { ring: "stroke-green-600 dark:stroke-green-400", text: "text-green-700 dark:text-green-300" },
-  AT_RISK: { ring: "stroke-amber-500", text: "text-amber-700 dark:text-amber-300" },
-  NOT_READY: { ring: "stroke-red-600 dark:stroke-red-400", text: "text-red-700 dark:text-red-300" },
+  READY: { ring: "stroke-green-600", text: "text-green-700" },
+  AT_RISK: { ring: "stroke-amber-500", text: "text-amber-700" },
+  NOT_READY: { ring: "stroke-red-600", text: "text-red-700" },
 };
 
 /** Circular progress for the readiness score (coloured by verdict). */

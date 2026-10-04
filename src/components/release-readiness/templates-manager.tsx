@@ -57,20 +57,20 @@ export function TemplatesManager() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Button className="self-start bg-green-600 text-white hover:bg-green-700" onClick={() => setEditing({ id: null, name: "", sections: [{ name: "Testing", gates: [{ title: "", type: "MANUAL", isBlocker: false, weight: 1 }] }] })}>
+      <Button className="self-start bg-green-700 text-green-50 hover:bg-green-800" onClick={() => setEditing({ id: null, name: "", sections: [{ name: "Testing", gates: [{ title: "", type: "MANUAL", isBlocker: false, weight: 1 }] }] })}>
         <Plus className="size-4" aria-hidden /> New template
       </Button>
       {templates === null ? (
         <Skeleton className="h-32 w-full" />
       ) : templates.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-neutral-300 px-6 py-12 text-center text-sm text-neutral-500">No templates — new releases use the built-in Standard release checklist.</p>
+        <p className="rounded-xl border border-dashed border-neutral-300 px-6 py-12 text-center text-sm text-neutral-600">No templates — new releases use the built-in Standard release checklist.</p>
       ) : (
         <ul className="flex flex-col divide-y divide-neutral-200 rounded-xl border border-neutral-200 bg-card shadow-xs" aria-label="Templates">
           {templates.map((t) => (
             <li key={t.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-neutral-900">{t.name}</p>
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-neutral-600">
                   {t.sections.length} sections · {t.sections.reduce((n, s) => n + s.gates.length, 0)} gates ({t.sections.flatMap((s) => s.gates).filter((g) => g.type !== "MANUAL").length} auto)
                 </p>
               </div>
@@ -176,7 +176,7 @@ function TemplateEditor({
         <Button variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button className="bg-green-600 text-white hover:bg-green-700" onClick={onSave}>
+        <Button className="bg-green-700 text-green-50 hover:bg-green-800" onClick={onSave}>
           Save template
         </Button>
       </div>

@@ -150,7 +150,7 @@ export function LocatorHelper() {
             </h2>
             <button
               type="button"
-              className="text-sm font-medium text-cyan-700 hover:underline dark:text-cyan-300"
+              className="text-sm font-medium text-cyan-700 hover:underline"
               onClick={() => parse(SAMPLE_HTML)}
             >
               Load sample
@@ -166,12 +166,12 @@ export function LocatorHelper() {
             maxHeight="22rem"
           />
           {error && (
-            <p role="alert" className="mt-2 text-sm text-red-600">
+            <p role="alert" className="mt-2 text-sm text-red-700">
               {error}
             </p>
           )}
           <div className="mt-3 flex flex-wrap gap-2">
-            <Button onClick={() => parse(html)} className="bg-cyan-600 text-white hover:bg-cyan-700">
+            <Button onClick={() => parse(html)} className="bg-cyan-700 text-cyan-50 hover:bg-cyan-800">
               <Wand2 className="size-4" aria-hidden /> Parse
             </Button>
             <Button
@@ -237,7 +237,7 @@ export function LocatorHelper() {
                   expandAll={filtering}
                 />
               ) : (
-                <p className="p-2 text-sm text-neutral-500">No elements match the filter.</p>
+                <p className="p-2 text-sm text-neutral-600">No elements match the filter.</p>
               )}
             </div>
           </section>
@@ -260,15 +260,15 @@ export function LocatorHelper() {
             ) : (
               <>
                 {rec && (
-                  <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-4 dark:border-cyan-900 dark:bg-cyan-950/40">
-                    <p className="text-sm font-semibold text-cyan-900 dark:text-cyan-100">
+                  <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-4">
+                    <p className="text-sm font-semibold text-cyan-900">
                       Best choice: {rec.best.label}
                     </p>
-                    <code className="mt-1 block break-all font-mono text-xs text-cyan-900 dark:text-cyan-100">
+                    <code className="mt-1 block break-all font-mono text-xs text-cyan-900">
                       {rec.best.playwright ?? rec.best.selenium}
                     </code>
                     {rec.tip && (
-                      <p className="mt-2 flex items-start gap-1.5 text-xs text-cyan-900 dark:text-cyan-100">
+                      <p className="mt-2 flex items-start gap-1.5 text-xs text-cyan-900">
                         <Lightbulb className="mt-0.5 size-3.5 shrink-0" aria-hidden /> {rec.tip}
                       </p>
                     )}
@@ -316,7 +316,7 @@ export function LocatorHelper() {
             {!doc && <EmptyHint text="Parse some HTML first." />}
             {test &&
               (test.error ? (
-                <p role="alert" className="text-sm text-red-600">
+                <p role="alert" className="text-sm text-red-700">
                   {test.error}
                 </p>
               ) : (
@@ -361,6 +361,6 @@ function Snippet({ title, code }: { title: string; code: string }) {
 
 function EmptyHint({ text }: { text: string }) {
   return (
-    <div className="rounded-xl border border-dashed border-neutral-300 px-4 py-10 text-center text-sm text-neutral-500">{text}</div>
+    <div className="rounded-xl border border-dashed border-neutral-300 px-4 py-10 text-center text-sm text-neutral-600">{text}</div>
   );
 }

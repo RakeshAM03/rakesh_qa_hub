@@ -8,9 +8,9 @@ import type { Badge, Candidate } from "@/lib/locators/strategies";
 import { cn } from "@/lib/utils";
 
 const BADGE: Record<Badge, string> = {
-  Robust: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200",
-  OK: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200",
-  Fragile: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200",
+  Robust: "bg-green-100 text-green-800",
+  OK: "bg-amber-100 text-amber-800",
+  Fragile: "bg-red-100 text-red-800",
 };
 
 type TabId = "selenium" | "playwright" | "css" | "xpath";
@@ -47,7 +47,7 @@ export function SuggestionCard({ candidate, rank }: { candidate: Candidate; rank
       className="rounded-xl border border-neutral-200 bg-card p-4 shadow-xs"
     >
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold text-neutral-400">#{rank}</span>
+        <span className="text-xs font-semibold text-neutral-600">#{rank}</span>
         <h3 className="flex items-center gap-1.5 text-sm font-semibold text-neutral-900">
           {candidate.strategy === "ai" && <Sparkles className="size-3.5 text-violet-500" aria-hidden />}
           {candidate.label}
@@ -56,14 +56,14 @@ export function SuggestionCard({ candidate, rank }: { candidate: Candidate; rank
         <span
           className={cn(
             "ml-auto inline-flex items-center gap-1 text-xs",
-            unique ? "text-green-700 dark:text-green-300" : "text-amber-700 dark:text-amber-300",
+            unique ? "text-green-700" : "text-amber-700",
           )}
         >
           {unique ? <CheckCircle2 className="size-3.5" aria-hidden /> : <AlertTriangle className="size-3.5" aria-hidden />}
           {unique ? "Unique" : `Matches ${candidate.matches} elements`}
         </span>
       </div>
-      <p className="mt-1 text-xs text-neutral-500">{candidate.reason}</p>
+      <p className="mt-1 text-xs text-neutral-600">{candidate.reason}</p>
 
       <div role="tablist" aria-label="Locator format" className="mt-3 flex flex-wrap gap-1">
         {TABS.map((t) => (
@@ -75,8 +75,8 @@ export function SuggestionCard({ candidate, rank }: { candidate: Candidate; rank
             disabled={!code[t.id]}
             onClick={() => setTab(t.id)}
             className={cn(
-              "rounded-md px-2 py-1 text-xs font-medium text-neutral-500 hover:bg-neutral-100 disabled:opacity-40 disabled:hover:bg-transparent",
-              tab === t.id && "bg-cyan-50 text-cyan-800 dark:bg-cyan-900/40 dark:text-cyan-100",
+              "rounded-md px-2 py-1 text-xs font-medium text-neutral-600 hover:bg-neutral-100 disabled:opacity-40 disabled:hover:bg-transparent",
+              tab === t.id && "bg-cyan-50 text-cyan-800",
             )}
           >
             {t.label}

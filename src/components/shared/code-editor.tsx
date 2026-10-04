@@ -9,6 +9,7 @@ import { html } from "@codemirror/lang-html";
 import { java } from "@codemirror/lang-java";
 import { javascript } from "@codemirror/lang-javascript";
 import { json } from "@codemirror/lang-json";
+import { oneDark } from "@codemirror/theme-one-dark";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -52,6 +53,9 @@ const baseTheme = EditorView.theme({
   "&": { fontSize: "13px", height: "100%", backgroundColor: "transparent" },
   ".cm-scroller": { fontFamily: "var(--font-mono, ui-monospace, monospace)" },
   ".cm-gutters": { backgroundColor: "transparent", borderRight: "1px solid var(--border)" },
+  "&.cm-editor, & .cm-scroller": { backgroundColor: "transparent" },
+  // Readable line numbers in both modes (the app remaps neutral-600 for dark mode).
+  "&.cm-editor .cm-gutters": { color: "var(--color-neutral-600)" },
   ".cm-review-line": { backgroundColor: "color-mix(in oklab, #f59e0b 22%, transparent)" },
   "&.cm-focused": { outline: "none" },
 });
@@ -119,7 +123,7 @@ export function CodeEditor({
         value={value}
         onChange={onChange}
         extensions={extensions}
-        theme={resolvedTheme === "dark" ? "dark" : "light"}
+        theme={resolvedTheme === "dark" ? oneDark : "light"}
         placeholder={placeholder}
         readOnly={readOnly}
         editable={!readOnly}

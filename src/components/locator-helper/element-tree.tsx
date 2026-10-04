@@ -77,23 +77,23 @@ export function ElementTree({ root, selected, onSelect, highlighted, expandAll }
                 data-path={node.path}
                 className={cn(
                   "min-w-0 truncate rounded px-1.5 text-left hover:bg-neutral-100",
-                  isSelected && "bg-cyan-100 text-cyan-900 hover:bg-cyan-100 dark:bg-cyan-900/40 dark:text-cyan-100",
+                  isSelected && "bg-cyan-100 text-cyan-900 hover:bg-cyan-100",
                   highlighted.has(node.path) && "ring-2 ring-amber-400",
                 )}
               >
-                <span className={cn("font-semibold", node.interactive ? "text-cyan-700 dark:text-cyan-300" : "text-neutral-700")}>
+                <span className={cn("font-semibold", node.interactive ? "text-cyan-700" : "text-neutral-700")}>
                   &lt;{node.tag}&gt;
                 </span>
-                {node.id && <span className="ml-1.5 text-violet-700 dark:text-violet-300">#{node.id}</span>}
-                {node.name && <span className="ml-1.5 text-neutral-500">name={node.name}</span>}
-                {node.testAttr && <span className="ml-1.5 text-emerald-700 dark:text-emerald-300">{node.testAttr}</span>}
-                {node.text && <span className="ml-1.5 text-neutral-500">“{node.text}”</span>}
+                {node.id && <span className="ml-1.5 text-violet-700">#{node.id}</span>}
+                {node.name && <span className="ml-1.5 text-neutral-600">name={node.name}</span>}
+                {node.testAttr && <span className="ml-1.5 text-emerald-700">{node.testAttr}</span>}
+                {node.text && <span className="ml-1.5 text-neutral-600">“{node.text}”</span>}
               </button>
             </li>
           );
         })}
       </ul>
-      {truncated && <p className="mt-2 text-neutral-500">Showing the first {MAX_ROWS} elements — use the filter to narrow down.</p>}
+      {truncated && <p className="mt-2 text-neutral-600">Showing the first {MAX_ROWS} elements — use the filter to narrow down.</p>}
     </div>
   );
 }

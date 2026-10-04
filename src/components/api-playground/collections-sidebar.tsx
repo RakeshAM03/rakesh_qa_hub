@@ -12,11 +12,11 @@ import { cn } from "@/lib/utils";
 export type CollectionSummary = { id: string; name: string; requests: { id: string; name: string; method: string }[] };
 
 export const METHOD_TONE: Record<string, string> = {
-  GET: "text-green-700 dark:text-green-300",
-  POST: "text-amber-700 dark:text-amber-300",
-  PUT: "text-blue-700 dark:text-blue-300",
-  PATCH: "text-purple-700 dark:text-purple-300",
-  DELETE: "text-red-700 dark:text-red-300",
+  GET: "text-green-800",
+  POST: "text-amber-800",
+  PUT: "text-blue-800",
+  PATCH: "text-purple-800",
+  DELETE: "text-red-800",
   HEAD: "text-neutral-600",
   OPTIONS: "text-neutral-600",
 };
@@ -82,13 +82,13 @@ export function CollectionsSidebar({ collections, activeId, dirty, onOpen, onNew
             }}
           />
         </div>
-        <Button size="sm" className="mb-3 w-full bg-indigo-600 text-white hover:bg-indigo-700" onClick={onNewCollection}>
+        <Button size="sm" className="mb-3 w-full bg-indigo-700 text-indigo-50 hover:bg-indigo-800" onClick={onNewCollection}>
           <FolderPlus className="size-4" aria-hidden /> New Collection
         </Button>
         {collections === null ? (
-          <p className="px-1 text-xs text-neutral-500">Loading…</p>
+          <p className="px-1 text-xs text-neutral-600">Loading…</p>
         ) : collections.length === 0 ? (
-          <p className="px-1 text-sm text-neutral-500">No collections yet — create one to save requests.</p>
+          <p className="px-1 text-sm text-neutral-600">No collections yet — create one to save requests.</p>
         ) : (
           <ul className="flex flex-col gap-1">
             {collections.map((c) => (
@@ -98,7 +98,7 @@ export function CollectionsSidebar({ collections, activeId, dirty, onOpen, onNew
                     <CollapsibleTrigger className="flex min-w-0 flex-1 items-center gap-1 rounded-md px-1 py-1 text-left text-sm font-medium text-neutral-800 hover:bg-neutral-100">
                       <ChevronDown className="size-3.5 shrink-0 transition-transform [[data-state=closed]>&]:-rotate-90" aria-hidden />
                       <span className="truncate">{c.name}</span>
-                      <span className="text-xs text-neutral-400">{c.requests.length}</span>
+                      <span className="text-xs text-neutral-600">{c.requests.length}</span>
                     </CollapsibleTrigger>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -125,7 +125,7 @@ export function CollectionsSidebar({ collections, activeId, dirty, onOpen, onNew
                   </div>
                   <CollapsibleContent>
                     {c.requests.length === 0 ? (
-                      <p className="py-1 pl-6 text-xs text-neutral-500">No saved requests.</p>
+                      <p className="py-1 pl-6 text-xs text-neutral-600">No saved requests.</p>
                     ) : (
                       <ul className="ml-3 border-l border-neutral-200 pl-2" aria-label={`${c.name} requests`}>
                         {c.requests.map((r) => (
@@ -136,7 +136,7 @@ export function CollectionsSidebar({ collections, activeId, dirty, onOpen, onNew
                               aria-current={activeId === r.id ? "true" : undefined}
                               className={cn(
                                 "flex min-w-0 flex-1 items-center gap-2 rounded-md px-1.5 py-1 text-left text-sm hover:bg-neutral-100",
-                                activeId === r.id && "bg-indigo-50 dark:bg-indigo-950/40",
+                                activeId === r.id && "bg-indigo-50",
                               )}
                             >
                               <span className={cn("w-12 shrink-0 font-mono text-[10px] font-bold", METHOD_TONE[r.method])}>{r.method}</span>

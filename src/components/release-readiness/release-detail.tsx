@@ -103,10 +103,10 @@ export type ReleaseDetailData = {
 };
 
 const STATUS_OPTIONS: { value: GateStatus; label: string; tone: string }[] = [
-  { value: "PENDING", label: "Pending", tone: "data-[on=true]:bg-neutral-600 data-[on=true]:text-white" },
-  { value: "PASS", label: "Pass", tone: "data-[on=true]:bg-green-600 data-[on=true]:text-white" },
-  { value: "FAIL", label: "Fail", tone: "data-[on=true]:bg-red-600 data-[on=true]:text-white" },
-  { value: "NA", label: "N/A", tone: "data-[on=true]:bg-neutral-400 data-[on=true]:text-white" },
+  { value: "PENDING", label: "Pending", tone: "data-[on=true]:bg-neutral-700 data-[on=true]:text-neutral-50" },
+  { value: "PASS", label: "Pass", tone: "data-[on=true]:bg-green-700 data-[on=true]:text-green-50" },
+  { value: "FAIL", label: "Fail", tone: "data-[on=true]:bg-red-700 data-[on=true]:text-red-50" },
+  { value: "NA", label: "N/A", tone: "data-[on=true]:bg-neutral-300 data-[on=true]:text-neutral-900" },
 ];
 
 async function json(res: Response) {
@@ -218,7 +218,7 @@ export function ReleaseDetail({ id }: { id: string }) {
       <PageHeader
         title={release.name}
         icon={Rocket}
-        iconClassName="text-green-600"
+        iconClassName="text-green-700"
         backHref="/release-readiness"
         backLabel="Release Readiness"
         subtitle={
@@ -226,7 +226,7 @@ export function ReleaseDetail({ id }: { id: string }) {
             {release.version && <span className="font-medium text-neutral-700">{release.version}</span>}
             <StatusPill status={release.status} />
             {release.targetDate && (
-              <span className={cn(overdue && "font-semibold text-red-600")}>
+              <span className={cn(overdue && "font-semibold text-red-700")}>
                 Target {isoToLong(release.targetDate)} ({targetDateText(release.targetDate, today)})
               </span>
             )}
@@ -296,7 +296,7 @@ export function ReleaseDetail({ id }: { id: string }) {
             <p className="text-sm text-neutral-600" data-testid="rr-breakdown">
               {score.counts.PASS} passed · {score.counts.FAIL} failed · {score.counts.PENDING} pending · {score.counts.NA} not applicable
             </p>
-            <p className="text-xs text-neutral-500">
+            <p className="text-xs text-neutral-600">
               Weighted by gate weight; blockers count 3×. Ready ≥ 90% with no failed or pending blockers; at risk 70–89%; not ready below 70% or with a failed blocker.
             </p>
           </div>
@@ -305,18 +305,18 @@ export function ReleaseDetail({ id }: { id: string }) {
               <RefreshCw className={cn("size-4", refreshing && "animate-spin")} aria-hidden /> Refresh checks
             </Button>
             {!latest && (
-              <Button className="bg-green-600 text-white hover:bg-green-700" onClick={() => setDecisionOpen(true)}>
+              <Button className="bg-green-700 text-green-50 hover:bg-green-800" onClick={() => setDecisionOpen(true)}>
                 <Gavel className="size-4" aria-hidden /> Record decision
               </Button>
             )}
           </div>
         </div>
         {score.blockers.length > 0 && (
-          <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950/40" role="alert">
-            <p className="flex items-center gap-1.5 text-sm font-semibold text-red-800 dark:text-red-200">
+          <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3" role="alert">
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-red-800">
               <ShieldAlert className="size-4" aria-hidden /> Blockers
             </p>
-            <ul className="mt-1 list-disc pl-6 text-sm text-red-800 dark:text-red-200">
+            <ul className="mt-1 list-disc pl-6 text-sm text-red-800">
               {score.blockers.map((b) => (
                 <li key={b.id}>{b.title}</li>
               ))}
@@ -324,7 +324,7 @@ export function ReleaseDetail({ id }: { id: string }) {
           </div>
         )}
         {(release.linked.suites.length > 0 || release.linked.features.length > 0 || release.linkedRepos.length > 0) && (
-          <p className="mt-3 text-xs text-neutral-500">
+          <p className="mt-3 text-xs text-neutral-600">
             Linked: {[...release.linked.suites.map((s) => `CI: ${s.name}`), ...release.linked.features.map((f) => `Bugs: ${f.name}`), ...release.linkedRepos.map((r) => `Repo: ${r}`)].join(" · ")}
           </p>
         )}
@@ -340,15 +340,15 @@ export function ReleaseDetail({ id }: { id: string }) {
             <Plus className="size-4" aria-hidden /> Add gate
           </Button>
         </div>
-        {sections.length === 0 && <p className="rounded-xl border border-dashed border-neutral-300 px-4 py-8 text-center text-sm text-neutral-500">No gates yet — add the first one.</p>}
+        {sections.length === 0 && <p className="rounded-xl border border-dashed border-neutral-300 px-4 py-8 text-center text-sm text-neutral-600">No gates yet — add the first one.</p>}
         {sections.map(([name, gates]) => (
           <Collapsible key={name} defaultOpen asChild>
             <section aria-label={`${name} gates`} className="rounded-xl border border-neutral-200 bg-card shadow-xs">
               <CollapsibleTrigger className="group flex w-full items-center gap-2 px-4 py-3 text-left">
                 <h3 className="flex-1 text-sm font-semibold text-neutral-900">
-                  {name} <span className="font-normal text-neutral-500">· {gates.filter((g) => g.effective === "PASS").length}/{gates.filter((g) => g.effective !== "NA").length}</span>
+                  {name} <span className="font-normal text-neutral-600">· {gates.filter((g) => g.effective === "PASS").length}/{gates.filter((g) => g.effective !== "NA").length}</span>
                 </h3>
-                <ChevronDown className="size-4 text-neutral-500 transition-transform group-data-[state=open]:rotate-180" aria-hidden />
+                <ChevronDown className="size-4 text-neutral-600 transition-transform group-data-[state=open]:rotate-180" aria-hidden />
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <ul className="divide-y divide-neutral-200 border-t border-neutral-200">
@@ -384,7 +384,7 @@ export function ReleaseDetail({ id }: { id: string }) {
             Decision
           </h2>
           <div className="flex gap-2 print:hidden">
-            <Button size="sm" variant={latest ? "outline" : "default"} className={latest ? "" : "bg-green-600 text-white hover:bg-green-700"} onClick={() => setDecisionOpen(true)}>
+            <Button size="sm" variant={latest ? "outline" : "default"} className={latest ? "" : "bg-green-700 text-green-50 hover:bg-green-800"} onClick={() => setDecisionOpen(true)}>
               <Gavel className="size-4" aria-hidden /> {latest ? "Change decision" : "Record decision"}
             </Button>
             {(release.status === "GO" || release.status === "GO_WITH_ISSUES") && (
@@ -395,7 +395,7 @@ export function ReleaseDetail({ id }: { id: string }) {
           </div>
         </div>
         {!latest ? (
-          <p className="text-sm text-neutral-500">No decision yet. Recording one freezes a snapshot of the checklist.</p>
+          <p className="text-sm text-neutral-600">No decision yet. Recording one freezes a snapshot of the checklist.</p>
         ) : (
           <DecisionCard decision={latest} />
         )}
@@ -505,7 +505,7 @@ function GateRow({
   const auto = g.type !== "MANUAL";
   const failedBlocker = g.isBlocker && g.effective === "FAIL";
   return (
-    <li className={cn("flex flex-col gap-2 px-4 py-3", failedBlocker && "bg-red-50/60 dark:bg-red-950/20")} data-testid="gate-row" data-gate={g.title}>
+    <li className={cn("flex flex-col gap-2 px-4 py-3", failedBlocker && "bg-red-50/60")} data-testid="gate-row" data-gate={g.title}>
       <div className="flex flex-wrap items-center gap-3">
         <div role="radiogroup" aria-label={`Status of ${g.title}`} className="inline-flex overflow-hidden rounded-lg border border-neutral-300 text-xs font-medium">
           {STATUS_OPTIONS.map((o) => (
@@ -526,14 +526,14 @@ function GateRow({
         <p className="min-w-0 flex-1 text-sm font-medium text-neutral-900">
           {g.title}
           {auto && (
-            <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-sky-100 px-2 py-0.5 align-middle text-[11px] font-semibold text-sky-800 dark:bg-sky-900/40 dark:text-sky-200">
+            <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-sky-100 px-2 py-0.5 align-middle text-[11px] font-semibold text-sky-800">
               <Bot className="size-3" aria-hidden /> Auto
             </span>
           )}
-          {g.isBlocker && <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 align-middle text-[11px] font-semibold text-red-800 dark:bg-red-900/40 dark:text-red-200">Blocker</span>}
+          {g.isBlocker && <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 align-middle text-[11px] font-semibold text-red-800">Blocker</span>}
         </p>
         <div className="flex items-center gap-1 print:hidden">
-          <Label htmlFor={`blk-${g.id}`} className="text-xs text-neutral-500">
+          <Label htmlFor={`blk-${g.id}`} className="text-xs text-neutral-600">
             Blocker
           </Label>
           <Switch id={`blk-${g.id}`} checked={g.isBlocker} onCheckedChange={onBlocker} aria-label={`Blocker: ${g.title}`} />
@@ -556,15 +556,15 @@ function GateRow({
           </Button>
         </div>
       </div>
-      <div className="flex flex-wrap gap-x-4 gap-y-1 pl-1 text-xs text-neutral-500">
+      <div className="flex flex-wrap gap-x-4 gap-y-1 pl-1 text-xs text-neutral-600">
         {auto && g.autoResult && !g.override && (
-          <span className={cn(g.autoResult.status === null && "text-amber-700 dark:text-amber-300")}>
+          <span className={cn(g.autoResult.status === null && "text-amber-700")}>
             {GATE_TYPE_LABELS[g.type]}: {g.autoResult.detail}
             {g.autoResult.status === null && " (set it manually)"}
           </span>
         )}
         {g.override && (
-          <span className="text-violet-700 dark:text-violet-300">
+          <span className="text-violet-700">
             Overridden by {g.override.by}: {g.override.note}{" "}
             <button type="button" className="underline print:hidden" onClick={onClearOverride}>
               Clear override
@@ -600,12 +600,12 @@ function Signoffs({ release, mutate }: { release: ReleaseDetailData; mutate: (ur
       <ul className="flex flex-col divide-y divide-neutral-200" aria-label="Sign-offs">
         {release.signoffs.map((s) => (
           <li key={s.id} className="flex flex-wrap items-center gap-3 py-2">
-            {s.decision === "APPROVE" ? <CheckCircle2 className="size-4 text-green-600" aria-label="Approved" /> : s.decision === "REJECT" ? <XCircle className="size-4 text-red-600" aria-label="Rejected" /> : <span className="size-4 rounded-full border-2 border-neutral-300" aria-label="Pending" />}
+            {s.decision === "APPROVE" ? <CheckCircle2 className="size-4 text-green-700" aria-label="Approved" /> : s.decision === "REJECT" ? <XCircle className="size-4 text-red-700" aria-label="Rejected" /> : <span className="size-4 rounded-full border-2 border-neutral-300" aria-label="Pending" />}
             <span className="w-28 text-sm font-semibold text-neutral-900">{s.role}</span>
             <span className="min-w-0 flex-1 text-sm text-neutral-600">
               {s.decision === "PENDING" ? "Pending" : `${s.decision === "APPROVE" ? "Approved" : "Rejected"} by ${s.name}`}
               {s.comment && ` — “${s.comment}”`}
-              {s.signedAt && <span className="text-xs text-neutral-500"> · {formatDateTime(s.signedAt)}</span>}
+              {s.signedAt && <span className="text-xs text-neutral-600"> · {formatDateTime(s.signedAt)}</span>}
             </span>
             <div className="flex gap-1 print:hidden">
               <Button size="sm" variant="outline" onClick={() => setSigning(s)}>
@@ -689,7 +689,7 @@ function SignDialog({ signoff, defaultName, onClose, onSubmit }: { signoff: Sign
                 role="radio"
                 aria-checked={decision === v}
                 onClick={() => setDecision(v)}
-                className={cn("rounded-full border px-3 py-1 text-sm", decision === v ? "border-green-600 bg-green-600 text-white" : "border-neutral-300 text-neutral-700")}
+                className={cn("rounded-full border px-3 py-1 text-sm", decision === v ? "border-green-700 bg-green-700 text-green-50" : "border-neutral-300 text-neutral-700")}
               >
                 {l}
               </button>
@@ -712,7 +712,7 @@ function SignDialog({ signoff, defaultName, onClose, onSubmit }: { signoff: Sign
 }
 
 function DecisionCard({ decision: d, compact }: { decision: Decision; compact?: boolean }) {
-  const tone = d.decision === "NO_GO" ? "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/30" : "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/30";
+  const tone = d.decision === "NO_GO" ? "border-red-200 bg-red-50" : "border-green-200 bg-green-50";
   return (
     <div className={cn("rounded-lg border p-3", tone)} data-testid="decision-card">
       <p className="text-sm font-semibold text-neutral-900">
@@ -740,7 +740,7 @@ function DecisionCard({ decision: d, compact }: { decision: Decision; compact?: 
                 <li key={i}>
                   [{g.status}] {g.section} — {g.title}
                   {g.isBlocker && " (blocker)"}
-                  {g.detail && <span className="text-neutral-500"> · {g.detail}</span>}
+                  {g.detail && <span className="text-neutral-600"> · {g.detail}</span>}
                 </li>
               ))}
             </ul>
@@ -794,7 +794,7 @@ function DecisionDialog({ open, onOpenChange, changing, onSubmit }: { open: bool
                 onClick={() => setDecision(d)}
                 className={cn(
                   "rounded-full border px-3 py-1.5 text-sm font-medium",
-                  decision === d ? (d === "NO_GO" ? "border-red-600 bg-red-600 text-white" : "border-green-600 bg-green-600 text-white") : "border-neutral-300 text-neutral-700",
+                  decision === d ? (d === "NO_GO" ? "border-red-700 bg-red-700 text-red-50" : "border-green-700 bg-green-700 text-green-50") : "border-neutral-300 text-neutral-700",
                 )}
               >
                 {DECISION_LABELS[d]}
@@ -806,7 +806,7 @@ function DecisionDialog({ open, onOpenChange, changing, onSubmit }: { open: bool
               Comment <span className="text-red-500">*</span>
             </Label>
             <Textarea id="dec-comment" value={comment} onChange={(e) => setComment(e.target.value)} maxLength={5000} aria-invalid={submitted && !comment.trim()} />
-            {submitted && !comment.trim() && <p className="text-xs text-red-600">A comment is required</p>}
+            {submitted && !comment.trim() && <p className="text-xs text-red-700">A comment is required</p>}
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="dec-issues">Known issues (one per line)</Label>
@@ -817,7 +817,7 @@ function DecisionDialog({ open, onOpenChange, changing, onSubmit }: { open: bool
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" className="bg-green-600 text-white hover:bg-green-700">
+            <Button type="submit" className="bg-green-700 text-green-50 hover:bg-green-800">
               Record decision
             </Button>
           </DialogFooter>
@@ -1030,14 +1030,14 @@ function ActivityLog({ events }: { events: Event[] }) {
         Activity
       </h2>
       {events.length === 0 ? (
-        <p className="text-sm text-neutral-500">No activity yet.</p>
+        <p className="text-sm text-neutral-600">No activity yet.</p>
       ) : (
         <ol className="flex flex-col gap-2 border-l border-neutral-200 pl-4" aria-label="Activity">
           {events.map((e) => (
             <li key={e.id} className="relative text-sm">
               <span className="absolute top-1.5 -left-[21px] size-2 rounded-full bg-neutral-300" aria-hidden />
               <span className="font-medium text-neutral-900">{e.actor ?? "Someone"}</span> <span className="text-neutral-700">{(EVENT_TEXT[e.type] ?? (() => e.type.toLowerCase()))(e.detail)}</span>
-              <span className="ml-2 text-xs text-neutral-500" title={formatDateTime(e.createdAt)}>
+              <span className="ml-2 text-xs text-neutral-600" title={formatDateTime(e.createdAt)}>
                 {formatRelative(e.createdAt)}
               </span>
             </li>

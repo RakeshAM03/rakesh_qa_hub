@@ -338,6 +338,22 @@ Spec: `prompts/NEW-MODULES-MASTER-PROMPT.md`. Phases N0–N10 in PLAN.md.
   from the local test DB with generic sample data ("Checkout revamp", "Sprint 42",
   "Checkout regression", "Demo API").
 
+- **Theme check (2026-10-04, after N10):** swept every new page in light + dark × all 5
+  colour themes with axe-core colour-contrast (scratch script, not committed). Colour
+  themes behave identically (no theme-specific issues). Found and fixed dark-mode
+  problems in the new modules: explicit `dark:` palette classes double-inverted under the
+  palette remap in `theme-palette.css` (removed — the remap handles dark mode, as in the
+  existing modules); white text on 500/600 colours → `-700` background with `-50` text
+  (reads well in both modes after the remap); status segments; grey helper text
+  neutral-500 → 600; risk-matrix cells → mid-tone hues at low opacity (400–500 aren't
+  remapped); CodeMirror uses One Dark syntax colours in dark mode and readable gutter
+  numbers. Violations on new pages: 1,875 → 1 (a CodeMirror token on the active line in
+  light mode, 4.26:1). Existing Bug Formatter still has 6 minor ones (neutral-500 helper
+  text in dark, orange tab in light) — left unchanged. Guard: `src/lib/theme-guard.test.ts`
+  fails on any `dark:` palette override in components (shadcn `ui/` exempt). README dark
+  home screenshot retaken (the earlier one used the wrong storage key) and new-page
+  screenshots refreshed.
+
 ## Open questions / next steps
 
 - Install the Vercel GitHub app for RakeshAM03/rakesh_qa_hub, then run

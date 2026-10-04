@@ -20,7 +20,7 @@ type Suite = { id: string; name: string };
 type Run = { id: number; number: number; conclusion: string | null; startedAt: string; branch: string | null };
 
 const triggerClass =
-  "h-11 flex-1 gap-2 rounded-none border-0 border-b-2 border-transparent text-neutral-500 shadow-none data-[state=active]:border-rose-500 data-[state=active]:bg-rose-50 data-[state=active]:text-rose-700 data-[state=active]:shadow-none dark:data-[state=active]:bg-rose-950/40 dark:data-[state=active]:text-rose-200";
+  "h-11 flex-1 gap-2 rounded-none border-0 border-b-2 border-transparent text-neutral-600 shadow-none data-[state=active]:border-rose-500 data-[state=active]:bg-rose-50 data-[state=active]:text-rose-700 data-[state=active]:shadow-none";
 
 export function InputCard({ onParsed }: { onParsed: (result: ParseResult, source: string) => void }) {
   const [tab, setTab] = useState("paste");
@@ -90,7 +90,7 @@ export function InputCard({ onParsed }: { onParsed: (result: ParseResult, source
         <TabsContent value="paste" className="flex flex-col gap-2 p-4 sm:p-5">
           <div className="flex items-center justify-between">
             <Label htmlFor="fa-paste">Stack traces or console output</Label>
-            <button type="button" className="text-sm font-medium text-rose-700 hover:underline dark:text-rose-300" onClick={() => setText(SAMPLE_LOG)}>
+            <button type="button" className="text-sm font-medium text-rose-700 hover:underline" onClick={() => setText(SAMPLE_LOG)}>
               Load sample
             </button>
           </div>
@@ -116,7 +116,7 @@ export function InputCard({ onParsed }: { onParsed: (result: ParseResult, source
             }}
             className={cn(
               "flex flex-col items-center gap-2 rounded-xl border-2 border-dashed border-neutral-300 px-4 py-8 text-center text-sm text-neutral-600",
-              dragging && "border-rose-400 bg-rose-50 dark:bg-rose-950/30",
+              dragging && "border-rose-400 bg-rose-50",
             )}
           >
             <Upload className="size-6 text-neutral-400" aria-hidden />
@@ -145,7 +145,7 @@ export function InputCard({ onParsed }: { onParsed: (result: ParseResult, source
               {files.map((f) => (
                 <li key={`${f.name}-${f.size}`} className="flex items-center justify-between rounded-md bg-neutral-100 px-3 py-1.5">
                   <span className="truncate">
-                    {f.name} <span className="text-neutral-500">({Math.ceil(f.size / 1024)} KB)</span>
+                    {f.name} <span className="text-neutral-600">({Math.ceil(f.size / 1024)} KB)</span>
                   </span>
                   <Button type="button" size="icon" variant="ghost" aria-label={`Remove ${f.name}`} onClick={() => setFiles((p) => p.filter((x) => x !== f))}>
                     <X className="size-4" />
@@ -161,16 +161,16 @@ export function InputCard({ onParsed }: { onParsed: (result: ParseResult, source
       </Tabs>
       {tab !== "ci" && (
         <div className="flex flex-wrap items-center gap-3 border-t border-neutral-200 px-4 py-3 sm:px-5">
-          <Button onClick={analyze} disabled={busy} className="bg-rose-600 text-white hover:bg-rose-700">
+          <Button onClick={analyze} disabled={busy} className="bg-rose-700 text-rose-50 hover:bg-rose-800">
             {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Search className="size-4" aria-hidden />} Analyze
           </Button>
-          <span className="text-xs text-neutral-500">
+          <span className="text-xs text-neutral-600">
             Up to {MAX_TOTAL_BYTES / 1024 / 1024} MB and {MAX_FAILURES.toLocaleString()} failures. Parsed in your browser.
           </span>
         </div>
       )}
       {error && (
-        <p role="alert" className="px-4 pb-4 text-sm text-red-600 sm:px-5">
+        <p role="alert" className="px-4 pb-4 text-sm text-red-700 sm:px-5">
           {error}
         </p>
       )}
@@ -228,7 +228,7 @@ function FromCi({ onParsed, active }: { onParsed: (r: ParseResult, source: strin
     }
   }
 
-  if (!state) return <p className="text-sm text-neutral-500">Loading CI suites…</p>;
+  if (!state) return <p className="text-sm text-neutral-600">Loading CI suites…</p>;
   if (!state.connected) {
     return (
       <p className="rounded-lg border border-dashed border-neutral-300 px-4 py-6 text-center text-sm text-neutral-600">
@@ -283,7 +283,7 @@ function FromCi({ onParsed, active }: { onParsed: (r: ParseResult, source: strin
           </SelectContent>
         </Select>
       </div>
-      <Button onClick={load} disabled={!runId || busy} className="bg-rose-600 text-white hover:bg-rose-700">
+      <Button onClick={load} disabled={!runId || busy} className="bg-rose-700 text-rose-50 hover:bg-rose-800">
         {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Search className="size-4" aria-hidden />} Load &amp; analyze
       </Button>
     </div>

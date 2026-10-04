@@ -111,7 +111,7 @@ export function ReleaseFormDialog({ open, onOpenChange, initial, title, submitLa
                 Name <span className="text-red-500">*</span>
               </Label>
               <Input id="rr-name" value={v.name} onChange={(e) => set("name", e.target.value)} placeholder="Checkout revamp" maxLength={200} aria-invalid={submitted && !v.name.trim()} />
-              {submitted && !v.name.trim() && <p className="text-xs text-red-600">Required</p>}
+              {submitted && !v.name.trim() && <p className="text-xs text-red-700">Required</p>}
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="rr-version">Version</Label>
@@ -157,7 +157,7 @@ export function ReleaseFormDialog({ open, onOpenChange, initial, title, submitLa
             </div>
           )}
           <fieldset className="flex flex-col gap-3 rounded-lg border border-neutral-200 p-3">
-            <legend className="px-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">Linked data (optional — powers the auto gates)</legend>
+            <legend className="px-1 text-xs font-semibold uppercase tracking-wider text-neutral-600">Linked data (optional — powers the auto gates)</legend>
             <div className="flex flex-col gap-1.5">
               <span className="text-sm font-medium">CI suites</span>
               <MultiSelect label="CI suites" options={opts?.suites ?? []} value={v.linkedCiSuiteIds} onChange={(x) => set("linkedCiSuiteIds", x)} empty="No CI suites yet — add them in CI Reports." />
@@ -175,7 +175,7 @@ export function ReleaseFormDialog({ open, onOpenChange, initial, title, submitLa
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={busy} className="bg-green-600 text-white hover:bg-green-700">
+            <Button type="submit" disabled={busy} className="bg-green-700 text-green-50 hover:bg-green-800">
               {submitLabel}
             </Button>
           </DialogFooter>

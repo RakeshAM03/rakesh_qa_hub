@@ -123,12 +123,12 @@ function EnvironmentDialog({
         </DialogHeader>
         {editingId === null ? (
           <div className="flex flex-col gap-2">
-            {environments.length === 0 && <p className="text-sm text-neutral-500">No environments yet.</p>}
+            {environments.length === 0 && <p className="text-sm text-neutral-600">No environments yet.</p>}
             <ul className="flex flex-col divide-y divide-neutral-200" aria-label="Environments">
               {environments.map((e) => (
                 <li key={e.id} className="flex items-center gap-2 py-2">
                   <span className="flex-1 text-sm font-medium">
-                    {e.name} <span className="text-xs font-normal text-neutral-500">· {e.variables.length} variables</span>
+                    {e.name} <span className="text-xs font-normal text-neutral-600">· {e.variables.length} variables</span>
                   </span>
                   <Button size="sm" variant="outline" onClick={() => edit(e)}>
                     Edit

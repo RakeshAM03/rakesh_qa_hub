@@ -80,7 +80,7 @@ export function ReleasesList() {
             <LayoutTemplate className="size-4" aria-hidden /> Manage templates
           </Link>
         </Button>
-        <Button onClick={() => setOpen(true)} className="bg-green-600 text-white hover:bg-green-700">
+        <Button onClick={() => setOpen(true)} className="bg-green-700 text-green-50 hover:bg-green-800">
           <Plus className="size-4" aria-hidden /> New Release
         </Button>
       </div>
@@ -92,7 +92,7 @@ export function ReleasesList() {
           <Rocket className="size-8 text-neutral-400" aria-hidden />
           <p className="text-sm text-neutral-600">{filtering ? "No releases match these filters." : "No releases yet — create your first release checklist."}</p>
           {!filtering && (
-            <Button onClick={() => setOpen(true)} className="bg-green-600 text-white hover:bg-green-700">
+            <Button onClick={() => setOpen(true)} className="bg-green-700 text-green-50 hover:bg-green-800">
               <Plus className="size-4" aria-hidden /> New Release
             </Button>
           )}
@@ -100,7 +100,7 @@ export function ReleasesList() {
       ) : (
         <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-card shadow-xs">
           <table className="w-full text-left text-sm" aria-label="Releases">
-            <thead className="border-b border-neutral-200 text-xs uppercase tracking-wider text-neutral-500">
+            <thead className="border-b border-neutral-200 text-xs uppercase tracking-wider text-neutral-600">
               <tr>
                 <th className="px-4 py-3 font-semibold">Release</th>
                 <th className="px-4 py-3 font-semibold">Target date</th>
@@ -119,9 +119,9 @@ export function ReleasesList() {
                       <Link href={`/release-readiness/${r.id}`} className="font-semibold text-neutral-900 hover:underline" onClick={(e) => e.stopPropagation()}>
                         {r.name}
                       </Link>
-                      {r.version && <span className="ml-2 text-xs text-neutral-500">{r.version}</span>}
+                      {r.version && <span className="ml-2 text-xs text-neutral-600">{r.version}</span>}
                     </td>
-                    <td className={cn("px-4 py-3 whitespace-nowrap", overdue ? "font-semibold text-red-600" : "text-neutral-700")}>
+                    <td className={cn("px-4 py-3 whitespace-nowrap", overdue ? "font-semibold text-red-700" : "text-neutral-700")}>
                       {r.targetDate ? isoToLong(r.targetDate) : "—"}
                       {overdue && <span className="sr-only"> (overdue)</span>}
                     </td>
@@ -130,7 +130,7 @@ export function ReleasesList() {
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-neutral-700">
                       {r.passed} / {r.applicable} passed
-                      {r.blockers > 0 && <span className="ml-2 text-xs font-semibold text-red-600">{r.blockers} blocker{r.blockers === 1 ? "" : "s"}</span>}
+                      {r.blockers > 0 && <span className="ml-2 text-xs font-semibold text-red-700">{r.blockers} blocker{r.blockers === 1 ? "" : "s"}</span>}
                     </td>
                     <td className="px-4 py-3">
                       <StatusPill status={r.status} />

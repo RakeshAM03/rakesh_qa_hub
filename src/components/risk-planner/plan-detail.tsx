@@ -58,16 +58,17 @@ type Suggestion = { defectHistory?: { value: number; reason: string }; complexit
 type Factor = keyof typeof FACTOR_HELP;
 
 export const LEVEL_TONE: Record<Level, string> = {
-  Critical: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200",
-  High: "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200",
-  Medium: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200",
-  Low: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200",
+  Critical: "bg-red-100 text-red-800",
+  High: "bg-orange-100 text-orange-800",
+  Medium: "bg-amber-100 text-amber-800",
+  Low: "bg-green-100 text-green-800",
 };
+/** Mid-tone hues at low opacity: the app's dark-mode remap leaves 400–500 shades alone, so these read in both modes. */
 const CELL_TONE: Record<Level, string> = {
-  Critical: "bg-red-200/70 dark:bg-red-900/50",
-  High: "bg-orange-200/70 dark:bg-orange-900/40",
-  Medium: "bg-amber-100 dark:bg-amber-900/30",
-  Low: "bg-green-100 dark:bg-green-900/30",
+  Critical: "bg-red-500/45",
+  High: "bg-orange-500/35",
+  Medium: "bg-amber-400/30",
+  Low: "bg-green-500/20",
 };
 
 export function LevelPill({ level, score }: { level: Level; score?: number }) {
@@ -219,7 +220,7 @@ export function PlanDetail({ id }: { id: string }) {
       <PageHeader
         title={plan.name}
         icon={ShieldAlert}
-        iconClassName="text-amber-600"
+        iconClassName="text-amber-700"
         backHref="/risk-planner"
         backLabel="Risk-Based Test Planner"
         subtitle={
@@ -277,17 +278,17 @@ export function PlanDetail({ id }: { id: string }) {
             Areas
           </h2>
           <HowCalculated settings={settings} />
-          <span className="ml-auto text-xs text-neutral-500" role="status" data-testid="save-state">
+          <span className="ml-auto text-xs text-neutral-600" role="status" data-testid="save-state">
             {saveState === "saving" ? (
               <span className="inline-flex items-center gap-1">
                 <Loader2 className="size-3 animate-spin" aria-hidden /> Saving…
               </span>
             ) : saveState === "saved" ? (
-              <span className="inline-flex items-center gap-1 text-green-700 dark:text-green-300">
+              <span className="inline-flex items-center gap-1 text-green-700">
                 <Check className="size-3" aria-hidden /> Saved
               </span>
             ) : saveState === "error" ? (
-              <span className="text-red-600">Not saved</span>
+              <span className="text-red-700">Not saved</span>
             ) : null}
           </span>
           {pendingSuggestions > 0 && (
@@ -295,16 +296,16 @@ export function PlanDetail({ id }: { id: string }) {
               <Lightbulb className="size-4 text-amber-500" aria-hidden /> Apply all suggestions ({pendingSuggestions})
             </Button>
           )}
-          <Button size="sm" className="bg-amber-600 text-white hover:bg-amber-700 print:hidden" onClick={addArea}>
+          <Button size="sm" className="bg-amber-700 text-amber-50 hover:bg-amber-800 print:hidden" onClick={addArea}>
             <Plus className="size-4" aria-hidden /> Add area
           </Button>
         </div>
         {areas.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-neutral-300 px-4 py-8 text-center text-sm text-neutral-500">No areas yet — add the features or areas in scope.</p>
+          <p className="rounded-lg border border-dashed border-neutral-300 px-4 py-8 text-center text-sm text-neutral-600">No areas yet — add the features or areas in scope.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1100px] text-left text-xs" aria-label="Areas">
-              <thead className="border-b border-neutral-200 text-[11px] uppercase tracking-wider text-neutral-500">
+              <thead className="border-b border-neutral-200 text-[11px] uppercase tracking-wider text-neutral-600">
                 <tr>
                   <th className="py-2 pr-2 font-semibold">Area</th>
                   <th className="px-2 py-2 font-semibold">Feature page</th>
@@ -377,7 +378,7 @@ export function PlanDetail({ id }: { id: string }) {
                                   <TooltipTrigger asChild>
                                     <button
                                       type="button"
-                                      className="inline-flex items-center rounded px-1 text-[11px] font-semibold text-amber-700 hover:bg-amber-50 dark:text-amber-300 print:hidden"
+                                      className="inline-flex items-center rounded px-1 text-[11px] font-semibold text-amber-700 hover:bg-amber-50 print:hidden"
                                       onClick={() => editArea(a.id, { [f]: s.value })}
                                       aria-label={`Apply suggested ${FACTOR_HELP[f].label} ${s.value} for ${a.name}`}
                                     >
@@ -438,20 +439,20 @@ export function PlanDetail({ id }: { id: string }) {
               <span data-testid="capacity">
                 {allocated} h allocated of {plan.availableHours} h
               </span>
-              {over && <span className="font-semibold text-red-600">Over capacity by {Math.round((allocated - plan.availableHours) * 10) / 10} h</span>}
+              {over && <span className="font-semibold text-red-700">Over capacity by {Math.round((allocated - plan.availableHours) * 10) / 10} h</span>}
             </div>
             <div className="h-2.5 overflow-hidden rounded-full bg-neutral-200" role="progressbar" aria-label="Capacity" aria-valuemin={0} aria-valuemax={plan.availableHours} aria-valuenow={allocated}>
               <div className={cn("h-full rounded-full", over ? "bg-red-500" : "bg-amber-500")} style={{ width: `${plan.availableHours ? Math.min(100, (allocated / plan.availableHours) * 100) : 0}%` }} />
             </div>
           </div>
           {active.length === 0 ? (
-            <p className="text-sm text-neutral-500">Add areas to see the plan.</p>
+            <p className="text-sm text-neutral-600">Add areas to see the plan.</p>
           ) : (
             <ol className="flex flex-col divide-y divide-neutral-200" aria-label="Prioritised plan">
               {active.map((a, i) => (
                 <li key={a.id} className="flex flex-col gap-1.5 py-2.5" data-testid="plan-row">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="w-6 text-sm font-bold text-neutral-400">{i + 1}</span>
+                    <span className="w-6 text-sm font-bold text-neutral-600">{i + 1}</span>
                     <span className="min-w-0 flex-1 text-sm font-semibold text-neutral-900">{a.name}</span>
                     <LevelPill level={a.level} score={a.score} />
                     <span className="text-sm font-semibold tabular-nums text-neutral-900">{a.hours} h</span>
@@ -533,7 +534,7 @@ function Scale({ value, factor, area, onChange }: { value: number; factor: Facto
               aria-checked={value === n}
               aria-label={`${n} — ${help.levels[n - 1]}`}
               onClick={() => onChange(n)}
-              className={cn("w-6 py-1 text-[11px] font-semibold text-neutral-600 hover:bg-neutral-100", value === n && "bg-amber-500 text-white hover:bg-amber-500")}
+              className={cn("w-6 py-1 text-[11px] font-semibold text-neutral-600 hover:bg-neutral-100", value === n && "bg-amber-700 text-amber-50 hover:bg-amber-800")}
             >
               {n}
             </button>
@@ -609,7 +610,7 @@ function RiskMatrix({ areas, settings }: { areas: ComputedArea[]; settings: Sett
       </h2>
       <div className="flex gap-2">
         <div className="flex w-5 items-center justify-center">
-          <span className="-rotate-90 text-xs whitespace-nowrap text-neutral-500">Likelihood →</span>
+          <span className="-rotate-90 text-xs whitespace-nowrap text-neutral-600">Likelihood →</span>
         </div>
         <div className="flex-1">
           <div className="grid grid-cols-5 gap-1" role="grid" aria-label="Risk matrix: likelihood by impact">
@@ -624,7 +625,7 @@ function RiskMatrix({ areas, settings }: { areas: ComputedArea[]; settings: Sett
                         <TooltipTrigger asChild>
                           <button
                             type="button"
-                            className="truncate rounded bg-white/90 px-1 py-0.5 text-left text-[10px] font-medium text-neutral-900 shadow-xs hover:ring-2 hover:ring-amber-500 dark:bg-neutral-900/80 dark:text-neutral-100"
+                            className="truncate rounded bg-card/90 px-1 py-0.5 text-left text-[10px] font-medium text-neutral-900 shadow-xs hover:ring-2 hover:ring-amber-500"
                             onClick={() => {
                               const row = document.getElementById(`area-${a.id}`);
                               row?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -644,12 +645,12 @@ function RiskMatrix({ areas, settings }: { areas: ComputedArea[]; settings: Sett
               }),
             )}
           </div>
-          <div className="mt-1 grid grid-cols-5 text-center text-[10px] text-neutral-500">
+          <div className="mt-1 grid grid-cols-5 text-center text-[10px] text-neutral-600">
             {[1, 2, 3, 4, 5].map((n) => (
               <span key={n}>{n}</span>
             ))}
           </div>
-          <p className="text-center text-xs text-neutral-500">Impact →</p>
+          <p className="text-center text-xs text-neutral-600">Impact →</p>
         </div>
       </div>
       <ul className="mt-3 flex flex-wrap gap-3 text-xs text-neutral-600" aria-label="Legend">
@@ -669,7 +670,7 @@ function HowCalculated({ settings: s }: { settings: Settings }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button type="button" className="inline-flex items-center gap-1 text-xs text-neutral-500 hover:text-neutral-800 print:hidden">
+        <button type="button" className="inline-flex items-center gap-1 text-xs text-neutral-600 hover:text-neutral-800 print:hidden">
           <HelpCircle className="size-3.5" aria-hidden /> How is this calculated?
         </button>
       </PopoverTrigger>
@@ -755,29 +756,29 @@ function SettingsDrawer({ open, onOpenChange, settings, onSave }: { open: boolea
         </SheetHeader>
         <div className="flex flex-col gap-5 px-4 pb-6">
           <fieldset className="flex flex-col gap-2">
-            <legend className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">Change size → score</legend>
+            <legend className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-600">Change size → score</legend>
             {(Object.keys(CHANGE_SIZE_LABELS) as ChangeSize[]).map((k) => field(CHANGE_SIZE_LABELS[k], s.changeSizeScores[k], (n) => setS({ ...s, changeSizeScores: { ...s.changeSizeScores, [k]: n } })))}
           </fieldset>
           <fieldset className="flex flex-col gap-2">
-            <legend className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">Likelihood weights (%)</legend>
+            <legend className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-600">Likelihood weights (%)</legend>
             {field("Change size", s.likelihoodWeights.changeSize, (n) => setS({ ...s, likelihoodWeights: { ...s.likelihoodWeights, changeSize: n } }))}
             {field("Complexity", s.likelihoodWeights.complexity, (n) => setS({ ...s, likelihoodWeights: { ...s.likelihoodWeights, complexity: n } }))}
             {field("Defect history", s.likelihoodWeights.defectHistory, (n) => setS({ ...s, likelihoodWeights: { ...s.likelihoodWeights, defectHistory: n } }))}
             {field("Dependencies", s.likelihoodWeights.dependencies, (n) => setS({ ...s, likelihoodWeights: { ...s.likelihoodWeights, dependencies: n } }))}
           </fieldset>
           <fieldset className="flex flex-col gap-2">
-            <legend className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">Impact weights (%)</legend>
+            <legend className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-600">Impact weights (%)</legend>
             {field("Business impact", s.impactWeights.businessImpact, (n) => setS({ ...s, impactWeights: { ...s.impactWeights, businessImpact: n } }))}
             {field("Usage frequency", s.impactWeights.usageFrequency, (n) => setS({ ...s, impactWeights: { ...s.impactWeights, usageFrequency: n } }))}
           </fieldset>
           <fieldset className="flex flex-col gap-2">
-            <legend className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">Level thresholds (score ≥)</legend>
+            <legend className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-600">Level thresholds (score ≥)</legend>
             {field("Critical", s.thresholds.critical, (n) => setS({ ...s, thresholds: { ...s.thresholds, critical: n } }), 0.1)}
             {field("High", s.thresholds.high, (n) => setS({ ...s, thresholds: { ...s.thresholds, high: n } }), 0.1)}
             {field("Medium", s.thresholds.medium, (n) => setS({ ...s, thresholds: { ...s.thresholds, medium: n } }), 0.1)}
           </fieldset>
           <fieldset className="flex flex-col gap-2">
-            <legend className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">Test depth by level</legend>
+            <legend className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-600">Test depth by level</legend>
             {LEVELS.map((l) => (
               <label key={l} className="flex flex-col gap-1 text-sm">
                 <span className="text-neutral-700">{l}</span>
@@ -786,7 +787,7 @@ function SettingsDrawer({ open, onOpenChange, settings, onSave }: { open: boolea
             ))}
           </fieldset>
           <fieldset className="flex flex-col gap-2">
-            <legend className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">Hours</legend>
+            <legend className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-600">Hours</legend>
             {field("Minimum per area", s.minHours, (n) => setS({ ...s, minHours: n }), 0.5)}
             {field("Round to", s.roundTo, (n) => setS({ ...s, roundTo: n || 0.5 }), 0.25)}
           </fieldset>
@@ -795,7 +796,7 @@ function SettingsDrawer({ open, onOpenChange, settings, onSave }: { open: boolea
               Reset to defaults
             </Button>
             <Button
-              className="bg-amber-600 text-white hover:bg-amber-700"
+              className="bg-amber-700 text-amber-50 hover:bg-amber-800"
               onClick={async () => {
                 await onSave(s);
                 onOpenChange(false);

@@ -64,9 +64,9 @@ function readHistory(raw: string | null): HistoryEntry[] {
 }
 
 const SEVERITY: Record<Severity, { icon: typeof Info; label: string; className: string }> = {
-  attention: { icon: AlertOctagon, label: "Needs attention", className: "text-red-600 dark:text-red-400" },
-  warning: { icon: AlertTriangle, label: "Warning", className: "text-amber-600 dark:text-amber-400" },
-  info: { icon: Info, label: "Info", className: "text-sky-600 dark:text-sky-400" },
+  attention: { icon: AlertOctagon, label: "Needs attention", className: "text-red-700" },
+  warning: { icon: AlertTriangle, label: "Warning", className: "text-amber-700" },
+  info: { icon: Info, label: "Info", className: "text-sky-600" },
 };
 
 const byteLength = (s: string) => new TextEncoder().encode(s).length;
@@ -247,7 +247,7 @@ export function Converter() {
           />
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-3">
-          <Button onClick={convert} disabled={loading} className="bg-violet-600 text-white hover:bg-violet-700">
+          <Button onClick={convert} disabled={loading} className="bg-violet-700 text-violet-50 hover:bg-violet-800">
             {loading ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <ArrowRightLeft className="size-4" aria-hidden />}
             Convert
           </Button>
@@ -281,7 +281,7 @@ export function Converter() {
               <DropdownMenuLabel>Last {MAX_HISTORY} conversions (this browser)</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {history.length === 0 ? (
-                <p className="px-2 py-3 text-sm text-neutral-500">No conversions yet.</p>
+                <p className="px-2 py-3 text-sm text-neutral-600">No conversions yet.</p>
               ) : (
                 history.map((h) => (
                   <DropdownMenuItem
@@ -293,7 +293,7 @@ export function Converter() {
                     }}
                   >
                     <span className="flex-1 truncate">{firstClass(h.input)}</span>
-                    <span className="text-xs text-neutral-500">{formatDateTime(h.date)}</span>
+                    <span className="text-xs text-neutral-600">{formatDateTime(h.date)}</span>
                   </DropdownMenuItem>
                 ))
               )}
@@ -307,7 +307,7 @@ export function Converter() {
           </div>
         </div>
         {error && (
-          <p role="alert" className="mt-3 text-sm text-red-600">
+          <p role="alert" className="mt-3 text-sm text-red-700">
             {error}
           </p>
         )}
@@ -363,7 +363,7 @@ export function Converter() {
             />
           )}
           {output && prompt === null && (
-            <p className="mt-2 text-xs text-neutral-500" data-testid="convert-stats">
+            <p className="mt-2 text-xs text-neutral-600" data-testid="convert-stats">
               {output.statsLine}
             </p>
           )}
@@ -374,10 +374,10 @@ export function Converter() {
       {output && prompt === null && (
         <section aria-labelledby="review-title" className="rounded-xl border border-neutral-200 bg-card p-4 shadow-xs sm:p-5">
           <h2 id="review-title" className="mb-3 text-base font-semibold text-neutral-900">
-            Review notes {output.notes.length > 0 && <span className="text-neutral-500">({output.notes.length})</span>}
+            Review notes {output.notes.length > 0 && <span className="text-neutral-600">({output.notes.length})</span>}
           </h2>
           {output.notes.length === 0 ? (
-            <p className="text-sm text-neutral-500">Nothing flagged — still give the output a quick read before running it.</p>
+            <p className="text-sm text-neutral-600">Nothing flagged — still give the output a quick read before running it.</p>
           ) : (
             <ul className="flex flex-col gap-1" aria-label="Review notes">
               {output.notes.map((n, i) => {
@@ -421,7 +421,7 @@ function OptionSelect({
   const id = `opt-${label.toLowerCase().replace(/\s+/g, "-")}`;
   return (
     <div className="flex flex-col gap-1.5">
-      <Label htmlFor={id} className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+      <Label htmlFor={id} className="text-xs font-semibold uppercase tracking-wider text-neutral-600">
         {label}
       </Label>
       <Select value={value} onValueChange={onChange}>

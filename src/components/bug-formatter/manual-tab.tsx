@@ -113,7 +113,7 @@ export function ManualTab({ editing, prefill, onAdd, onSave, onCancelEdit }: Man
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-4">
       {prefillSource && !editing && (
-        <p role="status" className="flex items-start gap-2 rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-sm text-orange-900 dark:border-orange-900 dark:bg-orange-950/40 dark:text-orange-100">
+        <p role="status" className="flex items-start gap-2 rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-sm text-orange-900">
           <Info className="mt-0.5 size-4 shrink-0" aria-hidden />
           Pre-filled from {prefillSource} — review the details, then click Add Bug.
         </p>

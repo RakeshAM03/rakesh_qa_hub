@@ -357,7 +357,7 @@ export function ApiPlayground() {
               className={cn("flex-1 font-mono text-sm", unknownVariables(draft.url, vars).length > 0 && "border-red-500")}
               spellCheck={false}
             />
-            <Button type="submit" disabled={send.kind === "loading"} className="bg-indigo-600 text-white hover:bg-indigo-700">
+            <Button type="submit" disabled={send.kind === "loading"} className="bg-indigo-700 text-indigo-50 hover:bg-indigo-800">
               <Send className="size-4" aria-hidden /> Send
             </Button>
             <Button type="button" variant="outline" onClick={saveExisting}>
@@ -365,7 +365,7 @@ export function ApiPlayground() {
             </Button>
           </form>
           {unknown.length > 0 && (
-            <p className="mt-2 flex items-center gap-1.5 text-xs text-red-600" role="status">
+            <p className="mt-2 flex items-center gap-1.5 text-xs text-red-700" role="status">
               <AlertTriangle className="size-3.5" aria-hidden /> Unknown variable{unknown.length === 1 ? "" : "s"}: {unknown.map((u) => `{{${u}}}`).join(", ")}
               {env ? ` (not in “${env.name}”)` : " — pick an environment"}
             </p>
@@ -426,7 +426,7 @@ export function ApiPlayground() {
           </SheetHeader>
           <div className="px-4 pb-6">
             {history.length === 0 ? (
-              <p className="text-sm text-neutral-500">Nothing sent yet.</p>
+              <p className="text-sm text-neutral-600">Nothing sent yet.</p>
             ) : (
               <ul className="flex flex-col gap-1" aria-label="Request history">
                 {history.map((h) => (
@@ -447,8 +447,8 @@ export function ApiPlayground() {
                         <span className={cn("font-mono text-xs font-bold", METHOD_TONE[h.draft.method])}>{h.draft.method}</span>
                         <span className="truncate font-mono text-xs text-neutral-800">{h.draft.url}</span>
                       </span>
-                      <span className="flex items-center gap-2 text-xs text-neutral-500">
-                        {h.status !== null ? <span className={cn("rounded-full px-1.5 font-semibold", statusTone(h.status))}>{h.status}</span> : <span className="text-red-600">failed</span>}
+                      <span className="flex items-center gap-2 text-xs text-neutral-600">
+                        {h.status !== null ? <span className={cn("rounded-full px-1.5 font-semibold", statusTone(h.status))}>{h.status}</span> : <span className="text-red-700">failed</span>}
                         {h.timeMs !== null && `${h.timeMs} ms ·`} {formatDateTime(h.at)}
                       </span>
                     </button>
@@ -522,7 +522,7 @@ function SaveDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Save request</DialogTitle>
-          <DialogDescription className="flex items-start gap-1.5 text-amber-800 dark:text-amber-200">
+          <DialogDescription className="flex items-start gap-1.5 text-amber-800">
             <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden /> Saved requests are visible to anyone using this hub — don&apos;t save real secrets.
           </DialogDescription>
         </DialogHeader>

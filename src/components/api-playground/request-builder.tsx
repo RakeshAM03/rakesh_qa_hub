@@ -123,7 +123,7 @@ function AuthTab({ auth, onChange }: { auth: Auth; onChange: (a: Auth) => void }
           </div>
         </div>
       )}
-      <p className="text-xs text-neutral-500">Use {"{{variables}}"} from the environment so secrets aren&apos;t saved with the request.</p>
+      <p className="text-xs text-neutral-600">Use {"{{variables}}"} from the environment so secrets aren&apos;t saved with the request.</p>
     </div>
   );
 }
@@ -152,7 +152,7 @@ function BodyTab({ body, method, onChange, isUnknown }: { body: Body; method: st
             }
             className={
               body.type === t
-                ? "rounded-full border border-indigo-500 bg-indigo-500 px-3 py-1 text-xs font-medium text-white"
+                ? "rounded-full border border-indigo-500 bg-indigo-700 px-3 py-1 text-xs font-medium text-indigo-50"
                 : "rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium text-neutral-600 hover:border-indigo-300"
             }
           >
@@ -208,7 +208,7 @@ function AssertionsTab({ assertions, onChange }: { assertions: Assertion[]; onCh
   const update = (id: string, patch: Partial<Assertion>) => onChange(assertions.map((a) => (a.id === id ? { ...a, ...patch } : a)));
   return (
     <div className="flex flex-col gap-2">
-      {assertions.length === 0 && <p className="text-sm text-neutral-500">No assertions yet — add checks that run when the response arrives.</p>}
+      {assertions.length === 0 && <p className="text-sm text-neutral-600">No assertions yet — add checks that run when the response arrives.</p>}
       {assertions.map((a, i) => {
         const ops = TYPE_OPERATORS[a.type];
         const needsTarget = a.type === "header" || a.type === "jsonpath";

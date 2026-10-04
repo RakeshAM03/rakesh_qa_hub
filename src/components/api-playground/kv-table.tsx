@@ -27,7 +27,7 @@ export function KvTable({ rows, onChange, label, keyPlaceholder = "Key", valuePl
   const update = (id: string, patch: Partial<KV>) => onChange(rows.map((r) => (r.id === id ? { ...r, ...patch } : r)));
   return (
     <div className="flex flex-col gap-2">
-      {rows.length === 0 && <p className="text-sm text-neutral-500">No {label.toLowerCase()}s yet.</p>}
+      {rows.length === 0 && <p className="text-sm text-neutral-600">No {label.toLowerCase()}s yet.</p>}
       {rows.map((r, i) => (
         <div key={r.id} className="flex items-center gap-2">
           <Checkbox checked={r.enabled} onCheckedChange={(c) => update(r.id, { enabled: c === true })} aria-label={`Enable ${label.toLowerCase()} ${i + 1}`} />

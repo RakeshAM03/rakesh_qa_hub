@@ -113,7 +113,7 @@ export function FailureAnalyzer() {
               onMarkKnown={setMarkKnown}
             />
           ) : (
-            <div className="rounded-xl border border-dashed border-neutral-300 bg-card px-6 py-12 text-center text-sm text-neutral-500">
+            <div className="rounded-xl border border-dashed border-neutral-300 bg-card px-6 py-12 text-center text-sm text-neutral-600">
               Paste failures or upload a report, then click Analyze — failures are grouped by likely root cause.
             </div>
           )}
@@ -196,7 +196,7 @@ function MarkKnownDialog({ cluster, onClose, onSaved }: { cluster: Cluster | nul
             <Label htmlFor="ki-notes">Notes (optional)</Label>
             <Textarea id="ki-notes" value={notes} onChange={(e) => setNotes(e.target.value)} maxLength={2000} />
           </div>
-          {cluster && <p className="break-words font-mono text-xs text-neutral-500">{cluster.message.slice(0, 200)}</p>}
+          {cluster && <p className="break-words font-mono text-xs text-neutral-600">{cluster.message.slice(0, 200)}</p>}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
@@ -274,7 +274,7 @@ function SaveDialog({ open, current, onClose, onSaved }: { open: boolean; curren
 function KnownIssuesList({ issues, onDelete }: { issues: KnownIssue[]; onDelete: (id: string) => void }) {
   if (!issues.length) {
     return (
-      <div className="rounded-xl border border-dashed border-neutral-300 bg-card px-6 py-12 text-center text-sm text-neutral-500">
+      <div className="rounded-xl border border-dashed border-neutral-300 bg-card px-6 py-12 text-center text-sm text-neutral-600">
         No known issues yet — use “Mark as known flaky” on a cluster to add one.
       </div>
     );
@@ -286,7 +286,7 @@ function KnownIssuesList({ issues, onDelete }: { issues: KnownIssue[]; onDelete:
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-neutral-900">{k.label}</p>
             {k.notes && <p className="text-sm text-neutral-600">{k.notes}</p>}
-            <p className="text-xs text-neutral-500">
+            <p className="text-xs text-neutral-600">
               <code>{k.signature}</code> · added {formatDateTime(k.createdAt)}
             </p>
           </div>
@@ -302,10 +302,10 @@ function KnownIssuesList({ issues, onDelete }: { issues: KnownIssue[]; onDelete:
 function HistoryView({ items, onOpen, onDelete }: { items: HistoryItem[] | null; onOpen: (id: string) => void; onDelete: (id: string) => void }) {
   const t = useChartTheme();
   const color = useCategoryColor();
-  if (items === null) return <p className="text-sm text-neutral-500">Loading…</p>;
+  if (items === null) return <p className="text-sm text-neutral-600">Loading…</p>;
   if (!items.length) {
     return (
-      <div className="rounded-xl border border-dashed border-neutral-300 bg-card px-6 py-12 text-center text-sm text-neutral-500">
+      <div className="rounded-xl border border-dashed border-neutral-300 bg-card px-6 py-12 text-center text-sm text-neutral-600">
         No saved analyses yet — analyze some failures and click “Save analysis”.
       </div>
     );
@@ -319,7 +319,7 @@ function HistoryView({ items, onOpen, onDelete }: { items: HistoryItem[] | null;
           Failures per category over time
         </h2>
         {items.length < 2 ? (
-          <p className="text-sm text-neutral-500">Save at least two analyses to see a trend.</p>
+          <p className="text-sm text-neutral-600">Save at least two analyses to see a trend.</p>
         ) : (
           <div className="h-56">
             <ResponsiveContainer>
@@ -353,7 +353,7 @@ function HistoryView({ items, onOpen, onDelete }: { items: HistoryItem[] | null;
           <li key={i.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-neutral-900">{i.name}</p>
-              <p className="text-xs text-neutral-500">
+              <p className="text-xs text-neutral-600">
                 {formatDateTime(i.createdAt)} · {i.source} · {i.totalFailures} failures
                 {i.createdBy ? ` · saved by ${i.createdBy}` : ""}
               </p>

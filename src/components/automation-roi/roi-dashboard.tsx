@@ -130,14 +130,14 @@ export function RoiDashboard() {
       </div>
 
       {!period ? (
-        <p className="text-sm text-neutral-500">Pick a start and end date.</p>
+        <p className="text-sm text-neutral-600">Pick a start and end date.</p>
       ) : !data ? (
         <Skeleton className="h-96 w-full" />
       ) : empty ? (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-neutral-300 bg-card px-6 py-14 text-center">
           <TrendingUp className="size-8 text-neutral-400" aria-hidden />
           <p className="text-sm text-neutral-600">No automation projects yet — add one to start tracking ROI.</p>
-          <Button className="bg-emerald-600 text-white hover:bg-emerald-700" onClick={() => setForm("new")}>
+          <Button className="bg-emerald-700 text-emerald-50 hover:bg-emerald-800" onClick={() => setForm("new")}>
             <Plus className="size-4" aria-hidden /> Add project
           </Button>
         </div>
@@ -155,7 +155,7 @@ export function RoiDashboard() {
               Projects
             </h2>
             <table className="w-full text-left text-sm" aria-label="Projects">
-              <thead className="border-b border-neutral-200 text-xs uppercase tracking-wider text-neutral-500">
+              <thead className="border-b border-neutral-200 text-xs uppercase tracking-wider text-neutral-600">
                 <tr>
                   {(
                     [
@@ -185,11 +185,11 @@ export function RoiDashboard() {
                     <tr key={r.id} className="cursor-pointer border-b border-neutral-200 last:border-0 hover:bg-neutral-50" onClick={() => setDetail(r.id)} data-testid="roi-row">
                       <td className="px-4 py-3">
                         <span className="font-semibold text-neutral-900">{r.name}</span>
-                        {p.ciSuiteName && <span className="ml-2 text-xs text-neutral-500">CI: {p.ciSuiteName}</span>}
+                        {p.ciSuiteName && <span className="ml-2 text-xs text-neutral-600">CI: {p.ciSuiteName}</span>}
                         {p.ciSuiteId && r.usingEstimates && (
                           <UiTooltip>
                             <TooltipTrigger asChild>
-                              <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">Using estimates</span>
+                              <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">Using estimates</span>
                             </TooltipTrigger>
                             <TooltipContent>{p.ciError ?? "CI data unavailable"} — runs/month and seconds per test are used instead.</TooltipContent>
                           </UiTooltip>
@@ -204,8 +204,8 @@ export function RoiDashboard() {
                         </div>
                       </td>
                       <td className="px-4 py-3 tabular-nums">{fmt(r.runs)}</td>
-                      <td className={cn("px-4 py-3 font-semibold tabular-nums", r.netHours < 0 && "text-red-600")}>{fmt(r.netHours)} h</td>
-                      <td className={cn("px-4 py-3 tabular-nums", r.roi !== null && (r.roi >= 0 ? "text-emerald-700 dark:text-emerald-300" : "text-red-600"))}>{r.roi === null ? "—" : `${fmt(r.roi, 0)}%`}</td>
+                      <td className={cn("px-4 py-3 font-semibold tabular-nums", r.netHours < 0 && "text-red-700")}>{fmt(r.netHours)} h</td>
+                      <td className={cn("px-4 py-3 tabular-nums", r.roi !== null && (r.roi >= 0 ? "text-emerald-700" : "text-red-700"))}>{r.roi === null ? "—" : `${fmt(r.roi, 0)}%`}</td>
                       <td className="px-4 py-3 whitespace-nowrap">{r.breakEven ?? "Not yet"}</td>
                       <td className="px-4 py-3 tabular-nums">{r.passRate === null ? "—" : `${r.passRate}%`}</td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
@@ -228,7 +228,7 @@ export function RoiDashboard() {
             </table>
           </section>
           {!data.githubConnected && data.projects.some((p) => p.ciSuiteId) && (
-            <p className="text-xs text-neutral-500">GitHub isn&apos;t connected (GITHUB_TOKEN), so linked projects use their manual estimates.</p>
+            <p className="text-xs text-neutral-600">GitHub isn&apos;t connected (GITHUB_TOKEN), so linked projects use their manual estimates.</p>
           )}
         </>
       )}
@@ -278,7 +278,7 @@ function HowCalculated() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button type="button" className="inline-flex items-center gap-1 text-xs text-neutral-500 hover:text-neutral-800">
+        <button type="button" className="inline-flex items-center gap-1 text-xs text-neutral-600 hover:text-neutral-800">
           <HelpCircle className="size-3.5" aria-hidden /> How is this calculated?
         </button>
       </PopoverTrigger>
@@ -323,15 +323,15 @@ function Kpis({ data, currency }: { data: Data; currency: string }) {
       value: `${fmt(k.hoursSaved, 0)} h`,
       extra:
         Math.abs(delta) < 0.5 ? (
-          <span className="text-xs text-neutral-500">Same as the previous period</span>
+          <span className="text-xs text-neutral-600">Same as the previous period</span>
         ) : (
-          <span className={cn("inline-flex items-center gap-0.5 text-xs", delta >= 0 ? "text-emerald-700 dark:text-emerald-300" : "text-red-600")}>
+          <span className={cn("inline-flex items-center gap-0.5 text-xs", delta >= 0 ? "text-emerald-700" : "text-red-700")}>
             {delta >= 0 ? <ArrowUp className="size-3" aria-hidden /> : <ArrowDown className="size-3" aria-hidden />}
             {fmt(Math.abs(delta), 0)} h vs previous period
           </span>
         ),
     },
-    { label: "ROI", value: k.roi === null ? "—" : `${fmt(k.roi, 0)}%`, tone: k.roi !== null && k.roi > 0 ? "text-emerald-700 dark:text-emerald-300" : k.roi !== null && k.roi < 0 ? "text-red-600" : undefined },
+    { label: "ROI", value: k.roi === null ? "—" : `${fmt(k.roi, 0)}%`, tone: k.roi !== null && k.roi > 0 ? "text-emerald-700" : k.roi !== null && k.roi < 0 ? "text-red-700" : undefined },
     { label: "Automation coverage", value: `${fmt(k.coverage)}%` },
     { label: "CI pass rate", value: k.passRate === null ? "—" : `${k.passRate}%` },
   ];
@@ -340,7 +340,7 @@ function Kpis({ data, currency }: { data: Data; currency: string }) {
     <ul className={cn("grid gap-4 sm:grid-cols-2", tiles.length === 5 ? "lg:grid-cols-5" : "lg:grid-cols-4")} aria-label="Key figures">
       {tiles.map((t) => (
         <li key={t.label} className="rounded-xl border border-t-4 border-neutral-200 border-t-emerald-500 bg-card p-4 shadow-xs">
-          <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">{t.label}</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-neutral-600">{t.label}</p>
           <p className={cn("mt-1 text-2xl font-bold tabular-nums text-neutral-900", t.tone)} data-testid={`kpi-${t.label.toLowerCase().replace(/\s+/g, "-")}`}>
             {t.value}
           </p>
@@ -355,7 +355,7 @@ function ChartCard({ title, children, empty }: { title: string; children: React.
   return (
     <section aria-label={title} className="rounded-xl border border-neutral-200 bg-card p-4 shadow-xs">
       <h2 className="mb-3 text-sm font-semibold text-neutral-900">{title}</h2>
-      {empty ? <div className="flex h-56 items-center justify-center rounded-lg border border-dashed border-neutral-300 px-4 text-center text-sm text-neutral-500">{empty}</div> : <div className="h-56">{children}</div>}
+      {empty ? <div className="flex h-56 items-center justify-center rounded-lg border border-dashed border-neutral-300 px-4 text-center text-sm text-neutral-600">{empty}</div> : <div className="h-56">{children}</div>}
     </section>
   );
 }
@@ -480,14 +480,14 @@ function ManageDialog({
           <DialogDescription>Editing or deleting a project and changing the currency need the admin passcode.</DialogDescription>
         </DialogHeader>
         {projects.length === 0 ? (
-          <p className="text-sm text-neutral-500">No projects yet.</p>
+          <p className="text-sm text-neutral-600">No projects yet.</p>
         ) : (
           <ul className="flex flex-col divide-y divide-neutral-200" aria-label="Automation projects">
             {projects.map((p) => (
               <li key={p.id} className="flex items-center gap-2 py-2">
                 <span className="flex-1 text-sm">
                   <span className="font-medium">{p.name}</span>
-                  <span className="text-xs text-neutral-500">
+                  <span className="text-xs text-neutral-600">
                     {" "}
                     · {p.automatedTests}/{p.totalTests} automated · {p.snapshots} snapshot{p.snapshots === 1 ? "" : "s"}
                   </span>
@@ -505,7 +505,7 @@ function ManageDialog({
             ))}
           </ul>
         )}
-        <Button className="self-start bg-emerald-600 text-white hover:bg-emerald-700" onClick={onAdd}>
+        <Button className="self-start bg-emerald-700 text-emerald-50 hover:bg-emerald-800" onClick={onAdd}>
           <Plus className="size-4" aria-hidden /> Add project
         </Button>
         <form
@@ -614,7 +614,7 @@ function ProjectForm({
         {label} {required && <span className="text-red-500">*</span>}
       </Label>
       <Input id={`roi-${k}`} type="number" min={0} step="any" value={v[k]} onChange={(e) => set(k, e.target.value)} />
-      {hint && <p className="text-xs text-neutral-500">{hint}</p>}
+      {hint && <p className="text-xs text-neutral-600">{hint}</p>}
     </div>
   );
 
@@ -659,7 +659,7 @@ function ProjectForm({
             {field("hourlyCost", `Hourly cost (${currency}, optional)`)}
           </div>
           {error && (
-            <p role="alert" className="text-sm text-red-600">
+            <p role="alert" className="text-sm text-red-700">
               {error}
             </p>
           )}
@@ -667,7 +667,7 @@ function ProjectForm({
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" className="bg-emerald-600 text-white hover:bg-emerald-700">
+            <Button type="submit" className="bg-emerald-700 text-emerald-50 hover:bg-emerald-800">
               {target === "new" ? "Add project" : "Save"}
             </Button>
           </DialogFooter>
@@ -761,13 +761,13 @@ function DetailDrawer({ id, data, currency, onClose }: { id: string | null; data
                   ] as [string, string][]
                 ).map(([k, val]) => (
                   <div key={k} className="contents">
-                    <dt className="text-neutral-500">{k}</dt>
+                    <dt className="text-neutral-600">{k}</dt>
                     <dd className="text-right font-medium tabular-nums text-neutral-900">{val}</dd>
                   </div>
                 ))}
               </dl>
               <div>
-                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">Inputs</h3>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-600">Inputs</h3>
                 <ul className="text-sm text-neutral-700">
                   <li>
                     {p.automatedTests} of {p.totalTests} test cases automated
@@ -780,9 +780,9 @@ function DetailDrawer({ id, data, currency, onClose }: { id: string | null; data
                 </ul>
               </div>
               <div>
-                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">Coverage over time</h3>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-600">Coverage over time</h3>
                 {series.length < 2 ? (
-                  <p className="text-sm text-neutral-500">Log snapshots on different days to see a trend.</p>
+                  <p className="text-sm text-neutral-600">Log snapshots on different days to see a trend.</p>
                 ) : (
                   <div className="h-44">
                     <ResponsiveContainer>
