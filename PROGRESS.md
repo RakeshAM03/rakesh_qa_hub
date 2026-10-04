@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** New modules — Phase N9 (full test pass + deploy) 🛑. Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** New modules — Phase N9 done, waiting at the checkpoint before N10 (wrap-up). Live at https://rakesh-qa-hub.vercel.app. Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -320,6 +320,18 @@ Spec: `prompts/NEW-MODULES-MASTER-PROMPT.md`. Phases N0–N10 in PLAN.md.
   one snapshot per day (re-logging replaces it and updates the project's counts).
   Currency in AppSetting `roi.currency` (default ₹, passcode to change). Edit and
   delete need the passcode.
+- **N9 Test pass + deploy (2026-10-04):** local: lint, typecheck, 365 unit tests
+  (23 files), build, full E2E 90 passed + 1 skipped (`@network`, opt-in). GitHub Actions
+  green for every phase commit. Vercel auto-deploy still not connected → deployed with
+  `vercel deploy --prod --scope rakesh-qa`; the build applied `20261004043828_new_modules`
+  to Supabase (additive; Standard release template inserted). Live smoke: all 17 pages
+  200; new GET APIs 200 and empty (only the built-in template); AI status off; 8 SSRF
+  probes blocked (metadata IP, loopback, localhost, 10/8, ::1, decimal IP, metadata
+  hostname, file://) while a public request works; 7 new DELETEs and the currency PATCH
+  401 without the passcode; security headers present. Live Playwright (read-only):
+  first run 59/60 — the converter's note-highlight step lost a race with the lazily
+  loaded editor on a cold start; fixed (`CodeEditor` tracks the view via
+  `onCreateEditor`), redeployed, live suite 60/60 passed + 1 skipped.
 
 ## Open questions
 

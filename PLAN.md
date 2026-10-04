@@ -135,6 +135,6 @@ module E2E, browser check (Playwright MCP), commit + push, PROGRESS.md, short su
 - [x] **Phase N7 — Risk-Based Test Planner** (`/risk-planner`, `src/lib/risk.ts`, matrix,
   suggestions, allocation, exports, Send to PR QA Session).
 - [x] **Phase N8 — Automation ROI Dashboard** (`/automation-roi`, `src/lib/roi.ts`, KPIs, charts, CSV).
-- [ ] **Phase N9 — Full test pass + deploy** 🛑 unit + E2E, push, `vercel deploy --prod --scope rakesh-qa`,
+- [x] **Phase N9 — Full test pass + deploy** 🛑 unit + E2E, push, `vercel deploy --prod --scope rakesh-qa`,
   live smoke test, live-mode Playwright.
 - [x] **Phase N10 — Wrap-up** README (modules, screenshots), PROGRESS.md, PLAN.md, final summary.
