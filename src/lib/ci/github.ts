@@ -154,3 +154,29 @@ export async function failedJobLogs(repo: string, runId: number, maxCharsPerJob 
     }),
   );
 }
+
+/**
+ * Runs created on or after `since` (YYYY-MM-DD), without per-run job lookups —
+ * for dashboards that only need dates, durations and conclusions. Capped at
+ * `max` runs (100 per page).
+ */
+export async function listRunsSince(repo: string, workflowFile: string, since: string, max = 1000) {
+  const out: { date: string; durationSec: number | null; conclusion: string | null; completed: boolean }[] = [];
+  for (let page = 1; out.length < max && page <= Math.ceil(max / 100); page++) {
+    const data = await gh<{ total_count: number; workflow_runs: RawRun[] }>(
+      `/repos/${enc(repo)}/actions/workflows/${encodeURIComponent(workflowFile)}/runs?per_page=100&page=${page}&created=${encodeURIComponent(`>=${since}`)}`,
+    );
+    for (const r of data.workflow_runs) {
+      const started = r.run_started_at ?? r.created_at;
+      const completed = r.status === "completed";
+      out.push({
+        date: started.slice(0, 10),
+        durationSec: completed ? Math.max(0, Math.round((Date.parse(r.updated_at) - Date.parse(started)) / 1000)) : null,
+        conclusion: r.conclusion,
+        completed,
+      });
+    }
+    if (data.workflow_runs.length < 100) break;
+  }
+  return out.slice(0, max);
+}

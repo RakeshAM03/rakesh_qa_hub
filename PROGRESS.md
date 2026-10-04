@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** New modules — Phase N8 (Automation ROI Dashboard). Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** New modules — Phase N9 (full test pass + deploy) 🛑. Original 13 phases done; live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -308,6 +308,18 @@ Spec: `prompts/NEW-MODULES-MASTER-PROMPT.md`. Phases N0–N10 in PLAN.md.
   usage→Performance, defects/High+→Regression] via the hand-off; PR QA Session reads it
   (only change there; its E2E suite unchanged and green). MultiSelect moved to
   `components/shared`.
+- **N8 Automation ROI:** pure calculations in `src/lib/roi.ts` (spec formulas; months =
+  days ÷ 30.44; monthly buckets clipped to the period; previous same-length period for
+  ↑/↓; weighted coverage; weekly pass rate; coverage-over-time from each project's
+  latest snapshot ≤ date; status sentence; CSV with formula escaping). Cumulative net,
+  ROI % and break-even are computed over the selected period [inferred — projects
+  have no start date]. CI data: new `listRunsSince()` in `src/lib/ci/github.ts`
+  (date-filtered workflow runs without per-run job calls, max 1,000) — CI Reports'
+  existing functions unchanged. Linked projects fall back to estimates (badge) when
+  GitHub isn't connected or fails. Creating a project also logs its first snapshot;
+  one snapshot per day (re-logging replaces it and updates the project's counts).
+  Currency in AppSetting `roi.currency` (default ₹, passcode to change). Edit and
+  delete need the passcode.
 
 ## Open questions
 

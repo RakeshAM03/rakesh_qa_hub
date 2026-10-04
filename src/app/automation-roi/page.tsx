@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { TrendingUp } from "lucide-react";
 
-import { ComingSoon } from "@/components/shell/coming-soon";
+import { RoiDashboard } from "@/components/automation-roi/roi-dashboard";
 import { PageHeader } from "@/components/shell/page-header";
 
 export const metadata: Metadata = { title: "Automation ROI Dashboard" };
@@ -15,7 +15,7 @@ export default function AutomationRoiPage() {
         icon={TrendingUp}
         iconClassName="text-emerald-600"
       />
-      <ComingSoon message="Coming soon" />
+      <RoiDashboard />
     </>
   );
 }
