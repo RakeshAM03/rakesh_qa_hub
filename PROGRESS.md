@@ -506,6 +506,15 @@ Spec: `prompts/MORE-MODULES-MASTER-PROMPT.md`. Phases M0–M5 in PLAN.md. All de
   refreshed home light/dark (new groups), AI-optional note (Test Case Generator + checklist
   mode), stack (Faker, ExcelJS, js-yaml), rate limits, env var use, test notes. Screenshots
   taken from the local test DB with generic data only (E2E leftovers deleted first).
+- **Theme review + table layout (2026-10-05, after M5):** visual review of 11 key states of both
+  new modules in light, dark and dark + Sunset (33 screenshots) found no theme problems. Test
+  Case Generator table: at 1400 px the Automation toggle and row actions were off-screen, so
+  Automation now sits after Priority, the four row buttons became one "More actions" menu
+  (Move up / Move down / Duplicate / Delete) in the Title cell, text columns got min/max
+  widths, and titles are auto-growing text boxes that wrap (Enter doesn't add a line break).
+  At 1400 px every Automation toggle is now visible; the long text columns still scroll (they
+  also open in full via Expand and the edit drawer). New E2E for the row menu; contrast
+  re-check 40 checks, 0 violations.
 
 ## Open questions / next steps
 

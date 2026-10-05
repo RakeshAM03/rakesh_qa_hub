@@ -13,6 +13,7 @@ import {
   FileText,
   Grid3x3,
   HelpCircle,
+  MoreHorizontal,
   Plus,
   Save,
   Search,
@@ -26,6 +27,7 @@ import { Pagination } from "@/components/shared/pagination";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
@@ -308,7 +310,7 @@ export function CasesView({ result, onCases, scheme, requirement, prefix, action
           )}
 
           <div className="overflow-x-auto rounded-lg border border-neutral-200">
-            <table className="w-full min-w-[64rem] border-collapse text-sm" aria-label="Test cases">
+            <table className="w-full border-collapse text-sm" aria-label="Test cases">
               <thead className="bg-neutral-50 text-left text-xs text-neutral-700">
                 <tr>
                   <th scope="col" className="w-8 px-2 py-2">
@@ -318,9 +320,9 @@ export function CasesView({ result, onCases, scheme, requirement, prefix, action
                       aria-label="Select all shown"
                     />
                   </th>
-                  {["ID", "Title", "Category", "Type", "Priority", "Preconditions", "Steps", "Test data", "Expected result", "Automation", ""].map((h) => (
-                    <th key={h} scope="col" className="px-2 py-2 font-medium">
-                      {h || <span className="sr-only">Actions</span>}
+                  {["ID", "Title", "Category", "Type", "Priority", "Automation", "Preconditions", "Steps", "Test data", "Expected result"].map((h) => (
+                    <th key={h} scope="col" className="px-2 py-2 font-medium whitespace-nowrap">
+                      {h}
                     </th>
                   ))}
                 </tr>
@@ -328,7 +330,7 @@ export function CasesView({ result, onCases, scheme, requirement, prefix, action
               <tbody>
                 {shown.length === 0 && (
                   <tr>
-                    <td colSpan={12} className="px-3 py-8 text-center text-neutral-600">
+                    <td colSpan={11} className="px-3 py-8 text-center text-neutral-600">
                       {isFiltered ? "No test cases match these filters." : "No test cases. Add one below."}
                     </td>
                   </tr>
@@ -346,21 +348,47 @@ export function CasesView({ result, onCases, scheme, requirement, prefix, action
                           value={c.id}
                           onChange={(e) => update(c.key, { id: e.target.value })}
                           aria-label={`ID of ${c.title || "test case"}`}
-                          className="w-28 rounded border border-transparent bg-transparent px-1 py-0.5 hover:border-neutral-300 focus:border-blue-500 focus:outline-none"
+                          className="w-24 rounded border border-transparent bg-transparent px-1 py-0.5 hover:border-neutral-300 focus:border-blue-500 focus:outline-none"
                         />
                         {c.template && <Badge variant="outline" className="mt-1 block w-fit border-amber-300 text-[10px] text-amber-800">Template</Badge>}
                       </td>
-                      <td className="min-w-72 px-2 py-2">
-                        <input
+                      <td className="min-w-64 px-2 py-2">
+                        <textarea
                           value={c.title}
-                          onChange={(e) => update(c.key, { title: e.target.value })}
+                          rows={1}
+                          onChange={(e) => update(c.key, { title: e.target.value.replace(/\n/g, " ") })}
+                          onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
                           aria-label={`Title of ${c.id}`}
                           placeholder="Title"
-                          className="w-full rounded border border-transparent bg-transparent px-1 py-0.5 font-medium hover:border-neutral-300 focus:border-blue-500 focus:outline-none"
+                          className="field-sizing-content w-full resize-none rounded border border-transparent bg-transparent px-1 py-0.5 font-medium hover:border-neutral-300 focus:border-blue-500 focus:outline-none"
                         />
-                        <button type="button" onClick={() => setEditing(c.key)} className="mt-0.5 px-1 text-xs text-blue-800 hover:underline">
-                          Edit all fields
-                        </button>
+                        <div className="mt-0.5 flex items-center gap-1">
+                          <button type="button" onClick={() => setEditing(c.key)} className="px-1 text-xs text-blue-800 hover:underline">
+                            Edit all fields
+                          </button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button type="button" variant="ghost" size="icon" className="size-6" aria-label={`More actions for ${c.id}`}>
+                                <MoreHorizontal className="size-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start">
+                              <DropdownMenuItem onSelect={() => move(c.key, -1)} disabled={cases[0]?.key === c.key}>
+                                <ArrowUp /> Move up
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onSelect={() => move(c.key, 1)} disabled={cases.at(-1)?.key === c.key}>
+                                <ArrowDown /> Move down
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onSelect={() => duplicate(c)}>
+                                <CopyPlus /> Duplicate
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem variant="destructive" onSelect={() => remove(new Set([c.key]))}>
+                                <Trash2 /> Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </td>
                       <td className="px-2 py-2">
                         <Badge className={cn("font-normal whitespace-nowrap", CATEGORY_TONE[c.category])}>{c.category}</Badge>
@@ -373,16 +401,19 @@ export function CasesView({ result, onCases, scheme, requirement, prefix, action
                       <td className="px-2 py-2">
                         <Badge className={cn("font-normal", PRIORITY_TONE[c.priority])}>{priorityLabel(c.priority, scheme)}</Badge>
                       </td>
-                      <td className="max-w-44 px-2 py-2 text-xs">
+                      <td className="px-2 py-2">
+                        <Switch checked={c.automationCandidate} onCheckedChange={(v) => update(c.key, { automationCandidate: v })} aria-label={`Automation candidate ${c.id}`} />
+                      </td>
+                      <td className="min-w-32 max-w-40 px-2 py-2 text-xs">
                         <p className={cn("whitespace-pre-line", clamp)}>{c.preconditions}</p>
                       </td>
-                      <td className="max-w-64 px-2 py-2 text-xs">
+                      <td className="min-w-40 max-w-56 px-2 py-2 text-xs">
                         <p className={cn("whitespace-pre-line", clamp)}>{numberedSteps(c.steps)}</p>
                       </td>
-                      <td className="max-w-44 px-2 py-2 text-xs">
+                      <td className="min-w-32 max-w-40 px-2 py-2 text-xs">
                         <p className={cn("whitespace-pre-line break-words", clamp)}>{c.testData}</p>
                       </td>
-                      <td className="max-w-56 px-2 py-2 text-xs">
+                      <td className="min-w-40 max-w-56 px-2 py-2 text-xs">
                         <p className={cn("whitespace-pre-line", clamp)}>{c.expectedResult}</p>
                         <button
                           type="button"
@@ -392,23 +423,6 @@ export function CasesView({ result, onCases, scheme, requirement, prefix, action
                         >
                           {open ? "Collapse" : "Expand"}
                         </button>
-                      </td>
-                      <td className="px-2 py-2">
-                        <Switch checked={c.automationCandidate} onCheckedChange={(v) => update(c.key, { automationCandidate: v })} aria-label={`Automation candidate ${c.id}`} />
-                      </td>
-                      <td className="px-1 py-1 whitespace-nowrap">
-                        <Button type="button" variant="ghost" size="icon" className="size-7" aria-label={`Move ${c.id} up`} onClick={() => move(c.key, -1)}>
-                          <ArrowUp className="size-3.5" />
-                        </Button>
-                        <Button type="button" variant="ghost" size="icon" className="size-7" aria-label={`Move ${c.id} down`} onClick={() => move(c.key, 1)}>
-                          <ArrowDown className="size-3.5" />
-                        </Button>
-                        <Button type="button" variant="ghost" size="icon" className="size-7" aria-label={`Duplicate ${c.id}`} onClick={() => duplicate(c)}>
-                          <CopyPlus className="size-3.5" />
-                        </Button>
-                        <Button type="button" variant="ghost" size="icon" className="size-7" aria-label={`Delete ${c.id}`} onClick={() => remove(new Set([c.key]))}>
-                          <Trash2 className="size-3.5" />
-                        </Button>
                       </td>
                     </tr>
                   );

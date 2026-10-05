@@ -26,7 +26,7 @@ export class TestCaseGeneratorPage extends BasePage {
 
   /** Titles are editable inputs, so read their values. */
   async titles() {
-    return this.page.locator('input[aria-label^="Title of "]').evaluateAll((els) => els.map((e) => (e as HTMLInputElement).value));
+    return this.page.locator('[aria-label^="Title of "]').evaluateAll((els) => els.map((e) => (e as HTMLTextAreaElement).value));
   }
 
   async moreContext(moduleName: string) {

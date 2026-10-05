@@ -117,6 +117,24 @@ test.describe("Test Case Generator", () => {
     await expect(tc.rows).toHaveCount(1);
   });
 
+  test("row menu moves, duplicates and deletes a case", async ({ page }) => {
+    const tc = new TestCaseGeneratorPage(page);
+    await tc.goto();
+    await tc.requirement.fill(STORY);
+    await tc.importAnswer(fenced);
+    const ids = () => page.locator('input[aria-label^="ID of "]').evaluateAll((els) => els.map((e) => (e as HTMLInputElement).value));
+    await page.getByRole("button", { name: "More actions for TC-SU-002" }).click();
+    await page.getByRole("menuitem", { name: "Move up" }).click();
+    expect(await ids()).toEqual(["TC-SU-002", "TC-SU-001", "TC-SU-003"]);
+    await page.getByRole("button", { name: "More actions for TC-SU-001" }).click();
+    await page.getByRole("menuitem", { name: "Duplicate" }).click();
+    expect(await ids()).toEqual(["TC-SU-002", "TC-SU-001", "TC-SU-001-copy", "TC-SU-003"]);
+    await page.getByRole("button", { name: "More actions for TC-SU-003" }).click();
+    await expect(page.getByRole("menuitem", { name: "Move down" })).toBeDisabled();
+    await page.getByRole("menuitem", { name: "Delete" }).click();
+    expect(await ids()).toEqual(["TC-SU-002", "TC-SU-001", "TC-SU-001-copy"]);
+  });
+
   test("OpenAPI spec in the API tab gives per-endpoint cases", async ({ page }) => {
     const tc = new TestCaseGeneratorPage(page);
     await tc.goto();
