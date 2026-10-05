@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** All done — original 13 phases, N0–N10 and M0–M5. Live at https://rakesh-qa-hub.vercel.app. Original 13 phases and N0–N10 done; live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** All done — original 13 phases, N0–N10 and M0–M5. Live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
