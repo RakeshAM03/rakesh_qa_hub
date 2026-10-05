@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** More modules — Phase M4 (full test pass + deploy). Original 13 phases and N0–N10 done; live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** All done — original 13 phases, N0–N10 and M0–M5. Live at https://rakesh-qa-hub.vercel.app. Original 13 phases and N0–N10 done; live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -489,6 +489,23 @@ Spec: `prompts/MORE-MODULES-MASTER-PROMPT.md`. Phases M0–M5 in PLAN.md. All de
   Insights (QA Tracker, Automation ROI). Home cards follow `navGroups`; README module tables,
   nav unit test and navigation E2E updated. Routes unchanged. Old collapsed-group state in
   `qa-hub:nav-groups-closed` refers to the old titles and is simply ignored.
+- **M4 Test pass + deploy (2026-10-05):** local: lint, typecheck, 560 unit tests (29 files),
+  build, full E2E 109 passed + 1 skipped (`@network`, opt-in). GitHub Actions green.
+  Deployed with `vercel deploy --prod --scope rakesh-qa` (first try "Not authorized", retry
+  fine, as before); the build applied `20261004175132_more_modules` to Supabase (additive).
+  Live smoke: all 20 pages 200; `/qa-digest` → 307 to `/`; new GET APIs 200 and empty; both
+  new DELETEs 401 without the passcode; AI generate 503 (AI off); security headers present.
+  Live Playwright (read-only): 73 passed + 1 skipped, 1 failed on a network stall
+  (`page.goto` load event > 45 s; the whole run took 10.8 min instead of ~2) — that spec
+  re-run alone: 4/4 passed. Live contrast sweep: 249 page checks + 525 hidden-state checks
+  (incl. 18 new-module states) × light/dark × 5 themes, 0 violations; checks lost to
+  ERR_NETWORK_CHANGED / timeouts were re-run (50 checks, 0 violations). Only gap: the QA
+  Tracker log-entry form needs a resource, which production doesn't have (0 locally).
+- **M5 Wrap-up:** README: intro, module tables in the new sidebar groups (both new modules
+  described), screenshots `docs/test-case-generator.png` and `docs/test-data-generator.png`,
+  refreshed home light/dark (new groups), AI-optional note (Test Case Generator + checklist
+  mode), stack (Faker, ExcelJS, js-yaml), rate limits, env var use, test notes. Screenshots
+  taken from the local test DB with generic data only (E2E leftovers deleted first).
 
 ## Open questions / next steps
 
@@ -498,6 +515,6 @@ Spec: `prompts/MORE-MODULES-MASTER-PROMPT.md`. Phases M0–M5 in PLAN.md. All de
   in `src/config/ai.ts`) and `GITHUB_TOKEN` (CI Reports, CI-green gate, Failure
   Analyzer "From CI", ROI run counts). Without them the app falls back gracefully.
 - Optional: turn Deployment Protection fully off if preview URLs should be public too.
-- Ideas: Release Readiness could link a Risk Plan's
+- Ideas: Test Case Generator → "Send to Test Data Generator" (seed a schema from detected fields); Release Readiness could link a Risk Plan's
   accepted risks into "Known issues"; a CSP header (Next inline scripts need nonces);
   Prisma 7 config file (`package.json#prisma` deprecation warning in builds).

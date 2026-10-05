@@ -171,7 +171,7 @@ full-app pass (no `dark:` palette classes; `-700` text; `-700` bg / `-50` text b
   Playground, history (API + passcode delete).
   Also (user request): sidebar regrouped into Test Planning / Test Execution / Automation /
   Reports & Insights — home, README and tests too.
-- [ ] **Phase M4 — Full test pass + deploy** 🛑 unit + E2E, push, `vercel deploy --prod
+- [x] **Phase M4 — Full test pass + deploy** 🛑 unit + E2E, push, `vercel deploy --prod
   --scope rakesh-qa`, live smoke on both routes, live-mode Playwright, contrast sweep
   incl. the new pages.
-- [ ] **Phase M5 — Wrap-up** README, PROGRESS.md, PLAN.md, final summary.
+- [x] **Phase M5 — Wrap-up** README, PROGRESS.md, PLAN.md, final summary.
