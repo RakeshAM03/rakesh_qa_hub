@@ -21,10 +21,10 @@ const MODULES = [
 ];
 
 const GROUPS = [
-  { name: "Testing", cards: 7 },
-  { name: "Planning", cards: 3 },
-  { name: "Automation Tools", cards: 5 },
-  { name: "Insights", cards: 1 },
+  { name: "Test Planning", cards: 4 },
+  { name: "Test Execution", cards: 5 },
+  { name: "Automation", cards: 5 },
+  { name: "Reports & Insights", cards: 2 },
 ];
 
 test.describe("navigation", () => {
@@ -39,14 +39,14 @@ test.describe("navigation", () => {
   test("sidebar group headings collapse and remember it", async ({ page }) => {
     const base = new BasePage(page, "/");
     await base.goto();
-    const heading = base.sidebar.getByRole("button", { name: "Planning" });
+    const heading = base.sidebar.getByRole("button", { name: "Test Planning" });
     await expect(heading).toHaveAttribute("aria-expanded", "true");
     await heading.click();
     await expect(heading).toHaveAttribute("aria-expanded", "false");
     await expect(base.sidebarLink("Release Readiness")).toBeHidden();
     await page.reload();
-    await expect(base.sidebar.getByRole("button", { name: "Planning" })).toHaveAttribute("aria-expanded", "false");
-    await base.sidebar.getByRole("button", { name: "Planning" }).click();
+    await expect(base.sidebar.getByRole("button", { name: "Test Planning" })).toHaveAttribute("aria-expanded", "false");
+    await base.sidebar.getByRole("button", { name: "Test Planning" }).click();
     await expect(base.sidebarLink("Release Readiness")).toBeVisible();
   });
 

@@ -14,38 +14,40 @@ One place for everyday QA work: CI runs, bug and time tracking, PR QA session pr
 
 The sidebar groups modules the same way as the tables below.
 
-**Testing**
+**Test Planning**
+
+| Module | Route | What it does |
+|---|---|---|
+| Test Case Generator | `/test-case-generator` | Turn a user story, acceptance criteria or an API definition (OpenAPI / cURL) into functional, non-functional and API test cases — with AI, a prompt to paste into Claude, or a rule-based checklist. Edit them in a table and export to Excel, CSV, Markdown, Gherkin or Postman, save to TC Library or send to the API Playground. |
+| TC Library | `/tc-library` | Save approved Step 1 + Step 2 outputs (PR analysis and test plan) and reuse them in PR QA sessions. |
+| Risk-Based Test Planner | `/risk-planner` | Score areas by likelihood and impact to get a prioritised plan: risk matrix, test depth, hour allocation, deferred "accepted risks", suggestions from Bug Tracker / AI PR Review, Markdown / CSV export and "Send to PR QA Session". |
+| Release Readiness | `/release-readiness` | A quality-gate checklist per release with a weighted readiness score and verdict. Gates can auto-check CI Reports, Bug Tracker and AI PR Review. Sign-offs, a Go / No-Go decision with a frozen snapshot, an activity log, a shareable summary and editable templates. |
+
+**Test Execution**
+
+| Module | Route | What it does |
+|---|---|---|
+| PR QA Session | `/pr-qa-session` | Build a full QA-session prompt for Claude Code from PR URLs, templates, focus areas and steps. |
+| API Test Playground | `/api-playground` | A lightweight Postman: requests with params, headers, auth and body, `{{environment}}` variables, assertions, collections, cURL export and history. Requests go through an SSRF-protected proxy. |
+| Bug Tracker | `/bug-tracker` | Teams and feature pages with total / valid issues and a % valid pill. Feature issue lists, an activity feed and a workload view. |
+| Bug Formatter | `/bug-formatter` | Turn pasted Claude findings, a form or a CSV into Markdown for Jira or Slack. |
+| AI PR Review | `/ai-pr-review` | Generate a focused code-review prompt, then log the flags from Claude's table and browse them all. |
+
+**Automation**
 
 | Module | Route | What it does |
 |---|---|---|
 | CI Reports | `/ci` | Add your own GitHub Actions suites, trigger runs with inputs, follow status, jobs and duration. Optional AI root cause for failed runs. |
-| Bug Tracker | `/bug-tracker` | Teams and feature pages with total / valid issues and a % valid pill. Feature issue lists, an activity feed and a workload view. |
-| QA Tracker | `/qa-tracker` | Log daily tasks and hours per person, with charts for the last 7–30 days and a history grouped by date. |
-| PR QA Session | `/pr-qa-session` | Build a full QA-session prompt for Claude Code from PR URLs, templates, focus areas and steps. |
-| AI PR Review | `/ai-pr-review` | Generate a focused code-review prompt, then log the flags from Claude's table and browse them all. |
-| TC Library | `/tc-library` | Save approved Step 1 + Step 2 outputs (PR analysis and test plan) and reuse them in PR QA sessions. |
-| Bug Formatter | `/bug-formatter` | Turn pasted Claude findings, a form or a CSV into Markdown for Jira or Slack. |
-
-**Planning**
-
-| Module | Route | What it does |
-|---|---|---|
-| Release Readiness | `/release-readiness` | A quality-gate checklist per release with a weighted readiness score and verdict. Gates can auto-check CI Reports, Bug Tracker and AI PR Review. Sign-offs, a Go / No-Go decision with a frozen snapshot, an activity log, a shareable summary and editable templates. |
-| Risk-Based Test Planner | `/risk-planner` | Score areas by likelihood and impact to get a prioritised plan: risk matrix, test depth, hour allocation, deferred "accepted risks", suggestions from Bug Tracker / AI PR Review, Markdown / CSV export and "Send to PR QA Session". |
-
-**Automation Tools**
-
-| Module | Route | What it does |
-|---|---|---|
+| Test Failure Analyzer | `/failure-analyzer` | Paste logs or upload TestNG / JUnit / Playwright reports (or pull a failed CI run) to group failures by likely root cause. Send product bugs to Bug Formatter, mark known flakes, and save analyses to see trends. |
 | Locator Helper | `/locator-helper` | Paste HTML, pick an element and get ranked Selenium (Java) and Playwright (TS) locators with robustness scores, a locator tester and Page Object snippets. Runs in the browser; pasted HTML is never rendered. |
 | Selenium → Playwright | `/selenium-to-playwright` | Convert Selenium Java tests and page objects to Playwright TypeScript with rule-based conversion, review notes linked to lines, and .ts / .zip download. Optional AI mode, or a prompt to paste into Claude. |
-| Test Failure Analyzer | `/failure-analyzer` | Paste logs or upload TestNG / JUnit / Playwright reports (or pull a failed CI run) to group failures by likely root cause. Send product bugs to Bug Formatter, mark known flakes, and save analyses to see trends. |
-| API Test Playground | `/api-playground` | A lightweight Postman: requests with params, headers, auth and body, `{{environment}}` variables, assertions, collections, cURL export and history. Requests go through an SSRF-protected proxy. |
+| Test Data Generator | `/test-data-generator` | Design a schema (80 field types, presets) and generate realistic fake data plus edge cases in CSV, TSV, JSON, JSON Lines, Excel, SQL (5 dialects), XML or YAML. Seeded and reproducible, runs in the browser. |
 
-**Insights**
+**Reports & Insights**
 
 | Module | Route | What it does |
 |---|---|---|
+| QA Tracker | `/qa-tracker` | Log daily tasks and hours per person, with charts for the last 7–30 days and a history grouped by date. |
 | Automation ROI | `/automation-roi` | Hours saved, ROI, break-even, coverage growth and CI pass rate for the automation projects you add, using real CI runs when linked and estimates otherwise. |
 
 Everything starts empty, except the one generic "Standard release" checklist template. Suites, teams, feature pages, people, releases, plans and projects are added in the app.

@@ -162,13 +162,15 @@ full-app pass (no `dark:` palette classes; `-700` text; `-700` bg / `-50` text b
   seeded generation in a Web Worker (progress + cancel), exporters (CSV/TSV, JSON,
   JSON Lines, Excel, SQL ×5 dialects, XML, YAML, zip), preview + stats, saved schemas
   (API + passcode delete), schema JSON import/export, "Use in automation" snippets.
-- [ ] **Phase M3 — Test Case Generator** (`/test-case-generator`, `src/lib/tcgen/`):
+- [x] **Phase M3 — Test Case Generator** (`/test-case-generator`, `src/lib/tcgen/`):
   input tabs (requirement / API definition / upload) + context, test-type chips and
   presets, options; three modes (AI route with zod + one retry, Copy prompt + Import
   with JSON/Markdown fallback, Checklist with templates + field detection + OpenAPI /
   cURL cases); editable table (filters, sort, bulk, drawer, coverage view, pagination);
   exports (Excel, CSV, Markdown, Gherkin, Postman), Save to TC Library, Send to API
   Playground, history (API + passcode delete).
+  Also (user request): sidebar regrouped into Test Planning / Test Execution / Automation /
+  Reports & Insights — home, README and tests too.
 - [ ] **Phase M4 — Full test pass + deploy** 🛑 unit + E2E, push, `vercel deploy --prod
   --scope rakesh-qa`, live smoke on both routes, live-mode Playwright, contrast sweep
   incl. the new pages.

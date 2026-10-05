@@ -17,6 +17,8 @@ export const RULES = {
   converterAi: { name: "converter-ai", limit: 10, windowMs: 60 * 60_000 },
   /** Test Failure Analyzer "Explain with AI". */
   failureAi: { name: "failure-ai", limit: 20, windowMs: 60 * 60_000 },
+  /** Test Case Generator "Generate with AI". */
+  tcgenAi: { name: "tcgen-ai", limit: 10, windowMs: 60 * 60_000 },
   /** API Test Playground outbound sends. */
   apiSend: { name: "api-send", limit: 30, windowMs: 10 * 60_000 },
 } satisfies Record<string, Rule>;
@@ -27,6 +29,7 @@ const OWN_LIMIT: [RegExp, Rule][] = [
   [/^\/api\/selenium-to-playwright\/ai\/?$/, RULES.converterAi],
   [/^\/api\/failure-analyzer\/ai\/?$/, RULES.failureAi],
   [/^\/api\/api-playground\/send\/?$/, RULES.apiSend],
+  [/^\/api\/test-case-generator\/generate\/?$/, RULES.tcgenAi],
 ];
 
 export function createLimiter(now: () => number = Date.now) {

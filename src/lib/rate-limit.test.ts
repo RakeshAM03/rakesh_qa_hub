@@ -42,6 +42,8 @@ describe("rulesFor", () => {
     expect(rulesFor("POST", "/api/locator-helper/ai")).toEqual([RULES.locatorAi]);
     expect(rulesFor("POST", "/api/selenium-to-playwright/ai")).toEqual([RULES.converterAi]);
     expect(rulesFor("POST", "/api/failure-analyzer/ai")).toEqual([RULES.failureAi]);
+    expect(rulesFor("POST", "/api/test-case-generator/generate")).toEqual([RULES.tcgenAi]);
+    expect(RULES.tcgenAi).toMatchObject({ limit: 10, windowMs: 60 * 60_000 });
     expect(rulesFor("POST", "/api/api-playground/send")).toEqual([RULES.apiSend]);
     expect(RULES.locatorAi.limit).toBe(20);
     expect(RULES.converterAi.limit).toBe(10);

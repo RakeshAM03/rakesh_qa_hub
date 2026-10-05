@@ -42,15 +42,57 @@ export type NavGroup = {
 
 export const navGroups: NavGroup[] = [
   {
-    title: "Testing",
+    title: "Test Planning",
     items: [
       {
-        title: "CI Reports",
-        href: "/ci",
-        icon: GitBranch,
-        description: "Trigger and monitor the GitHub Actions regression suites you add.",
+        title: "Test Case Generator",
+        href: "/test-case-generator",
+        icon: ListChecks,
+        description: "Turn requirements into functional, non-functional and API test cases.",
         tone: "bg-blue-100 text-blue-700",
         ai: true,
+      },
+      {
+        title: "TC Library",
+        href: "/tc-library",
+        icon: BookMarked,
+        description: "Save approved PR analyses and test plans to reuse later.",
+        tone: "bg-teal-100 text-teal-700",
+        ai: true,
+      },
+      {
+        title: "Risk-Based Test Planner",
+        href: "/risk-planner",
+        icon: ShieldAlert,
+        description: "Score features by risk and get a prioritised test plan for your sprint.",
+        tone: "bg-amber-100 text-amber-700",
+      },
+      {
+        title: "Release Readiness",
+        href: "/release-readiness",
+        icon: Rocket,
+        description: "Track quality gates per release and record the Go / No-Go decision.",
+        tone: "bg-green-100 text-green-700",
+      },
+    ],
+  },
+  {
+    title: "Test Execution",
+    items: [
+      {
+        title: "PR QA Session",
+        href: "/pr-qa-session",
+        icon: FlaskConical,
+        description: "Build a full QA session prompt for Claude Code from PR URLs.",
+        tone: "bg-purple-100 text-purple-700",
+        ai: true,
+      },
+      {
+        title: "API Test Playground",
+        href: "/api-playground",
+        icon: Send,
+        description: "Build and send HTTP requests, assert on responses, save them in collections.",
+        tone: "bg-indigo-100 text-indigo-700",
       },
       {
         title: "Bug Tracker",
@@ -65,18 +107,11 @@ export const navGroups: NavGroup[] = [
         ],
       },
       {
-        title: "QA Tracker",
-        href: "/qa-tracker",
-        icon: ClipboardList,
-        description: "Log daily QA tasks and time spent, with analytics and history.",
-        tone: "bg-green-100 text-green-700",
-      },
-      {
-        title: "PR QA Session",
-        href: "/pr-qa-session",
-        icon: FlaskConical,
-        description: "Build a full QA session prompt for Claude Code from PR URLs.",
-        tone: "bg-purple-100 text-purple-700",
+        title: "Bug Formatter",
+        href: "/bug-formatter",
+        icon: FileSignature,
+        description: "Turn findings, forms or CSVs into clean Markdown for Jira or Slack.",
+        tone: "bg-orange-100 text-orange-700",
         ai: true,
       },
       {
@@ -87,54 +122,27 @@ export const navGroups: NavGroup[] = [
         tone: "bg-violet-100 text-violet-700",
         ai: true,
       },
-      {
-        title: "TC Library",
-        href: "/tc-library",
-        icon: BookMarked,
-        description: "Save approved PR analyses and test plans to reuse later.",
-        tone: "bg-teal-100 text-teal-700",
-        ai: true,
-      },
-      {
-        title: "Bug Formatter",
-        href: "/bug-formatter",
-        icon: FileSignature,
-        description: "Turn findings, forms or CSVs into clean Markdown for Jira or Slack.",
-        tone: "bg-orange-100 text-orange-700",
-        ai: true,
-      },
     ],
   },
   {
-    title: "Planning",
+    title: "Automation",
     items: [
       {
-        title: "Release Readiness",
-        href: "/release-readiness",
-        icon: Rocket,
-        description: "Track quality gates per release and record the Go / No-Go decision.",
-        tone: "bg-green-100 text-green-700",
-      },
-      {
-        title: "Risk-Based Test Planner",
-        href: "/risk-planner",
-        icon: ShieldAlert,
-        description: "Score features by risk and get a prioritised test plan for your sprint.",
-        tone: "bg-amber-100 text-amber-700",
-      },
-      {
-        title: "Test Case Generator",
-        href: "/test-case-generator",
-        icon: ListChecks,
-        description: "Turn requirements into functional, non-functional and API test cases.",
+        title: "CI Reports",
+        href: "/ci",
+        icon: GitBranch,
+        description: "Trigger and monitor the GitHub Actions regression suites you add.",
         tone: "bg-blue-100 text-blue-700",
         ai: true,
       },
-    ],
-  },
-  {
-    title: "Automation Tools",
-    items: [
+      {
+        title: "Test Failure Analyzer",
+        href: "/failure-analyzer",
+        icon: Stethoscope,
+        description: "Group test failures by root cause: script issues vs likely product bugs.",
+        tone: "bg-rose-100 text-rose-700",
+        ai: true,
+      },
       {
         title: "Locator Helper",
         href: "/locator-helper",
@@ -152,21 +160,6 @@ export const navGroups: NavGroup[] = [
         ai: true,
       },
       {
-        title: "Test Failure Analyzer",
-        href: "/failure-analyzer",
-        icon: Stethoscope,
-        description: "Group test failures by root cause: script issues vs likely product bugs.",
-        tone: "bg-rose-100 text-rose-700",
-        ai: true,
-      },
-      {
-        title: "API Test Playground",
-        href: "/api-playground",
-        icon: Send,
-        description: "Build and send HTTP requests, assert on responses, save them in collections.",
-        tone: "bg-indigo-100 text-indigo-700",
-      },
-      {
         title: "Test Data Generator",
         href: "/test-data-generator",
         icon: Database,
@@ -176,8 +169,15 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
-    title: "Insights",
+    title: "Reports & Insights",
     items: [
+      {
+        title: "QA Tracker",
+        href: "/qa-tracker",
+        icon: ClipboardList,
+        description: "Log daily QA tasks and time spent, with analytics and history.",
+        tone: "bg-green-100 text-green-700",
+      },
       {
         title: "Automation ROI",
         href: "/automation-roi",

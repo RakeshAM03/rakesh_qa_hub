@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** More modules — Phase M3 (Test Case Generator). Original 13 phases and N0–N10 done; live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** More modules — Phase M4 (full test pass + deploy). Original 13 phases and N0–N10 done; live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -449,6 +449,46 @@ Spec: `prompts/MORE-MODULES-MASTER-PROMPT.md`. Phases M0–M5 in PLAN.md. All de
   (passcode). 157 unit tests; E2E 9 (spec flow + seed reproducibility, errors, presets,
   Excel/zip/JSON import, snippets, save/load/delete, saved presets). Contrast sweep of 10
   page states × light/dark × 5 themes: 0 after darkening the "(empty)" marker.
+- **M3 Test Case Generator:** pure logic in `src/lib/tcgen/` — `types.ts` (26 test types in
+  3 categories, presets Smoke / Full functional / API complete / Everything, ID prefix from
+  the module name's initials, e.g. "Checkout payment" → CP), `schema.ts` (one lenient zod
+  schema for AI and pasted answers: priority words → P0–P3, steps as text or list, headers
+  as object or list, body as JSON text or object; strict JSON Schema for structured output;
+  API bodies), `prompt.ts` (same instructions for AI and Copy prompt; user inputs wrapped in
+  tags and marked as data), `extract.ts` (fenced / unfenced JSON with string-aware brace
+  matching, bare arrays; Markdown-table fallback with column aliases, escaped pipes, `<br>`),
+  `fields.ts` (11 field kinds), `templates.ts`, `openapi.ts` (OpenAPI 3 + Swagger 2, JSON or
+  YAML, local `$ref`, allOf, sample bodies; shell-style cURL parsing), `checklist.ts`,
+  `coverage.ts`, `export.ts` (CSV with BOM + formula escaping, Markdown, `.feature` grouped by
+  category with @ID/@priority/@automation tags, Postman v2.1 with status tests, TC Library
+  Markdown, API Playground requests), `excel.ts` (Test Cases / Summary / API sheets).
+  Decisions made while building [inferred]: priorities are stored as P0–P3 and only shown as
+  High/Medium/Low (P0+P1 = High). Checklist depth = templates per type (Quick 1, Standard 3,
+  Exhaustive all) plus field checks (2 / 4 / all); with an API definition, status codes /
+  request validation / auth / pagination / response schema are answered per endpoint
+  (other API types stay generic). Coverage matches cases to criteria by their requirement
+  reference ("AC2", "ac-2") or ≥ 60% of the criterion's words. Send to API Playground reuses
+  the existing `POST /api/api-playground/collections` with `requests` (one write, so the
+  rate limit isn't hit); relative endpoints become `{{baseUrl}}/…`; one status assertion per
+  request (case assertions are free text, so they go in the request name/description only).
+  Save to TC Library uses the existing `POST /api/tc-library`. AI route: 30 KB input cap,
+  10/hour (`tcgenAi`), retry once with the validation error, cancellable, maxDuration 300 s;
+  5 route tests with a mocked `structuredJson`. Replacing edited cases asks first (in-app
+  dialog); leaving with an unsaved result warns (beforeunload). Table pages at 50 rows.
+  Inputs kept as a draft in localStorage `qa-hub:test-case-generator:draft`; cases aren't
+  (save them to History). History list returns counts only; delete needs the passcode.
+  The `ComingSoon` placeholder component was removed (no longer used). Tests: 32 library
+  + 5 route unit tests; 9 E2E (spec flows: checklist → edit → CSV, JSON import →
+  questions / coverage / Gherkin / Postman / Excel, bad answer + Markdown fallback,
+  filters + bulk, OpenAPI per-endpoint cases, Save to TC Library, Send to API Playground,
+  save / reopen / delete). Contrast sweep of 8 states × light/dark × 5 themes: 0.
+- **Sidebar regrouping (user request, part of M3):** Test Planning (Test Case Generator, TC
+  Library, Risk-Based Test Planner, Release Readiness), Test Execution (PR QA Session, API
+  Test Playground, Bug Tracker, Bug Formatter, AI PR Review), Automation (CI Reports, Test
+  Failure Analyzer, Locator Helper, Selenium → Playwright, Test Data Generator), Reports &
+  Insights (QA Tracker, Automation ROI). Home cards follow `navGroups`; README module tables,
+  nav unit test and navigation E2E updated. Routes unchanged. Old collapsed-group state in
+  `qa-hub:nav-groups-closed` refers to the old titles and is simply ignored.
 
 ## Open questions / next steps
 

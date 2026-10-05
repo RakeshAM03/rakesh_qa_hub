@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { ListChecks } from "lucide-react";
 
-import { ComingSoon } from "@/components/shell/coming-soon";
 import { PageHeader } from "@/components/shell/page-header";
+import { TestCaseGenerator } from "@/components/test-case-generator/test-case-generator";
 
 export const metadata: Metadata = { title: "Test Case Generator" };
 
@@ -15,7 +15,7 @@ export default function TestCaseGeneratorPage() {
         icon={ListChecks}
         iconClassName="text-blue-600"
       />
-      <ComingSoon />
+      <TestCaseGenerator />
     </>
   );
 }

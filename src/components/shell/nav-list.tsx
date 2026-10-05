@@ -63,7 +63,7 @@ function parseClosed(raw: string | null): string[] {
   }
 }
 
-/** A collapsible group heading (Testing, Planning, …) and its modules. */
+/** A collapsible group heading (Test Planning, Test Execution, …) and its modules. */
 function NavSection({
   group,
   first,

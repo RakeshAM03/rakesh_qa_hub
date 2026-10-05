@@ -1,0 +1,21 @@
+{
+  "swagger": "2.0",
+  "info": { "title": "Sample Items", "version": "1" },
+  "host": "api.example.com",
+  "basePath": "/v2",
+  "schemes": ["https"],
+  "paths": {
+    "/items": {
+      "post": {
+        "summary": "Add an item",
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "$ref": "#/definitions/Item" } }
+        ],
+        "responses": { "200": { "description": "OK", "schema": { "$ref": "#/definitions/Item" } }, "422": { "description": "Invalid item" } }
+      }
+    }
+  },
+  "definitions": {
+    "Item": { "type": "object", "required": ["name"], "properties": { "name": { "type": "string" }, "price": { "type": "number" } } }
+  }
+}

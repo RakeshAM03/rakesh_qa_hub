@@ -1,0 +1,79 @@
+openapi: 3.0.3
+info:
+  title: Sample Orders API
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/v1
+security:
+  - bearerAuth: []
+paths:
+  /orders:
+    get:
+      summary: List orders
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer }
+        - name: limit
+          in: query
+          schema: { type: integer }
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PENDING, SHIPPED, DELIVERED]
+      responses:
+        "200":
+          description: A page of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Order" }
+        "401": { description: Not signed in }
+    post:
+      summary: Create an order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/NewOrder" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Order" }
+        "400": { description: Invalid order }
+        "409": { description: Duplicate order reference }
+  /orders/{orderId}:
+    get:
+      summary: Get one order
+      security: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: The order }
+        "404": { description: Order not found }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer }
+  schemas:
+    NewOrder:
+      type: object
+      required: [customerEmail, quantity]
+      properties:
+        customerEmail: { type: string, format: email }
+        quantity: { type: integer, example: 2 }
+        channel:
+          type: string
+          enum: [WEB, APP]
+    Order:
+      allOf:
+        - $ref: "#/components/schemas/NewOrder"
+        - type: object
+          properties:
+            id: { type: string, format: uuid }

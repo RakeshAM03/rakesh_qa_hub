@@ -38,31 +38,31 @@ describe("navItems", () => {
   it("lists every module route once", () => {
     const hrefs = navItems.map((i) => i.href);
     expect(hrefs).toEqual([
-      "/ci",
-      "/bug-tracker",
-      "/qa-tracker",
-      "/pr-qa-session",
-      "/ai-pr-review",
-      "/tc-library",
-      "/bug-formatter",
-      "/release-readiness",
-      "/risk-planner",
       "/test-case-generator",
+      "/tc-library",
+      "/risk-planner",
+      "/release-readiness",
+      "/pr-qa-session",
+      "/api-playground",
+      "/bug-tracker",
+      "/bug-formatter",
+      "/ai-pr-review",
+      "/ci",
+      "/failure-analyzer",
       "/locator-helper",
       "/selenium-to-playwright",
-      "/failure-analyzer",
-      "/api-playground",
       "/test-data-generator",
+      "/qa-tracker",
       "/automation-roi",
     ]);
   });
 
-  it("groups modules into Testing, Planning, Automation Tools and Insights", () => {
+  it("groups modules into Test Planning, Test Execution, Automation and Reports & Insights", () => {
     expect(navGroups.map((g) => [g.title, g.items.length])).toEqual([
-      ["Testing", 7],
-      ["Planning", 3],
-      ["Automation Tools", 5],
-      ["Insights", 1],
+      ["Test Planning", 4],
+      ["Test Execution", 5],
+      ["Automation", 5],
+      ["Reports & Insights", 2],
     ]);
   });
 });
