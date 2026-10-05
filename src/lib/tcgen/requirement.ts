@@ -255,7 +255,9 @@ export function extractRequirement(text: string, context?: Partial<Context>, api
     }
     for (const m of c.matchAll(/(\b[A-Za-z]+\b)?\s*(\d+)\s*(?:–|-|to)\s*(\d+)\s*(?:chars?|characters)\b/gi)) {
       if (/\(/.test(c.slice(0, m.index ?? 0)) && /\)/.test(c.slice(m.index ?? 0))) continue;
-      const subject = titleCase(m[1] && !/^(?:between|of|is|be|must)$/i.test(m[1]) ? m[1] : fields.at(-1)?.name ?? "Text");
+      // "Password must be 8–20 characters": the word before the numbers is filler, so use the "<word> must / should …" subject.
+      const named = m[1] && !/^(?:between|of|is|be|must|should|have|contain|from)$/i.test(m[1]) ? m[1] : (/(\b[A-Za-z]+)\s+(?:must|should|needs?|has|is)\b/i.exec(c.slice(0, m.index ?? 0)) ?? [])[1];
+      const subject = titleCase(named ?? fields.at(-1)?.name ?? "Text");
       addLimit({ kind: "length", subject, min: Number(m[2]), max: Number(m[3]), unit: "characters", raw: m[0].trim() });
       if (fieldTypeOf(subject) !== "text") addField(subject, { required: true });
     }

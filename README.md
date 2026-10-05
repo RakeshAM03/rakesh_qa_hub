@@ -4,6 +4,8 @@ One place for everyday QA work: CI runs, bug and time tracking, PR QA session pr
 
 **Live:** https://rakesh-qa-hub.vercel.app
 
+**User guide:** [`docs/user-guide/`](docs/user-guide/README.md) — how to use every module, with screenshots and workflows (also inside the app at `/guide`, linked from **Help** in the sidebar). One-page summary: [`OVERVIEW.md`](docs/user-guide/OVERVIEW.md).
+
 | Light | Dark |
 |---|---|
 | ![Rakesh QA Hub home page, light mode](docs/home.png) | ![Rakesh QA Hub home page, dark mode](docs/home-dark.png) |

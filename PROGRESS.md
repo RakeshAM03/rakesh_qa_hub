@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** All done — original 13 phases, N0–N10, M0–M5, Phase Q (Test Case Generator upgrade) and Phase P (PR QA Session prompt rebuild). Live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** All done — original 13 phases, N0–N10, M0–M5, Phase Q (Test Case Generator upgrade), Phase P (PR QA Session prompt rebuild) and Phase G (user guide). Live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -619,6 +619,43 @@ test types and Standard depth are the page defaults.
   content); E2E 11 PR QA Session + updated TC Library hand-off. Copy is checked to equal the full
   prompt. Contrast: 5 PR QA Session states × light / dark × 5 themes, 0 violations.
 - Sample (FE #3419 + BE #386, Full Session, all focus areas): 265 lines, ~13 KB.
+
+## User guide — decisions (Phase G, 2026-10-05)
+
+1. `docs/user-guide/`: README.md (index, lifecycle, 16-module table, 3 workflows, common features,
+   glossary), OVERVIEW.md (one page for managers) and one file per module named after its route
+   (`ci.md`, `bug-tracker.md` covers Dashboard / Activity / Workload). Every module file has exactly
+   the 11 required sections, 1,000–1,650 words (5–8 min). Product name "Rakesh QA Hub" kept
+   (user-approved); everything else generic.
+2. Written from the code (labels, fields, options, thresholds, formulas), not the specs. Worked
+   examples for Test Case Generator, Locator Helper, Failure Analyzer, Risk Planner and the converter
+   were run through the real libraries and use their actual output.
+3. In-app guide: `/guide`, `/guide/overview`, `/guide/<module>` render the same Markdown at build
+   time (`src/lib/guide/content.ts`, static params); links like `ci.md#faq` → `/guide/ci#faq`;
+   screenshots served by `/guide/images/[file]` (static route handler, no copies in `public/`).
+   Side panel with all pages + "On this page"; anchors on h2/h3. Unknown slugs → 404.
+4. Help link in the sidebar footer (icon + tooltip when collapsed) and the mobile menu; "How to use"
+   link in every module header (PageHeader + Bug Tracker top bar), chosen from the current path,
+   → `/guide/<module>#how-to-use-it`.
+5. Print: guide pages print without the shell and with compact type; the overview fits one A4 page
+   (browser Print → Save as PDF). No PDF committed.
+6. Screenshots: 16 PNGs, 1440 × 900, light mode, from the local test DB with `seed:demo` data plus
+   generic API-created data (release "Checkout revamp", plan "Sprint 42", ROI projects, "Users API"
+   collection). The API Playground response is mocked. Test Data Generator uses the Product preset
+   (Faker person names avoided).
+
+### Phase G notes
+
+- Found while verifying examples: Test Case Generator named the limit in "Password must be 8–20
+  characters" "Text" (filler word before the numbers) → now takes the "<word> must / should …"
+  subject; regression test added. Not fixed (reported): open-question case IDs can be off by one
+  (lockout question cites TC_…_007–010, the cases are 008–011); Failure Analyzer doesn't classify
+  Java `ConnectException: Connection refused` as Environment (only `ECONNREFUSED` / `net::ERR_`).
+- Tests: `src/lib/guide/guide.test.ts` (54: files ↔ sidebar, 11 sections in order, screenshot under
+  How to use, word counts, every relative link / image / anchor resolves, link mapping); E2E
+  `e2e/guide.spec.ts` (21: index + overview, all 16 pages with 11 sections and a loaded screenshot,
+  404, in-app links, Help link, How to use links). Contrast: 21 guide states × light / dark × 5
+  themes = 210 checks, 0 violations.
 
 ## Open questions / next steps
 

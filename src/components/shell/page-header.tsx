@@ -4,6 +4,8 @@ import { ChevronLeft, type LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+import { GuideLink } from "./guide-link";
+
 type PageHeaderProps = {
   title: string;
   subtitle?: ReactNode;
@@ -28,13 +30,16 @@ export function PageHeader({
 }: PageHeaderProps) {
   return (
     <div className="mb-6 flex flex-col gap-3">
-      <Link
-        href={backHref}
-        className="inline-flex w-fit items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900"
-      >
-        <ChevronLeft className="size-4" />
-        {backLabel}
-      </Link>
+      <div className="flex items-center justify-between gap-3">
+        <Link
+          href={backHref}
+          className="inline-flex w-fit items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900"
+        >
+          <ChevronLeft className="size-4" />
+          {backLabel}
+        </Link>
+        <GuideLink />
+      </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h1 className="flex items-center gap-3 text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl">

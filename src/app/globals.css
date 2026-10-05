@@ -293,3 +293,30 @@ html [data-sonner-toaster][data-sonner-theme="light"] {
   --warning-text: hsl(31, 92%, 30%);
   --error-text: hsl(360, 100%, 38%);
 }
+
+/* User guide pages (/guide): the shared .markdown styles, a little roomier; compact when printed. */
+@page { margin: 12mm; }
+@layer components {
+  .guide-markdown { @apply text-[0.95rem]; }
+  .guide-markdown h1 { @apply mt-0 text-2xl tracking-tight sm:text-3xl; }
+  .guide-markdown h2 { @apply mt-8; }
+  .guide-markdown img { @apply my-2; }
+  .guide-markdown table { @apply text-sm; }
+  @media print {
+    .guide-markdown { font-size: 9pt; line-height: 1.4; }
+    .guide-markdown h1 { font-size: 16pt; }
+    .guide-markdown h2 { margin-top: 0.8em; font-size: 11pt; }
+    .guide-markdown > * + * { margin-top: 0.5em; }
+    .guide-markdown table { font-size: 8.5pt; }
+    .guide-markdown th, .guide-markdown td { padding: 1px 6px; }
+    .guide-markdown pre { @apply whitespace-pre-wrap; }
+    .guide-markdown table { @apply table; }
+    .guide-markdown img { break-inside: avoid; }
+  }
+}
+
+/* Printing a guide page: no app padding or full-height shell (unlayered, so it beats utilities). */
+@media print {
+  main:has(.guide-markdown) { padding: 0; }
+  body:has(.guide-markdown) .min-h-screen { min-height: 0; }
+}

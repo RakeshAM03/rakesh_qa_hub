@@ -197,3 +197,11 @@ Source: `prompts/TestCaseGenerator-QUALITY-UPGRADE.md`; format reference
   generic-content rules). Section-based builder (`src/lib/pr-qa-session/prompt/`), new inputs
   (login URL + method, spec folders, style reference, resume from step), template modes,
   focus-area injection, risk context, tests, deploy.
+
+---
+
+# User guide — Plan
+
+- [x] **Phase G — User guide** 🛑 questions answered ("go", all defaults). 16 module guides + index +
+  one-page overview in `docs/user-guide/`, screenshots, in-app `/guide` rendered from the same files,
+  Help / How to use links, tests, deploy.

@@ -39,6 +39,12 @@ describe("rule extractor", () => {
     );
   });
 
+  it("takes the subject of 'X must be 8–20 characters' from X, not a generic 'Text'", () => {
+    const r = extractRequirement("Users log in with email and password.\nAC1: Password must be 8–20 characters.\nAC2: Display name should be between 3 and 30 characters.");
+    expect(r.limits.filter((l) => l.kind === "length").map(describeLimit)).toContain("Password: 8 characters to 20 characters");
+    expect(r.limits.some((l) => l.subject === "Text")).toBe(false);
+  });
+
   it("registration form: fields with attributes, digits, age and uniqueness", () => {
     const r = extractRequirement(sample("3-registration.txt"));
     expect(r.moduleName).toBe("Registration Form");

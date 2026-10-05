@@ -3,6 +3,7 @@
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
 import { Brand } from "@/components/shell/brand";
+import { HelpLink } from "@/components/shell/help-link";
 import { NavList } from "@/components/shell/nav-list";
 import { ThemePicker } from "@/components/theme/theme-picker";
 import { Button } from "@/components/ui/button";
@@ -48,7 +49,8 @@ export function AppSidebar() {
       <div className={cn("flex-1 overflow-y-auto px-3 pb-4", collapsed && "px-2")}>
         <NavList collapsed={collapsed} />
       </div>
-      <div className={cn("border-t border-neutral-200 p-3", collapsed && "flex justify-center px-2")}>
+      <div className={cn("flex flex-col gap-1 border-t border-neutral-200 p-3", collapsed && "items-center px-2")}>
+        <HelpLink compact={collapsed} />
         <ThemePicker compact={collapsed} side={collapsed ? "right" : "top"} />
       </div>
     </aside>

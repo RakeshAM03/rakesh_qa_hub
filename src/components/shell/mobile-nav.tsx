@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Menu } from "lucide-react";
 
 import { Brand } from "@/components/shell/brand";
+import { HelpLink } from "@/components/shell/help-link";
 import { NavList } from "@/components/shell/nav-list";
 import { ThemePicker } from "@/components/theme/theme-picker";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,9 @@ export function MobileNav() {
           </SheetHeader>
           <div className="overflow-y-auto px-3 pb-4">
             <NavList onNavigate={() => setOpen(false)} />
+            <div className="mt-3 border-t border-neutral-200 pt-3">
+              <HelpLink onNavigate={() => setOpen(false)} />
+            </div>
           </div>
         </SheetContent>
       </Sheet>

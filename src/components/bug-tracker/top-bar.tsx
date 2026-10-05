@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
+import { GuideLink } from "@/components/shell/guide-link";
+
 import { GlobalSearch } from "./global-search";
 
 /** Breadcrumb on the left, global issue search on the right (all Bug Tracker pages). */
@@ -11,7 +13,10 @@ export function BugTrackerTopBar({ backHref = "/", backLabel = "Home" }: { backH
         <ChevronLeft className="size-4" />
         {backLabel}
       </Link>
-      <GlobalSearch />
+      <div className="flex flex-wrap items-center gap-4">
+        <GuideLink />
+        <GlobalSearch />
+      </div>
     </div>
   );
 }
