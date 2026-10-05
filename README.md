@@ -1,6 +1,6 @@
 # Rakesh QA Hub
 
-One place for everyday QA work: CI runs, bug and time tracking, PR QA session prompts for Claude Code, AI code-review flags and a test-plan library, plus release readiness, risk-based test planning, locator and Selenium-to-Playwright tools, a test failure analyzer, an API test playground and an automation ROI dashboard. It's a public Next.js app; no login is needed.
+One place for everyday QA work: CI runs, bug and time tracking, PR QA session prompts for Claude Code, AI code-review flags and a test-plan library, plus release readiness, risk-based test planning, locator and Selenium-to-Playwright tools, a test failure analyzer, an API test playground, an automation ROI dashboard, a test case generator and a test data generator. It's a public Next.js app; no login is needed.
 
 **Live:** https://rakesh-qa-hub.vercel.app
 
@@ -50,20 +50,21 @@ The sidebar groups modules the same way as the tables below.
 | QA Tracker | `/qa-tracker` | Log daily tasks and hours per person, with charts for the last 7–30 days and a history grouped by date. |
 | Automation ROI | `/automation-roi` | Hours saved, ROI, break-even, coverage growth and CI pass rate for the automation projects you add, using real CI runs when linked and estimates otherwise. |
 
-Everything starts empty, except the one generic "Standard release" checklist template. Suites, teams, feature pages, people, releases, plans and projects are added in the app.
+Everything starts empty, except the one generic "Standard release" checklist template. Suites, teams, feature pages, people, releases, plans, projects, saved schemas and generations are added in the app.
 
-### New modules at a glance
+### Newer modules at a glance
 
 | | |
 |---|---|
 | ![Release Readiness: score, blockers and checklist](docs/release-readiness.png) | ![Risk-Based Test Planner: risk matrix and prioritised plan](docs/risk-planner.png) |
 | ![Locator Helper: element tree and ranked locators](docs/locator-helper.png) | ![Selenium to Playwright converter: Java in, TypeScript out](docs/selenium-to-playwright.png) |
 | ![Test Failure Analyzer: failures grouped by root cause](docs/failure-analyzer.png) | ![API Test Playground: request, response and assertions](docs/api-playground.png) |
-| ![Automation ROI Dashboard: KPIs and charts](docs/automation-roi.png) | |
+| ![Automation ROI Dashboard: KPIs and charts](docs/automation-roi.png) | ![Test Case Generator: imported test cases with questions and exports](docs/test-case-generator.png) |
+| ![Test Data Generator: schema builder, options and a preview with edge-case rows](docs/test-data-generator.png) | |
 
 ### AI features are optional
 
-Without `ANTHROPIC_API_KEY`, AI buttons are hidden and a **Copy prompt for Claude** option takes their place: Locator Helper alternatives, converter AI mode, failure explanations and CI root cause. Every AI feature uses one model constant in `src/config/ai.ts`.
+Without `ANTHROPIC_API_KEY`, AI buttons are hidden and a **Copy prompt for Claude** option takes their place: Test Case Generator, Locator Helper alternatives, converter AI mode, failure explanations and CI root cause. The Test Case Generator also has a rule-based checklist mode that needs no AI at all. Every AI feature uses one model constant in `src/config/ai.ts`.
 
 ## Tech stack
 
@@ -73,6 +74,7 @@ Without `ANTHROPIC_API_KEY`, AI buttons are hidden and a **Copy prompt for Claud
 - zod for validating every API request
 - Recharts, PapaParse, react-markdown with remark-gfm
 - CodeMirror 6 (code editors), fast-xml-parser (JUnit / TestNG reports), fflate (zip downloads), ipaddr.js (SSRF checks)
+- Faker (fake test data, generated in a Web Worker), ExcelJS (Excel exports), js-yaml (YAML export and OpenAPI parsing)
 - Anthropic SDK for the optional AI features (model set once in `src/config/ai.ts`)
 - Vitest for unit tests, Playwright for end-to-end tests
 - Deployed on Vercel (functions in Mumbai, `bom1`, next to the database)
@@ -80,7 +82,7 @@ Without `ANTHROPIC_API_KEY`, AI buttons are hidden and a **Copy prompt for Claud
 ## Public-access protection
 
 - Deleting anything, changing CI suites, running workflows, changing a recorded release decision, editing ROI projects and changing the ROI currency need the admin passcode (`x-admin-passcode` header). The app asks for it once per tab.
-- Per-IP rate limits: 30 writes per 10 minutes; 5 workflow runs and 10 CI root-cause analyses per hour; 20 Locator Helper and 20 failure-explanation AI calls and 10 AI conversions per hour; 30 API Playground sends per 10 minutes.
+- Per-IP rate limits: 30 writes per 10 minutes; 5 workflow runs and 10 CI root-cause analyses per hour; 20 Locator Helper and 20 failure-explanation AI calls, 10 AI conversions and 10 AI test-case generations per hour; 30 API Playground sends per 10 minutes.
 - The API Playground proxy only reaches public addresses. Loopback, private, link-local / cloud-metadata, CGNAT, multicast, reserved and IPv6-internal ranges are blocked, and the resolved IP is checked at connect time. Every redirect hop is re-checked. Other limits: 15 s timeout, 2 MB response and 1 MB request caps. Request contents are never logged, and the visitor's cookies are never forwarded.
 - Every request body is validated with zod. User content is always escaped, and Markdown is rendered without raw HTML.
 - Tokens and keys stay on the server; nothing secret is sent to the browser.
@@ -113,7 +115,7 @@ ALLOW_DEMO_SEED=1 npm run seed:demo -- --reset # removes it again
 | `DIRECT_URL` | Yes | Direct Postgres connection used for migrations (port 5432) |
 | `ADMIN_PASSCODE` | Yes | Unlocks deletes, CI suite changes and workflow runs |
 | `GITHUB_TOKEN` | No | Fine-grained token with Actions read/write on your automation repos. Powers CI Reports, the Release Readiness "CI suite green" gate, Failure Analyzer "From CI" and ROI run counts. Without it those show "Connect GitHub" or fall back to estimates |
-| `ANTHROPIC_API_KEY` | No | Turns on the AI features: CI root cause, Locator Helper alternatives, converter AI mode, failure explanations |
+| `ANTHROPIC_API_KEY` | No | Turns on the AI features: CI root cause, Locator Helper alternatives, converter AI mode, failure explanations, AI test-case generation |
 | `RCA_DAILY_LIMIT` | No | Max AI root-cause calls per day per server instance (default 50) |
 
 If the database password contains special characters, percent-encode them in both URLs (`@` → `%40`).
@@ -127,7 +129,7 @@ npm test               # unit tests (Vitest)
 npm run e2e            # builds, then runs the Playwright suite against a local test database
 ```
 
-Unit tests cover every module's core logic (in `src/lib/<module>/`, including the SSRF guard). E2E tests use page objects in `e2e/pages/`. The API Playground's network test only runs with `E2E_NETWORK=1`.
+Unit tests cover every module's core logic (in `src/lib/<module>/`, including the SSRF guard, the test-data exporters and the OpenAPI parser). E2E tests use page objects in `e2e/pages/`. The API Playground's network test only runs with `E2E_NETWORK=1`.
 
 The E2E suite needs a throwaway local Postgres database. It uses `E2E_DATABASE_URL`, or `postgresql://<you>@localhost:5432/qa_hub_test` by default, and empties it before each run. It refuses to touch any non-local database.
 
