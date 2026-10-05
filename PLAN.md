@@ -188,3 +188,12 @@ Source: `prompts/TestCaseGenerator-QUALITY-UPGRADE.md`; format reference
   generators for checklist mode; quality score with weak-row tools; shared prompt with 3
   multi-domain examples and batched AI; golden-layout Excel; tests for 6 sample requirements
   and the golden format; deploy.
+
+---
+
+# PR QA Session prompt rebuild — Plan
+
+- [x] **Phase P — 10-step PR QA Session prompt** 🛑 file plan approved ("go" + credentials and
+  generic-content rules). Section-based builder (`src/lib/pr-qa-session/prompt/`), new inputs
+  (login URL + method, spec folders, style reference, resume from step), template modes,
+  focus-area injection, risk context, tests, deploy.

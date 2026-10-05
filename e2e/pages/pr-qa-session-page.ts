@@ -26,13 +26,9 @@ export class PrQaSessionPage extends BasePage {
     return this.page.getByRole("group", { name: /Steps/ }).getByRole("button", { name });
   }
 
-  /** Step lines ("1. ...") of the generated prompt. */
-  async stepLines() {
+  /** Step numbers of the "## Step N — …" headings in the generated prompt. */
+  async stepNumbers() {
     const text = await this.output.inputValue();
-    return text
-      .split("## Steps\n")[1]
-      .split("\n\n## Output")[0]
-      .split("\n")
-      .filter((l) => /^\d+\. /.test(l));
+    return [...text.matchAll(/^## Step (\d+) —/gm)].map((m) => Number(m[1]));
   }
 }

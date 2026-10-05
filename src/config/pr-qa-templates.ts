@@ -21,19 +21,42 @@ export const SESSION_STEPS = [
 ] as const;
 export const ALL_STEP_IDS = SESSION_STEPS.map((s) => s.id);
 
+/**
+ * How a template shapes step CONTENT (not just which steps run):
+ * full = everything; api = backend + contract, API test cases, Category D;
+ * ui = frontend + impact radius, UI/UX/exploratory, Categories A + C;
+ * security = full, with the Security focus forced on and exploratory weighted to security.
+ */
+export type TemplateMode = "full" | "api" | "ui" | "security";
+
+/** Login METHOD only — the prompt never carries usernames, passwords, OTPs or tokens. */
+export const LOGIN_METHODS = [
+  { value: "sso", label: "SSO" },
+  { value: "email-password", label: "Email + password" },
+  { value: "magic-link", label: "Magic link" },
+  { value: "other", label: "Other" },
+] as const;
+export type LoginMethod = "" | (typeof LOGIN_METHODS)[number]["value"];
+
+export const DEFAULT_SPEC_FOLDERS = "tests/regression/, tests/feature/";
+
 export type SessionTemplateConfig = {
   name: string;
   focusAreas: FocusArea[];
   steps: number[];
+  mode?: TemplateMode;
   /** Custom (saved) templates may also carry these. */
   context?: string | null;
   specRef?: string | null;
+  loginUrl?: string | null;
+  loginMethod?: string | null;
+  specFolders?: string | null;
 };
 
-/** Built-in templates. Mappings are a sensible default; edit freely. */
+/** Built-in templates. */
 export const BUILT_IN_TEMPLATES: SessionTemplateConfig[] = [
-  { name: "Full Session", focusAreas: [...FOCUS_AREAS], steps: ALL_STEP_IDS },
-  { name: "API Only", focusAreas: ["Contract Testing", "Regression"], steps: [1, 2, 3, 7, 8, 9, 10] },
-  { name: "UI Regression", focusAreas: ["UI / UX", "Regression"], steps: [1, 2, 4, 5, 6, 7, 8, 10] },
-  { name: "Security", focusAreas: ["Security"], steps: [1, 2, 3, 6, 7, 8, 10] },
+  { name: "Full Session", focusAreas: [...FOCUS_AREAS], steps: ALL_STEP_IDS, mode: "full" },
+  { name: "API Only", focusAreas: ["Contract Testing", "Regression"], steps: [1, 2, 3, 7, 8, 9, 10], mode: "api" },
+  { name: "UI Regression", focusAreas: ["UI / UX", "Regression"], steps: [1, 2, 4, 5, 6, 7, 9, 10], mode: "ui" },
+  { name: "Security", focusAreas: ["Security"], steps: ALL_STEP_IDS, mode: "security" },
 ];

@@ -9,17 +9,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   ALL_STEP_IDS,
   BUILT_IN_TEMPLATES,
+  DEFAULT_SPEC_FOLDERS,
   FOCUS_AREAS,
+  LOGIN_METHODS,
   SESSION_STEPS,
+  type LoginMethod,
   type SessionTemplateConfig,
 } from "@/config/pr-qa-templates";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import { isGithubPrUrl } from "@/lib/github";
+import { isGithubPrUrl, parsePrUrl } from "@/lib/github";
 import { clearHandoff, parseHandoff, useHandoff } from "@/lib/handoff";
-import { buildPrompt, type SessionInputs } from "@/lib/pr-qa-session/build-prompt";
+import { buildPrompt, diffCommand, sanitizeLoginUrl, type SessionInputs } from "@/lib/pr-qa-session/prompt";
 import { cn } from "@/lib/utils";
 import { Chip } from "./chip";
 import { BeforeYouStart, HowItWorks } from "./info-panels";
@@ -41,6 +45,11 @@ const DEFAULT_DRAFT: Draft = {
   focusAreas: [],
   steps: ALL_STEP_IDS,
   specRef: "",
+  loginUrl: "",
+  loginMethod: "",
+  specFolders: DEFAULT_SPEC_FOLDERS,
+  mode: "full",
+  resumeFrom: 1,
   template: null,
   tcEntry: null,
 };
@@ -54,6 +63,12 @@ const draftSchema = z.object({
   focusAreas: z.array(z.enum(FOCUS_AREAS)),
   steps: z.array(z.number()),
   specRef: z.string(),
+  // Older drafts don't have these; the login URL is re-sanitised on read.
+  loginUrl: z.string().catch("").transform((v) => sanitizeLoginUrl(v)?.url ?? ""),
+  loginMethod: z.enum(["", ...LOGIN_METHODS.map((m) => m.value)] as [LoginMethod, ...LoginMethod[]]).catch(""),
+  specFolders: z.string().catch(DEFAULT_SPEC_FOLDERS),
+  mode: z.enum(["full", "api", "ui", "security"]).catch("full"),
+  resumeFrom: z.number().int().min(1).max(10).catch(1),
   template: z.string().nullable(),
   tcEntry: z.object({ id: z.string(), name: z.string() }).nullable().catch(null),
 });
@@ -69,8 +84,8 @@ function parseDraft(raw: string | null): Draft {
 }
 
 const labelClass = "text-xs font-semibold uppercase tracking-wider text-neutral-500";
-const PR_PLACEHOLDER = "https://github.com/org/repo/pull/123";
-const PR_ERROR = "Enter a GitHub pull request URL, e.g. https://github.com/org/repo/pull/123";
+const PR_PLACEHOLDER = "https://github.com/example-org/frontend/pull/123";
+const PR_ERROR = "Enter a GitHub pull request URL, e.g. https://github.com/example-org/frontend/pull/123";
 
 export function PrQaSession() {
   const [raw, setRaw] = useLocalStorage(DRAFT_KEY);
@@ -96,6 +111,7 @@ export function PrQaSession() {
   const [output, setOutput] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [building, setBuilding] = useState(false);
+  const [loginNote, setLoginNote] = useState<string | null>(null);
   /** Full outputs of loaded TC Library entries, by id. */
   const tcOutputs = useRef(new Map<string, string>());
   const outputRef = useRef<HTMLDivElement>(null);
@@ -121,9 +137,12 @@ export function PrQaSession() {
     value.trim() && (attempted || touched[field]) && !isGithubPrUrl(value) ? PR_ERROR : undefined;
 
   function applyTemplate(t: SessionTemplateConfig) {
-    const patch: Partial<Draft> = { template: t.name, focusAreas: [...t.focusAreas], steps: [...t.steps] };
-    // Saved templates also carry a spec reference, and context when the field is still empty.
+    const patch: Partial<Draft> = { template: t.name, focusAreas: [...t.focusAreas], steps: [...t.steps], mode: t.mode ?? "full" };
+    // Saved templates also carry a spec reference, login URL / method, spec folders, and context when the field is still empty.
     if (t.specRef) patch.specRef = t.specRef;
+    if (t.loginUrl) patch.loginUrl = sanitizeLoginUrl(t.loginUrl)?.url ?? "";
+    if (t.loginMethod) patch.loginMethod = t.loginMethod as LoginMethod;
+    if (t.specFolders) patch.specFolders = t.specFolders;
     if (t.context && !draft.context.trim()) patch.context = t.context;
     update(patch);
   }
@@ -183,6 +202,9 @@ export function PrQaSession() {
           steps: draft.steps,
           context: draft.context,
           specRef: draft.specRef,
+          loginUrl: draft.loginUrl || null,
+          loginMethod: draft.loginMethod || null,
+          specFolders: draft.specFolders,
         }),
       });
       const data = await res.json();
@@ -286,17 +308,64 @@ export function PrQaSession() {
             </Button>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="test-env" className={labelClass}>
-              Test Environment URL
-            </Label>
-            <Input
-              id="test-env"
-              value={draft.testEnvUrl}
-              onChange={(e) => update({ testEnvUrl: e.target.value })}
-              placeholder="https://your-env.example.com"
-            />
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="test-env" className={labelClass}>
+                Test Environment URL
+              </Label>
+              <Input
+                id="test-env"
+                value={draft.testEnvUrl}
+                onChange={(e) => update({ testEnvUrl: e.target.value })}
+                placeholder="https://your-env.example.com"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="spec-folders" className={labelClass}>
+                Existing Spec Folders <span className="font-normal normal-case tracking-normal">(optional)</span>
+              </Label>
+              <Input
+                id="spec-folders"
+                value={draft.specFolders}
+                onChange={(e) => update({ specFolders: e.target.value })}
+                placeholder={DEFAULT_SPEC_FOLDERS}
+              />
+            </div>
           </div>
+
+          <div className="grid gap-4 md:grid-cols-[1fr_14rem]">
+            <LoginUrlField
+              key={draft.loginUrl}
+              value={draft.loginUrl}
+              note={loginNote}
+              onSave={(loginUrl, note) => {
+                setLoginNote(note);
+                if (loginUrl !== draft.loginUrl) update({ loginUrl });
+              }}
+            />
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="login-method" className={labelClass}>
+                Login Method <span className="font-normal normal-case tracking-normal">(optional)</span>
+              </Label>
+              <Select value={draft.loginMethod || "none"} onValueChange={(v) => update({ loginMethod: (v === "none" ? "" : v) as LoginMethod })}>
+                <SelectTrigger id="login-method" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  <SelectItem value="none">Not provided</SelectItem>
+                  {LOGIN_METHODS.map((m) => (
+                    <SelectItem key={m.value} value={m.value}>
+                      {m.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <p className="-mt-4 text-xs text-neutral-600">
+            Only the login page and method are stored — never usernames, passwords, OTPs or tokens. The prompt tells Claude to read credentials from environment variables
+            (e.g. <code>TEST_USER_EMAIL</code>, <code>TEST_USER_PASSWORD</code>) or ask you at run time.
+          </p>
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="context" className={labelClass}>
@@ -385,28 +454,41 @@ export function PrQaSession() {
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="spec-ref" className={labelClass}>
-              Playwright Spec Style Reference{" "}
-              <span className="font-normal normal-case tracking-normal">(optional)</span>
+              Style Reference <span className="font-normal normal-case tracking-normal">(optional — a sample spec or Page Object)</span>
             </Label>
             <Textarea
               id="spec-ref"
               value={draft.specRef}
               onChange={(e) => update({ specRef: e.target.value })}
-              placeholder="Paste a sample .spec.ts file here..."
+              placeholder="Paste a sample .spec.ts or Page Object here..."
               className="min-h-28 resize-y font-mono text-xs"
               spellCheck={false}
             />
             <p className="text-xs text-neutral-500">Used in Step 9 so Claude mirrors your team&apos;s style.</p>
           </div>
 
-          <Button
-            onClick={build}
-            disabled={!hasPr || building}
-            size="lg"
-            className="w-full bg-purple-700 text-purple-50 hover:bg-purple-800 sm:w-fit sm:self-end"
-          >
-            <FlaskConical /> Build Prompt
-          </Button>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="resume-from" className={labelClass}>
+                Resume From Step
+              </Label>
+              <Select value={String(draft.tcEntry ? 3 : draft.resumeFrom)} onValueChange={(v) => update({ resumeFrom: Number(v) })} disabled={Boolean(draft.tcEntry)}>
+                <SelectTrigger id="resume-from" className="w-64">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  {SESSION_STEPS.map((s) => (
+                    <SelectItem key={s.id} value={String(s.id)}>
+                      {s.id}. {s.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button onClick={build} disabled={!hasPr || building} size="lg" className="w-full bg-purple-700 text-purple-50 hover:bg-purple-800 sm:w-fit">
+              <FlaskConical /> Build Prompt
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -449,6 +531,7 @@ type UrlFieldProps = {
 };
 
 function UrlField({ id, label, hideLabel, value, error, onChange, onBlur }: UrlFieldProps) {
+  const ref = parsePrUrl(value);
   return (
     <div className="flex flex-col gap-1.5">
       <Label htmlFor={id} className={cn(labelClass, hideLabel && "sr-only")}>
@@ -465,9 +548,55 @@ function UrlField({ id, label, hideLabel, value, error, onChange, onBlur }: UrlF
         aria-invalid={!!error}
         aria-describedby={error ? `${id}-error` : undefined}
       />
-      {error && (
+      {error ? (
         <p id={`${id}-error`} className="text-xs text-red-700">
           {error}
+        </p>
+      ) : (
+        ref && (
+          <p className="font-mono text-xs text-neutral-600" data-testid={`${id}-diff`}>
+            {diffCommand(ref)}
+          </p>
+        )
+      )}
+    </div>
+  );
+}
+
+/**
+ * Login page URL. Typing stays in local state; only a cleaned URL (no user:password@, no
+ * token / password / OTP parameters) is saved to the draft, on blur.
+ */
+function LoginUrlField({ value, note, onSave }: { value: string; note: string | null; onSave: (url: string, note: string | null) => void }) {
+  const [text, setText] = useState(value);
+  function commit() {
+    const clean = sanitizeLoginUrl(text);
+    if (!clean) {
+      onSave(value, "Enter an http(s) URL, e.g. https://your-env.example.com/login");
+      return;
+    }
+    setText(clean.url);
+    onSave(clean.url, clean.removed ? "Credentials or tokens were removed from the URL — only the login page is kept." : null);
+  }
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor="login-url" className={labelClass}>
+        Login URL <span className="font-normal normal-case tracking-normal">(optional)</span>
+      </Label>
+      <Input
+        id="login-url"
+        type="url"
+        inputMode="url"
+        autoComplete="off"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onBlur={commit}
+        placeholder="https://your-env.example.com/login"
+        aria-describedby={note ? "login-url-note" : undefined}
+      />
+      {note && (
+        <p id="login-url-note" role="status" className="text-xs text-amber-800">
+          {note}
         </p>
       )}
     </div>

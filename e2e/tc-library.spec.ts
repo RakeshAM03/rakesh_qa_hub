@@ -85,13 +85,13 @@ test.describe("TC Library @write", () => {
     await tc.goto();
     await tc.create(name, OUTPUT);
     await page.goto("/pr-qa-session");
-    await page.getByLabel("Frontend PR URL").fill("https://github.com/org/web/pull/42");
+    await page.getByLabel("Frontend PR URL").fill("https://github.com/example-org/frontend/pull/42");
     await page.getByRole("button", { name: "Load from TC Library" }).click();
     await page.getByRole("dialog").getByRole("button", { name: new RegExp(name) }).click();
     await page.getByRole("button", { name: "Build Prompt" }).click();
     const prompt = page.getByRole("textbox", { name: "Generated prompt" });
-    await expect(prompt).toHaveValue(/1\. Analyse the PR — already done and approved/);
-    await expect(prompt).toHaveValue(/start from Step 3/);
+    await expect(prompt).toHaveValue(/Steps 1–2 are already done and approved/);
+    await expect(prompt).toHaveValue(/Start from Step 3/);
     await expect(prompt).toHaveValue(new RegExp(`Approved Steps 1–2 \\(from TC Library: ${name}\\)`));
   });
 });

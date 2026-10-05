@@ -27,7 +27,7 @@ The sidebar groups modules the same way as the tables below.
 
 | Module | Route | What it does |
 |---|---|---|
-| PR QA Session | `/pr-qa-session` | Build a full QA-session prompt for Claude Code from PR URLs, templates, focus areas and steps. |
+| PR QA Session | `/pr-qa-session` | Build a 10-step Claude Code QA-session prompt from PR URLs: diff-based analysis (frontend, backend, contract mismatches, impact radius, AI code-quality review), a test plan with an approval gate, live Playwright MCP validation, a report gate, defect consolidation, four categories of generated Playwright specs and a closure checklist with a Go / No-Go call. Templates, focus areas and risk context change the prompt's content; credentials never go into it. |
 | API Test Playground | `/api-playground` | A lightweight Postman: requests with params, headers, auth and body, `{{environment}}` variables, assertions, collections, cURL export and history. Requests go through an SSRF-protected proxy. |
 | Bug Tracker | `/bug-tracker` | Teams and feature pages with total / valid issues and a % valid pill. Feature issue lists, an activity feed and a workload view. |
 | Bug Formatter | `/bug-formatter` | Turn pasted Claude findings, a form or a CSV into Markdown for Jira or Slack. |

@@ -176,13 +176,19 @@ model TestPlanEntry {
 // ---------- PR QA Session ----------
 
 model SessionTemplate {
-  id         String   @id @default(cuid())
-  name       String   @unique
-  focusAreas String[]
-  steps      Int[]
-  context    String?
-  specRef    String?
-  createdAt  DateTime @default(now())
+  id          String   @id @default(cuid())
+  name        String   @unique
+  focusAreas  String[]
+  steps       Int[]
+  context     String?
+  specRef     String?
+  /// Login page URL only (no credentials).
+  loginUrl    String?
+  /// "sso" | "email-password" | "magic-link" | "other" — never usernames, passwords, OTPs or tokens.
+  loginMethod String?
+  /// Existing spec folders for the impact radius, comma-separated.
+  specFolders String?
+  createdAt   DateTime @default(now())
 }
 
 // ---------- CI Reports ----------

@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** All done — original 13 phases, N0–N10, M0–M5 and the Test Case Generator quality upgrade (Phase Q). Live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** All done — original 13 phases, N0–N10, M0–M5, Phase Q (Test Case Generator upgrade) and Phase P (PR QA Session prompt rebuild). Live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -583,6 +583,42 @@ test types and Standard depth are the page defaults.
 - Found while testing: a spec-only input named the module "Feature" (→ "the feature" in
   titles) — fixed and covered by a test; a Vitest `beforeEach(() => mock.mockReset())`
   returned the mock, which Vitest then called as a cleanup hook — use a block body.
+
+## PR QA Session prompt rebuild — decisions (Phase P, 2026-10-05)
+
+1. Builder moved to `src/lib/pr-qa-session/prompt/` — `inputs.ts` (PR URL → `gh pr diff <n> --repo
+   <owner/repo>`, FE / BE / both, risk level, login URL sanitising), `sections.ts` (one function per
+   header block and step, sub-blocks toggled by template mode, focus areas and single-PR mode),
+   `index.ts` (`buildPrompt`). Old `build-prompt.ts` removed.
+2. Template modes: Full Session (all), API Only (Steps 1 BE + contract, 2, 3 TC-API only, 7, 8,
+   9 Category D, 10), UI Regression (1 FE + impact radius, 2, 4, 5, 6, 7, 9 A + C, 10), Security
+   (all steps, Security focus forced, Step 6 weighted). Manual chip changes keep the mode.
+3. Step numbers are no longer renumbered when steps are deselected (steps reference each other);
+   a Scope section lists skipped steps and why (FE only, BE only, template).
+4. Credentials (user rule): only the login URL and login method (SSO / Email + password / Magic
+   link / Other) are stored. The URL loses `user:password@` and token / password / OTP / email
+   query or hash parameters — on blur in the page (typed text stays in component state; only the
+   cleaned URL reaches the draft), on draft read, and again on the server for saved templates.
+   The prompt always says credentials come from env vars (`TEST_USER_EMAIL`, `TEST_USER_PASSWORD`)
+   or are asked at run time; OTP / MFA always asked at run time. Unit + E2E tests check that no
+   secret reaches localStorage or the prompt.
+5. Risk level read from Additional context ("Risk: Critical", "high-risk"…) scales test-case
+   depth; context gets its own Risk Context section.
+6. TC Library entry still means "resume at Step 3" with the saved output appended; Resume From
+   Step > 1 without one adds a block asking for the Step 1 analysis and approved Step 2 plan.
+7. Migration `pr_qa_session_login`: nullable `loginUrl`, `loginMethod`, `specFolders` on
+   SessionTemplate (additive).
+8. Generic content (user rule): scanned the new sections, templates, tests and the sample prompt;
+   replaced `acme`, `org/repo` and `org/web` with `example-org/frontend|backend`. Remaining:
+   example-org repos, example.com hosts, a deliberately fake credential in the stripping tests.
+
+### Phase P notes
+
+- Tests: 24 builder unit tests (done-when check, FE / BE / both, each template, each focus area,
+  empty env → `<not provided>`, URL → `gh pr diff --repo`, credentials, risk, resume, generic
+  content); E2E 11 PR QA Session + updated TC Library hand-off. Copy is checked to equal the full
+  prompt. Contrast: 5 PR QA Session states × light / dark × 5 themes, 0 violations.
+- Sample (FE #3419 + BE #386, Full Session, all focus areas): 265 lines, ~13 KB.
 
 ## Open questions / next steps
 

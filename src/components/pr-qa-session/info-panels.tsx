@@ -5,11 +5,12 @@ import { BookOpen, ChevronDown, Lightbulb } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-const STEPS = [
-  "Paste the PR URL(s) and the test environment URL.",
-  "Pick a template, focus areas and steps, then click Build Prompt.",
-  "Review and edit the generated prompt, then copy it.",
-  "Paste it into Claude Code in your terminal; Claude analyses the PR, tests it with Playwright and reports findings.",
+const FLOW: { steps: string; text: string; stop?: string }[] = [
+  { steps: "Step 1", text: "Claude reads every changed file (not the PR description): frontend and backend diffs, contract mismatches, impact radius and an AI code-quality review." },
+  { steps: "Step 2", text: "A prioritised test plan with test data, out-of-scope reasons and coverage rules.", stop: "STOP — you reply “Approved” or “Approved with changes:” before any browser work." },
+  { steps: "Steps 3–6", text: "Feature, UI, UX and exploratory testing in a live browser through Playwright MCP, with screenshots, console and network checks." },
+  { steps: "Step 7", text: "A findings report traced to the code change behind each bug.", stop: "STOP — Claude waits for your team's findings." },
+  { steps: "Steps 8–10", text: "Defects consolidated, Playwright specs generated (feature, defect, regression guard, API contract), then a closure checklist with a Go / No-Go call." },
 ];
 
 export function HowItWorks() {
@@ -24,20 +25,23 @@ export function HowItWorks() {
         className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm font-medium text-neutral-800"
       >
         <BookOpen className="size-4 text-purple-600" aria-hidden />
-        <span className="flex-1">How this works — 4-step workflow from PR to findings</span>
-        <ChevronDown className={cn("size-4 text-neutral-400 transition-transform", open && "rotate-180")} />
+        <span className="flex-1">How this works — a 10-step session with two approval gates</span>
+        <ChevronDown className={cn("size-4 text-neutral-500 transition-transform", open && "rotate-180")} />
       </button>
       {open && (
-        <ol id="how-it-works" className="grid gap-3 border-t border-purple-50 px-4 py-4 sm:grid-cols-2 lg:grid-cols-4">
-          {STEPS.map((text, i) => (
-            <li key={i} className="flex gap-3 rounded-lg bg-purple-50/60 p-3 text-sm text-neutral-700">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-purple-600 text-xs font-semibold text-white">
-                {i + 1}
-              </span>
-              {text}
-            </li>
-          ))}
-        </ol>
+        <div id="how-it-works" className="flex flex-col gap-3 border-t border-purple-50 px-4 py-4 text-sm text-neutral-700">
+          <p>Fill in the PR URL(s), test environment and login method, pick a template and focus areas, then Build Prompt. Copy the prompt into Claude Code in your terminal.</p>
+          <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {FLOW.map((f) => (
+              <li key={f.steps} className="flex flex-col gap-1.5 rounded-lg bg-purple-50/60 p-3">
+                <span className="text-xs font-semibold uppercase tracking-wider text-purple-800">{f.steps}</span>
+                <span>{f.text}</span>
+                {f.stop && <span className="rounded-md bg-amber-100 px-2 py-1 text-xs font-medium text-amber-900">{f.stop}</span>}
+              </li>
+            ))}
+          </ol>
+          <p className="text-xs text-neutral-600">Credentials never go into the prompt: Claude reads them from environment variables or asks you at run time.</p>
+        </div>
       )}
     </section>
   );
