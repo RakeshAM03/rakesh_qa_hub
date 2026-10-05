@@ -71,7 +71,7 @@ You set **Module / feature name** to "Login", leave **Everything** and **Standar
 | TC_LOG_015 | Verify login fails for an email that is not registered, without revealing it | Security | Negative | P1 - Critical |
 | TC_LOG_031 | Verify Login can be completed with the keyboard only | Accessibility | Positive | P2 - High |
 
-Each row also has preconditions, five or more numbered steps, concrete test data and detailed expected results. **Rules found in the requirement** lists "Password: 8 characters to 20 characters", "Failed login attempts: max 5 attempts" and "Lockout period: max 15 minutes". **Open questions** asks, for example, "Are the Password limits (8 to 20) inclusive?" and "Is the failed-attempt counter per account or per device / IP, and does it reset after a successful login?".
+Each row also has preconditions, five or more numbered steps, concrete test data and detailed expected results. **Rules found in the requirement** lists "Password: 8 characters to 20 characters", "Failed login attempts: max 5 attempts" and "Lockout period: max 15 minutes". **Open questions** asks, for example, "Are the Password limits (8 to 20) inclusive? (TC_LOG_001 … TC_LOG_006)" and "Is the failed-attempt counter per account or per device / IP, and does it reset after a successful login? (TC_LOG_008, TC_LOG_009, TC_LOG_010, TC_LOG_011)". The IDs in brackets are the cases each question affects.
 
 ## Understanding the output
 
@@ -87,6 +87,7 @@ Each row also has preconditions, five or more numbered steps, concrete test data
 - **Quality score** (0–100) — 70% row quality plus 30% coverage of the limits and values found in the requirement. **Green** is 80 or more, **amber** 60–79, **red** below 60.
 - **Weak** badge — the row has empty test data, fewer than 5 steps, fewer than 3 expected-result lines, a title that doesn't start with "Verify", generic wording, or a duplicate title.
 - **Template** badge — a generic case added because the requirement didn't give specific details for that test type.
+- **IDs in assumptions and open questions** — the cases the point affects. They always refer to the final numbering, so they stay correct after AI batches are merged or duplicates removed; IDs that don't exist are dropped.
 - **"Not covered by any case"** — limits or values from the requirement that no case tests yet.
 - **Summary chips** — the number of cases per category and per type.
 

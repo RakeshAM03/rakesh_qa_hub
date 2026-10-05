@@ -1,0 +1,4 @@
+FAILED: searchReturnsResults
+java.net.SocketTimeoutException: Read timed out
+	at java.base/sun.nio.ch.NioSocketImpl.timedRead(NioSocketImpl.java:288)
+	at com.example.api.SearchApiTest.searchReturnsResults(SearchApiTest.java:33)

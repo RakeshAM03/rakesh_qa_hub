@@ -648,9 +648,20 @@ test types and Standard depth are the page defaults.
 
 - Found while verifying examples: Test Case Generator named the limit in "Password must be 8–20
   characters" "Text" (filler word before the numbers) → now takes the "<word> must / should …"
-  subject; regression test added. Not fixed (reported): open-question case IDs can be off by one
-  (lockout question cites TC_…_007–010, the cases are 008–011); Failure Analyzer doesn't classify
-  Java `ConnectException: Connection refused` as Environment (only `ECONNREFUSED` / `net::ERR_`).
+  subject; regression test added. Two more found and fixed right after (user request):
+  - **Test Case Generator citations:** questions cited cases by loose title regexes ("locked" matched
+    "blocked", "existing" matched "existing clients"). Now `src/lib/tcgen/citations.ts`: checklist
+    questions use whole-word topic matchers and are built after final numbering; AI batch merge
+    rewrites each batch's text with its own old → final ID map after dedupe + renumbering (dropped
+    duplicates point at the kept case; IDs are rewritten in one pass, never twice); every answer
+    (AI batch, pasted, improve) drops citations of cases that don't exist. Tests: every sample at
+    every depth — each cited ID exists and its title matches the question's topic (independent
+    topic rules) — plus merge / remap / prune cases. Guide screenshot + example updated.
+  - **Failure Analyzer:** connection-level errors are Environment — `java.net.ConnectException`,
+    "Connection refused / reset / timed out", `SocketTimeoutException` (no longer Timing),
+    `HttpHostConnectException`, plus the existing `UnknownHostException`, `ECONNREFUSED`,
+    `ECONNRESET`, `ETIMEDOUT`, `net::ERR_…`. 9 fixtures in
+    `tests/fixtures/failure-analyzer/connection-errors/`, each parsed → 1 Environment failure.
 - Tests: `src/lib/guide/guide.test.ts` (54: files ↔ sidebar, 11 sections in order, screenshot under
   How to use, word counts, every relative link / image / anchor resolves, link mapping); E2E
   `e2e/guide.spec.ts` (21: index + overview, all 16 pages with 11 sections and a loaded screenshot,

@@ -1,0 +1,4 @@
+  1) [chromium] › tests/search.spec.ts:8:7 › search › filters by status
+
+    Error: apiRequestContext.get: connect ETIMEDOUT 203.0.113.10:443
+      at tests/search.spec.ts:11:28

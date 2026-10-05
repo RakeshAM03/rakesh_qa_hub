@@ -79,6 +79,7 @@ You send the assertion cluster to the Bug Formatter, fix the locator using the [
 
 ## Understanding the output
 
+- **Environment / infrastructure** — includes connection-level errors: "Connection refused" / `java.net.ConnectException`, `SocketTimeoutException`, `UnknownHostException`, `ECONNREFUSED`, `ECONNRESET`, `ETIMEDOUT` and `net::ERR_…`. These mean the app or a service wasn't reachable, so fix the environment and re-run rather than logging a bug.
 - **Summary line** — the percentage of failures in automation-side categories (locator, timing, test data), how many clusters look like product bugs (assertion, API), and how many failures are environment problems.
 - **Totals** — failures, plus passed and skipped tests when the report includes them.
 - **Category chart** — failures per category. Unknown is shown in grey.

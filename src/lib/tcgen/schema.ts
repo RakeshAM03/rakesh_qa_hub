@@ -5,6 +5,7 @@
 
 import { z } from "zod";
 
+import { pruneCitations } from "./citations";
 import { CATEGORIES, newKey, numbered, PRIORITIES, type CaseType, type Category, type GenerationResult, type Priority, type PriorityScheme, type TestCase } from "./types";
 
 export const MAX_CASES = 500;
@@ -238,7 +239,8 @@ export type ParseOutcome = { ok: true; result: GenerationResult } | { ok: false;
 
 export function validateResult(raw: unknown, scheme: PriorityScheme = "standard"): ParseOutcome {
   const parsed = resultSchema(scheme).safeParse(raw);
-  if (parsed.success) return { ok: true, result: parsed.data };
+  // Questions / assumptions may only cite cases that exist in this answer.
+  if (parsed.success) return { ok: true, result: pruneCitations(parsed.data) };
   const issue = parsed.error.issues[0];
   const where = issue?.path.length ? `${issue.path.join(".")}: ` : "";
   return { ok: false, error: `${where}${issue?.message ?? "The answer doesn't match the expected format."}` };

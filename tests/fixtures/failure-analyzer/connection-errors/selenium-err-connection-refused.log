@@ -1,0 +1,4 @@
+FAILED: checkoutPageOpens
+org.openqa.selenium.WebDriverException: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=128.0.6613.84)
+	at com.example.tests.CheckoutTest.checkoutPageOpens(CheckoutTest.java:15)

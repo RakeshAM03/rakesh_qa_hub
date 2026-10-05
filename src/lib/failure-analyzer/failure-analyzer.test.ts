@@ -160,3 +160,48 @@ describe("normalisation and clustering", () => {
     expect(verdict(0, { locator: 0, timing: 0, assertion: 0, data: 0, environment: 0, api: 0, unknown: 0 }, [])).toMatch(/No failures/);
   });
 });
+
+describe("connection-level errors are Environment problems", () => {
+  const FIXTURES: [file: string, mentions: RegExp][] = [
+    ["java-connection-refused.log", /ConnectException: Connection refused/],
+    ["restassured-connect-exception.log", /ConnectException/],
+    ["socket-timeout.log", /SocketTimeoutException: Read timed out/],
+    ["unknown-host.log", /UnknownHostException/],
+    ["node-econnrefused.log", /connect ECONNREFUSED/],
+    ["node-econnreset.log", /ECONNRESET/],
+    ["node-etimedout.log", /ETIMEDOUT/],
+    ["playwright-err-connection-refused.log", /net::ERR_CONNECTION_REFUSED/],
+    ["selenium-err-connection-refused.log", /net::ERR_CONNECTION_REFUSED/],
+  ];
+
+  it.each(FIXTURES)("%s → one Environment failure", (file, mentions) => {
+    const parsed = parseFile({ name: file, content: fixture(`connection-errors/${file}`) });
+    expect(parsed.failures).toHaveLength(1);
+    const [f] = parsed.failures;
+    expect(`${f.message}\n${f.stackTrace}`).toMatch(mentions);
+    expect(classify(f)).toBe("environment");
+    const a = analyze(parsed.failures);
+    expect(a.categoryCounts.environment).toBe(1);
+    expect(a.verdict).toContain("1 is an environment problem");
+  });
+
+  it.each([
+    "java.net.ConnectException: Connection refused",
+    "java.net.ConnectException: Connection timed out: connect",
+    "java.net.SocketTimeoutException: connect timed out",
+    "java.net.SocketException: Connection reset",
+    "org.apache.http.conn.HttpHostConnectException: Connect to qa.example.com:443 failed: Connection refused",
+    "java.net.UnknownHostException: qa.example.com",
+    "Error: connect ECONNREFUSED 127.0.0.1:3000",
+    "Error: read ECONNRESET",
+    "Error: connect ETIMEDOUT 203.0.113.10:443",
+    "Error: page.goto: net::ERR_CONNECTION_REFUSED at https://qa.example.com",
+  ])("%s → environment (not timing, API or unknown)", (message) => {
+    expect(classify({ message, stackTrace: "" })).toBe("environment");
+  });
+
+  it("keeps ordinary timeouts and assertions in their own categories", () => {
+    expect(classify({ message: "org.openqa.selenium.TimeoutException: Expected condition failed", stackTrace: "" })).toBe("timing");
+    expect(classify({ message: "java.lang.AssertionError: expected [connected] but found [offline]", stackTrace: "" })).toBe("assertion");
+  });
+});

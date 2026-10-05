@@ -4,6 +4,7 @@
  * examples from different domains (format, not content).
  */
 
+import { rewriteCitations } from "./citations";
 import { FORMAT_EXAMPLES } from "./examples";
 import { rowIssues } from "./quality";
 import { CATEGORIES, caseId, DEPTHS, derivePrefix, numbered, priorityLabels, TYPE_BY_ID, type Category, type GenerationResult, type TcInput, type TestCase } from "./types";
@@ -207,34 +208,49 @@ ${JSON.stringify(weak.map(caseForPrompt), null, 2)}
 Answer with ONLY a JSON object: { "summary": "", "requirementRules": [], "assumptions": [], "questions": [], "testCases": [ …the rewritten cases, same ids… ] }`;
 }
 
-/** Merges batch results: concatenates in batch order, drops duplicate titles and renumbers IDs. */
+/**
+ * Merges batch results: concatenates in batch order, drops duplicate titles and renumbers IDs.
+ * Citations are rewritten last, per batch (batches may reuse IDs): a dropped duplicate points at
+ * the case that was kept, and IDs that don't exist any more are removed.
+ */
 export function mergeResults(results: GenerationResult[], prefix: string): GenerationResult {
-  const seen = new Set<string>();
+  const kept = new Map<string, TestCase>();
+  const batchMaps = results.map(() => new Map<string, TestCase>());
   const testCases: TestCase[] = [];
-  for (const r of results) {
+  results.forEach((r, b) => {
     for (const c of r.testCases) {
       const k = c.title.trim().toLowerCase().replace(/\s+/g, " ");
-      if (seen.has(k)) continue;
-      seen.add(k);
+      const existing = kept.get(k);
+      if (existing) {
+        if (c.id && !batchMaps[b].has(c.id)) batchMaps[b].set(c.id, existing);
+        continue;
+      }
+      kept.set(k, c);
+      if (c.id && !batchMaps[b].has(c.id)) batchMaps[b].set(c.id, c);
       testCases.push(c);
     }
-  }
-  const idMap = new Map<string, string>();
-  testCases.forEach((c, i) => {
-    const id = caseId(prefix, i + 1);
-    if (c.id) idMap.set(c.id, id);
-    c.id = id;
   });
-  const uniq = (xs: string[]) => [...new Set(xs.map((x) => x.trim()).filter(Boolean))];
-  // Questions reference old batch IDs; remap them.
-  const remap = (s: string) => s.replace(/TC[_-][A-Z0-9]+[_-]\d{3}/g, (m) => idMap.get(m) ?? m);
+  testCases.forEach((c, i) => {
+    c.id = caseId(prefix, i + 1);
+  });
+  const valid = new Set(testCases.map((c) => c.id));
+  // Each batch's text is rewritten with its own old-ID → final-ID map (built after renumbering).
+  const rewrite = (pick: (r: GenerationResult) => string[]) =>
+    uniq(
+      results.flatMap((r, b) => {
+        const map = new Map([...batchMaps[b]].map(([old, c]) => [old, c.id]));
+        return pick(r).map((x) => rewriteCitations(x, valid, map));
+      }),
+    );
   return {
     summary: results.find((r) => r.summary.trim())?.summary ?? "",
     requirementRules: uniq(results.flatMap((r) => r.requirementRules)),
-    assumptions: uniq(results.flatMap((r) => r.assumptions)).map(remap),
-    questions: uniq(results.flatMap((r) => r.questions)).map(remap),
+    assumptions: rewrite((r) => r.assumptions),
+    questions: rewrite((r) => r.questions),
     testCases,
   };
 }
+
+const uniq = (xs: string[]) => [...new Set(xs.map((x) => x.trim()).filter(Boolean))];
 
 export { numbered };

@@ -1,0 +1,4 @@
+FAILED: loginPageOpens
+java.net.UnknownHostException: qa.example.com: nodename nor servname provided, or not known
+	at java.base/java.net.InetAddress.getAllByName0(InetAddress.java:1532)
+	at com.example.tests.LoginTest.loginPageOpens(LoginTest.java:21)

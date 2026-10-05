@@ -79,6 +79,9 @@ export const RULES: { category: CategoryId; patterns: RegExp[] }[] = [
       /WebDriverException:\s*unknown error/i,
       /net::ERR_/,
       /ECONNREFUSED|ECONNRESET|ENOTFOUND|EAI_AGAIN|ETIMEDOUT/,
+      // Connection-level Java / HTTP-client errors: the app or a dependency wasn't reachable.
+      /java\.net\.(?:ConnectException|SocketTimeoutException|NoRouteToHostException|SocketException)|\bHttpHostConnectException\b|\bConnectTimeoutException\b/,
+      /\bConnection (?:refused|reset|timed out)\b|\b(?:connect|read) timed out\b/i,
       /UnknownHostException|getaddrinfo|Name or service not known|DNS (?:lookup|resolution)/,
       /\b(502 Bad Gateway|503 Service Unavailable)\b|\bstatus(?:\s*code)?[\s:=<]*(502|503)\b/i,
       /browser has (?:crashed|disconnected)|Target (?:page, context or browser|closed)|chrome not reachable|session deleted because of page crash|Browser closed/i,

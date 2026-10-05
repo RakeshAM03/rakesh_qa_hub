@@ -3,6 +3,7 @@
  * Format. Domain-agnostic: generators react to what the requirement contains.
  */
 
+import { idsFor, pruneCitations, withCitations } from "./citations";
 import { apiCases, apiEndpoints } from "./generators/api";
 import { authCases } from "./generators/auth";
 import { finalize, makeCtx, type Draft } from "./generators/common";
@@ -43,27 +44,33 @@ function trim(drafts: Draft[], max: number, allowEssential: boolean): Draft[] {
   return keep;
 }
 
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const word = (s: string) => new RegExp(`\\b${escapeRe(s)}\\b`, "i");
+const hasNumber = (title: string, n: number) => new RegExp(`(^|[^\\d.,])${n}(?![\\d])`).test(title.replace(/(\d),(?=\d)/g, "$1"));
+
+/**
+ * Open questions, built after the cases have their final IDs. Each question cites only cases on
+ * its own topic (matched on whole words, so "blocked" isn't a lockout case).
+ */
 function questions(req: Requirement, cases: TestCase[]): string[] {
-  const ids = (re: RegExp) =>
-    cases
-      .filter((c) => re.test(c.title))
-      .map((c) => c.id)
-      .slice(0, 4)
-      .join(", ");
-  const withIds = (q: string, re: RegExp) => {
-    const list = ids(re);
-    return list ? `${q} (${list})` : q;
-  };
+  const ask = (q: string, topic: (title: string) => boolean, limit = 4) => withCitations(q, idsFor(cases, (c) => topic(c.title), limit));
   const out: string[] = [];
   const size = req.limits.find((l) => l.kind === "size");
-  if (size?.max) out.push(withIds(`Is the ${describeBytes(size.max)} limit inclusive, and is it measured in binary (${size.max.toLocaleString("en-US")} bytes) or decimal units?`, /exactly|max \+ 1|above/i));
-  if (req.features.files) out.push(withIds("Can more than one file be attached, and should a new upload replace the existing one?", /multiple|replace/i));
-  if (req.lockout) out.push(withIds("Is the failed-attempt counter per account or per device / IP, and does it reset after a successful login?", /attempt|locked/i));
-  for (const l of req.limits.filter((x) => x.kind === "length" || x.kind === "range")) out.push(withIds(`Are the ${l.subject} limits (${l.min ?? "–"} to ${l.max ?? "–"}) inclusive?`, new RegExp(l.subject, "i")));
-  for (const f of req.fields.filter((x) => x.unique)) out.push(withIds(`Is ${f.name} uniqueness case-insensitive?`, /duplicate|existing/i));
-  if (req.limits.some((l) => l.kind === "amount")) out.push(withIds("Are decimal amounts allowed, and how many decimal places?", /amount/i));
-  if (req.limits.some((l) => l.kind === "perPage")) out.push(withIds("Is the page size fixed, or can the user change it?", /pagination/i));
-  if (req.duplicate) out.push(withIds(`What exactly counts as a duplicate ${req.duplicate.subject} (same amount, same method, within a time window)?`, /duplicate|second/i));
+  if (size?.max) {
+    const label = describeBytes(size.max);
+    out.push(ask(`Is the ${label} limit inclusive, and is it measured in binary (${size.max.toLocaleString("en-US")} bytes) or decimal units?`, (t) => t.includes(label) && /\b(exactly|above|below|boundary|max [+−-] 1)\b/i.test(t)));
+  }
+  if (req.features.files) out.push(ask("Can more than one file be attached, and should a new upload replace the existing one?", (t) => /\bmultiple files\b|\breplaces?\b/i.test(t)));
+  if (req.lockout) out.push(ask("Is the failed-attempt counter per account or per device / IP, and does it reset after a successful login?", (t) => /\b(failed attempts?|attempts?|locked|lockout)\b/i.test(t)));
+  for (const l of req.limits.filter((x) => x.kind === "length" || x.kind === "range")) {
+    const bounds = [l.min, l.max].flatMap((n) => (n === undefined ? [] : [n - 1, n, n + 1]));
+    const range = l.min !== undefined && l.max !== undefined ? `${l.min} to ${l.max}` : l.max !== undefined ? `max ${l.max}` : `min ${l.min}`;
+    out.push(ask(`Are the ${l.subject} limits (${range}) inclusive?`, (t) => word(l.subject).test(t) && (bounds.some((n) => hasNumber(t, n)) || /\bbeyond the limit\b/i.test(t)), 6));
+  }
+  for (const f of req.fields.filter((x) => x.unique)) out.push(ask(`Is ${f.name} uniqueness case-insensitive?`, (t) => word(f.name).test(t) && /\b(already exists|duplicate|existing)\b/i.test(t)));
+  if (req.limits.some((l) => l.kind === "amount")) out.push(ask("Are decimal amounts allowed, and how many decimal places?", (t) => /\bamount\b/i.test(t)));
+  if (req.limits.some((l) => l.kind === "perPage")) out.push(ask("Is the page size fixed, or can the user change it?", (t) => /\bpagination\b|\bpage size\b/i.test(t)));
+  if (req.duplicate) out.push(ask(`What exactly counts as a duplicate ${req.duplicate.subject} (same amount, same method, within a time window)?`, (t) => /\bduplicate\b|\bsecond\b/i.test(t)));
   if (req.features.api && !req.statusCodes.length) out.push("Which status codes and error format should the endpoint return?");
   out.push("What exact success and error messages should be shown (UI copy deck)?");
   return out;
@@ -132,12 +139,12 @@ export function generateChecklist(input: TcInput): ChecklistOutcome {
   return {
     requirement: req,
     warnings,
-    result: {
+    result: pruneCitations({
       summary: `${testCases.length} test cases for ${req.moduleName} in the Standard Test Case Format, built from ${req.rules.length} rule${req.rules.length === 1 ? "" : "s"} found in the requirement (no AI). Review the assumptions and open questions before running them.`,
       requirementRules: req.rules,
       assumptions: [...ctx.assumptions, "Generated by the rule-based checklist (no AI): review wording and replace placeholders with the real screen and element names."],
       questions: questions(req, testCases),
       testCases,
-    },
+    }),
   };
 }

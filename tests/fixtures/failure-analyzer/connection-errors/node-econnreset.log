@@ -1,0 +1,4 @@
+  1) [chromium] › tests/profile.spec.ts:20:7 › profile › saves avatar
+
+    Error: apiRequestContext.post: read ECONNRESET
+      at tests/profile.spec.ts:24:30

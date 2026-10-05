@@ -1,0 +1,7 @@
+  1) [chromium] › tests/checkout.spec.ts:5:7 › checkout › page opens
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at https://qa.example.com/checkout
+    Call log:
+      - navigating to "https://qa.example.com/checkout", waiting until "load"
+
+      at tests/checkout.spec.ts:6:16
