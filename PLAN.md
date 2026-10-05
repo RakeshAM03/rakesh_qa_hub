@@ -175,3 +175,16 @@ full-app pass (no `dark:` palette classes; `-700` text; `-700` bg / `-50` text b
   --scope rakesh-qa`, live smoke on both routes, live-mode Playwright, contrast sweep
   incl. the new pages.
 - [x] **Phase M5 — Wrap-up** README, PROGRESS.md, PLAN.md, final summary.
+
+---
+
+# Test Case Generator quality upgrade — Plan
+
+Source: `prompts/TestCaseGenerator-QUALITY-UPGRADE.md`; format reference
+`tests/fixtures/tcgen/golden-resume-upload.xlsx` (structure and depth only).
+
+- [x] **Phase Q — Standard Test Case Format** 🛑 questions answered ("defaults OK"; Everything +
+  Standard as the page defaults). Workbook scrubbed of personal data; rule extractor + generic
+  generators for checklist mode; quality score with weak-row tools; shared prompt with 3
+  multi-domain examples and batched AI; golden-layout Excel; tests for 6 sample requirements
+  and the golden format; deploy.

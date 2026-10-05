@@ -1,6 +1,7 @@
 /** Reads a pasted Claude answer: JSON (fenced or not, with text around it), else a Markdown table. */
 
 import { validateResult, type ParseOutcome } from "./schema";
+import type { PriorityScheme } from "./types";
 
 /** Balanced {…} or […] starting at `start`, skipping braces inside strings. */
 function balanced(text: string, start: number): string | null {
@@ -69,7 +70,7 @@ const ALIASES: Record<string, string[]> = {
   testData: ["test data", "data", "input", "inputs"],
   expectedResult: ["expected result", "expected", "expected results", "expected outcome"],
   requirementRef: ["requirement", "requirement ref", "ac", "acceptance criteria", "req"],
-  automationCandidate: ["automation", "automation candidate", "automate", "automatable"],
+  automation: ["automation", "automation candidate", "automate", "automatable"],
 };
 
 function splitRow(line: string): string[] {
@@ -130,18 +131,18 @@ export function splitSteps(cell: string): string[] {
 
 export type AnswerSource = "json" | "markdown";
 
-export function parseAnswer(text: string): (ParseOutcome & { source?: AnswerSource }) {
+export function parseAnswer(text: string, scheme: PriorityScheme = "standard"): ParseOutcome & { source?: AnswerSource } {
   if (!text.trim()) return { ok: false, error: "Paste Claude's answer first." };
   const json = extractJson(text);
   let jsonError: string | null = null;
   if (json !== undefined) {
-    const outcome = validateResult(Array.isArray(json) ? { testCases: json } : json);
+    const outcome = validateResult(Array.isArray(json) ? { testCases: json } : json, scheme);
     if (outcome.ok) return { ...outcome, source: "json" };
     jsonError = outcome.error;
   }
   const rows = parseMarkdownTable(text);
   if (rows) {
-    const outcome = validateResult({ testCases: rows.map((r) => ({ ...r, steps: splitSteps(r.steps ?? "") })) });
+    const outcome = validateResult({ testCases: rows.map((r) => ({ ...r, steps: splitSteps(r.steps ?? "") })) }, scheme);
     if (outcome.ok) return { ...outcome, source: "markdown" };
   }
   return {

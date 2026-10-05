@@ -8,18 +8,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { CATEGORIES, PRIORITIES, priorityLabel, type Category, type Priority, type PriorityScheme, type TestCase } from "@/lib/tcgen/types";
+import { CASE_TYPES, CATEGORIES, PRIORITIES, priorityLabel, type CaseType, type Category, type Priority, type PriorityScheme, type TestCase } from "@/lib/tcgen/types";
 
 type Props = {
   testCase: TestCase | null;
   scheme: PriorityScheme;
+  /** Quality warnings for this row. */
+  issues?: string[];
   onChange: (c: TestCase) => void;
   onClose: () => void;
 };
 
 const lines = (s: string) => s.split("\n").map((l) => l.replace(/^\s*\d+[.)]\s*/, "")).filter((l) => l.trim());
 
-export function CaseDrawer({ testCase: c, scheme, onChange, onClose }: Props) {
+export function CaseDrawer({ testCase: c, scheme, issues = [], onChange, onClose }: Props) {
   const id = useId();
   const set = (patch: Partial<TestCase>) => c && onChange({ ...c, ...patch });
   const field = (key: keyof TestCase, label: string, rows = 3) => (
@@ -38,6 +40,11 @@ export function CaseDrawer({ testCase: c, scheme, onChange, onClose }: Props) {
         </SheetHeader>
         {c && (
           <div key={c.key} className="flex flex-col gap-3 px-4 pb-6">
+            {issues.length > 0 && (
+              <p role="status" className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                Weak row: {issues.join("; ")}.
+              </p>
+            )}
             <div className="grid grid-cols-[8rem_1fr] gap-3">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor={`${id}-id`}>ID</Label>
@@ -66,7 +73,18 @@ export function CaseDrawer({ testCase: c, scheme, onChange, onClose }: Props) {
               </div>
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor={`${id}-type`}>Type</Label>
-                <Input id={`${id}-type`} value={c.type} onChange={(e) => set({ type: e.target.value })} />
+                <Select value={c.type} onValueChange={(v) => set({ type: v as CaseType })}>
+                  <SelectTrigger id={`${id}-type`} className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent position="popper">
+                    {CASE_TYPES.map((t) => (
+                      <SelectItem key={t} value={t}>
+                        {t}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor={`${id}-prio`}>Priority</Label>
@@ -77,20 +95,20 @@ export function CaseDrawer({ testCase: c, scheme, onChange, onClose }: Props) {
                   <SelectContent position="popper">
                     {PRIORITIES.map((p) => (
                       <SelectItem key={p} value={p}>
-                        {scheme === "hml" ? `${priorityLabel(p, scheme)} (${p})` : p}
+                        {priorityLabel(p, scheme)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            {field("preconditions", "Preconditions", 2)}
+            {field("preconditions", "Preconditions (numbered lines)", 5)}
             <div className="flex flex-col gap-1.5">
               <Label htmlFor={`${id}-steps`}>Steps (one per line)</Label>
               <Textarea id={`${id}-steps`} value={c.steps.join("\n")} onChange={(e) => set({ steps: e.target.value.split("\n") })} onBlur={(e) => set({ steps: lines(e.target.value) })} rows={5} />
             </div>
-            {field("testData", "Test data", 2)}
-            {field("expectedResult", "Expected result", 3)}
+            {field("testData", "Test data (Key: value lines)", 3)}
+            {field("expectedResult", "Expected result (numbered lines)", 5)}
             <div className="flex flex-col gap-1.5">
               <Label htmlFor={`${id}-ref`}>Requirement reference</Label>
               <Input id={`${id}-ref`} value={c.requirementRef} onChange={(e) => set({ requirementRef: e.target.value })} placeholder="AC1" />

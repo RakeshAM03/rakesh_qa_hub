@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** All done — original 13 phases, N0–N10 and M0–M5. Live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** All done — original 13 phases, N0–N10, M0–M5 and the Test Case Generator quality upgrade (Phase Q). Live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -515,6 +515,74 @@ Spec: `prompts/MORE-MODULES-MASTER-PROMPT.md`. Phases M0–M5 in PLAN.md. All de
   At 1400 px every Automation toggle is now visible; the long text columns still scroll (they
   also open in full via Expand and the edit drawer). New E2E for the row menu; contrast
   re-check 40 checks, 0 violations.
+
+## Test Case Generator quality upgrade — decisions (Phase Q, 2026-10-05)
+
+Spec: `prompts/TestCaseGenerator-QUALITY-UPGRADE.md`. All defaults accepted, plus: "Everything"
+test types and Standard depth are the page defaults.
+
+1. Golden workbook scrubbed before committing: 11 cells — `Rakesh_Resume.pdf` → `Sample_Resume.pdf`,
+   `Rakesh A_M (QA) #1.pdf` → `Sample User (QA) #1.pdf`, `रेज़्यूमे_राकेश.pdf` → `रेज़्यूमे_नमूना.pdf`,
+   `Résumé_José-García.docx` → `Résumé_Échantillon-Ñ.docx`, `*@test.com` → `*@example.com`.
+   Only `xl/sharedStrings.xml` changed (verified byte-for-byte); formulas, styles, widths,
+   freeze pane and autofilter identical. Metadata had no personal data (author "openpyxl").
+2. Priority stored as P1 (critical) … P4 (low); shown as "P1 - Critical … P4 - Low" (default),
+   P0–P3, or High/Medium/Low. Older answers / saved generations (P0–P3, Non-Functional,
+   type "Boundary"…) are converted on read (`normalizeCases`).
+3. 15 categories, Type = Positive / Negative; the 26 test-type chips stay as the selector.
+4. IDs `TC_<ABBR>_001`; abbreviation field in More context (auto: initials of up to 3 words,
+   or the first 3 letters of one word; stop words ignored — "Pay an Invoice" → PI).
+5. Workbook keeps exactly 10 columns; "Requirement ref" is added as K only when a case has one.
+6. AI: Quick = one call; Standard / Exhaustive = 4 category batches in parallel inside one
+   request (one rate-limit hit), each with its own ID range (001 / 101 / 201 / 301), validated
+   and retried once, then merged (duplicate titles dropped, renumbered, IDs in questions
+   remapped). Failed batches are reported as a warning instead of failing the run.
+7. "Improve weak cases" = new `POST /api/test-case-generator/improve`, sharing the 10/hour
+   bucket. Without AI, "Copy improve prompt" opens the prompt panel; pasting the answer
+   updates those rows in place (matched by ID).
+8. Quality score = 70% rows (6 checks) + 30% coverage of extracted limits (at / −1 / +1 and
+   min ones) and allowed values, measured on the cases' text for every mode; rounded down so
+   any weak row keeps it under 100.
+9. Checklist depth: no padding; above the maximum, non-essential lowest-priority cases go
+   first (Quick may also trim essential ones). A warning shows when the requirement gives
+   fewer cases than the depth's minimum.
+10. The 6 sample tests run at Standard depth with Everything selected.
+11. Unknown navigation / element names → quoted neutral placeholders + an assumption.
+
+### Phase Q notes
+
+- **Extractor** (`src/lib/tcgen/requirement.ts`): clauses → allowed lists (only / one of /
+  "pay|sort|search|filter … by A or B"; ≥ 2 values unless file formats), limits (KB/MB/GB →
+  bytes with the nearest min/max keyword winning, char ranges, digits, attempts, lockout
+  durations, age N+, ₹/$ amount ranges with Indian grouping, numeric ranges with units,
+  per-page, counts), fields ("Name (required, max 50 chars)" + prose hints + unique /
+  required phrasing), roles, token role, duplicate rule, if/then, statuses, endpoints (text
+  and pasted OpenAPI / cURL; spec title → module name), status codes. Module name: context →
+  first clause → spec title → endpoint → "Module" (never "the feature").
+- **Generators** (`src/lib/tcgen/generators/`): common (standard 5-line preconditions for
+  app / auth / API, open steps, verify steps, indicative messages + assumption),
+  values-limits, fields, files, auth, domain (CRUD, search, workflow / duplicates / payments
+  / conditions / states, roles), api (text endpoints + OpenAPI / cURL: 2xx, missing / empty /
+  malformed / wrong-type / enum, 401 ×2, 403, 409, other documented codes, 405, idempotency,
+  Unicode, retrieve-after-create), cross (UI or API variant). Templates only for selected
+  types that apply and nothing covered (badged "Template"). Old `templates.ts` / `fields.ts`
+  removed.
+- Sample results (Standard, Everything): file upload 45, login 40, registration 43, search
+  & filter 39, payment 35, API 28 (with the "below Standard target" warning) — all quality
+  100, every value / limit covered.
+- **Excel** (`excel.ts`): golden layout — header Arial 10 bold white on #1F4E78, bordered body,
+  bold IDs, centred C–F, priority fills (P4 grey, not in the golden), widths, freeze C2,
+  autofilter, Summary COUNTIF blocks (values present only) + SUM, Assumptions & Queries;
+  file `<Module_Name>_Test_Cases.xlsx`. CSV / Markdown / Gherkin / Postman use the same
+  columns (Gherkin tags add @positive / @negative).
+- Migration `tcgen_requirement_rules` (additive column `requirementRules String[]`).
+- Tests: extractor 9, generators 25 (incl. the 6 samples), golden format 6, tcgen 17, routes
+  7 (batches, partial failure, retry, improve). E2E 11 (incl. login sample → score ≥ 80 →
+  xlsx with 3 sheets, AI JSON import with quality score, weak rows + improve prompt).
+  Contrast: 10 Test Case Generator states × light/dark × 5 themes, 0 violations.
+- Found while testing: a spec-only input named the module "Feature" (→ "the feature" in
+  titles) — fixed and covered by a test; a Vitest `beforeEach(() => mock.mockReset())`
+  returned the mock, which Vitest then called as a cleanup hook — use a block body.
 
 ## Open questions / next steps
 

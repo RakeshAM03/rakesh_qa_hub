@@ -19,9 +19,9 @@ export async function GET() {
       ...g,
       counts: {
         total: cases.length,
-        functional: cases.filter((c) => c.category === "Functional").length,
-        nonFunctional: cases.filter((c) => c.category === "Non-Functional").length,
-        api: cases.filter((c) => c.category === "API").length,
+        positive: cases.filter((c) => (c as { type?: string }).type === "Positive").length,
+        negative: cases.filter((c) => (c as { type?: string }).type === "Negative").length,
+        api: cases.filter((c) => String(c.category ?? "").startsWith("API")).length,
       },
     };
   });

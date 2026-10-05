@@ -1,0 +1,1 @@
+Pay an invoice by card or UPI; amount ₹1 to ₹1,00,000; duplicate payment for the same invoice is blocked.

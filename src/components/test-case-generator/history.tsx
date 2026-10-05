@@ -32,7 +32,7 @@ export type HistoryItem = {
   createdBy: string | null;
   createdAt: string;
   updatedAt: string;
-  counts: { total: number; functional: number; nonFunctional: number; api: number };
+  counts: { total: number; positive: number; negative: number; api: number };
 };
 
 const MODE_LABEL: Record<Mode, string> = { AI: "AI", IMPORTED: "Imported", CHECKLIST: "Checklist" };
@@ -120,7 +120,7 @@ export function HistoryDrawer({
                         {g.id === currentId && <span className="ml-2 text-xs font-normal text-neutral-600">(open)</span>}
                       </p>
                       <p className="text-xs text-neutral-600">
-                        {g.counts.total} cases · {g.counts.functional} functional · {g.counts.nonFunctional} non-functional · {g.counts.api} API
+                        {g.counts.total} cases · {g.counts.positive} positive · {g.counts.negative} negative · {g.counts.api} API
                       </p>
                       <p className="text-xs text-neutral-600">
                         <Badge variant="outline" className="mr-1 px-1 py-0 text-[10px]">

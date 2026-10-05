@@ -1,0 +1,1 @@
+Login with email and password; account locks for 15 minutes after 5 failed attempts; password 8–20 characters.

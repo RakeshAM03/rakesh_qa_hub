@@ -24,8 +24,10 @@ import { copyText, downloadText } from "@/lib/browser";
 import { generateChecklist } from "@/lib/tcgen/checklist";
 import { hasApiCases, toCsv, toFeatureFile, toMarkdownTable, toPlaygroundRequests, toPostman, toTcLibraryMarkdown } from "@/lib/tcgen/export";
 import { parseAnswer } from "@/lib/tcgen/extract";
-import { buildCopyPrompt, effectivePrefix } from "@/lib/tcgen/prompt";
-import { inputSchema } from "@/lib/tcgen/schema";
+import { buildCopyPrompt, buildImprovePrompt, effectivePrefix } from "@/lib/tcgen/prompt";
+import { scoreCases } from "@/lib/tcgen/quality";
+import { extractRequirement } from "@/lib/tcgen/requirement";
+import { inputSchema, normalizeCases } from "@/lib/tcgen/schema";
 import { defaultInput, type GenerationResult, type Mode, type TcInput, type TestCase } from "@/lib/tcgen/types";
 import { CasesView, type Actions } from "./cases-view";
 import { ClaudePanel } from "./claude-panel";
@@ -82,8 +84,14 @@ export function TestCaseGenerator() {
   const [pending, setPending] = useState<(() => void) | null>(null);
   const aiAbort = useRef<AbortController | null>(null);
 
-  const prefix = effectivePrefix(input);
-  const moduleName = input.context.moduleName.trim();
+  const requirement = useMemo(
+    () => extractRequirement(input.requirement, input.context, `${input.apiSpec}\n${input.apiForm.endpoint ? `${input.apiForm.method} ${input.apiForm.endpoint}` : ""}`),
+    [input.requirement, input.context, input.apiSpec, input.apiForm.method, input.apiForm.endpoint],
+  );
+  /** Typed module name, else the one derived from the requirement (never "the feature"). */
+  const moduleName = input.context.moduleName.trim() || (input.requirement.trim() || input.apiSpec.trim() || input.apiForm.endpoint.trim() ? requirement.moduleName : "");
+  const prefix = effectivePrefix(input, moduleName);
+  const quality = useMemo(() => (result ? scoreCases(result.testCases, requirement) : null), [result, requirement]);
   const snapshot = result ? JSON.stringify([result.testCases, input]) : null;
   /** Unsaved anything (warns before leaving the page). */
   const dirty = result !== null && snapshot !== savedSnapshot;
@@ -130,9 +138,9 @@ export function TestCaseGenerator() {
     try {
       const res = await fetch("/api/test-case-generator/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input), signal: ctrl.signal });
       if (!res.ok) return toast.error(await errorText(res, "AI generation failed."));
-      const { result: r } = (await res.json()) as { result: GenerationResult };
+      const { result: r, warnings: w = [] } = (await res.json()) as { result: GenerationResult; warnings?: string[] };
       guard(() => {
-        setWarnings([]);
+        setWarnings(w);
         load(r, "AI");
         toast.success(`Generated ${r.testCases.length} test cases`);
       });
@@ -145,8 +153,15 @@ export function TestCaseGenerator() {
   }
 
   function importAnswer(answer: string): string | null {
-    const r = parseAnswer(answer);
+    const r = parseAnswer(answer, input.options.priorityScheme);
     if (!r.ok) return r.error;
+    // An answer to the improve prompt (same IDs as existing rows) updates those rows in place.
+    if (result && r.result.testCases.every((c) => result.testCases.some((x) => x.id === c.id))) {
+      mergeImproved(r.result.testCases);
+      setPrompt(null);
+      toast.success(`Updated ${r.result.testCases.length} ${r.result.testCases.length === 1 ? "case" : "cases"}`);
+      return null;
+    }
     guard(() => {
       setWarnings(r.source === "markdown" ? ["Imported from a Markdown table — summary, assumptions, questions and API details aren't included."] : []);
       load(r.result, "IMPORTED");
@@ -164,8 +179,8 @@ export function TestCaseGenerator() {
         excel: async (cases) => {
           setBusy("excel");
           try {
-            const { toXlsx } = await import("@/lib/tcgen/excel");
-            saveBytes(`${base}-test-cases.xlsx`, await toXlsx(moduleName || "Test cases", result, cases, input.options.priorityScheme), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            const { toXlsx, xlsxFileName } = await import("@/lib/tcgen/excel");
+            saveBytes(xlsxFileName(moduleName), await toXlsx(moduleName || "Test Cases", input.requirement || input.apiSpec, result, cases, input.options.priorityScheme), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
           } catch {
             toast.error("Couldn't build the Excel file.");
           } finally {
@@ -196,8 +211,46 @@ export function TestCaseGenerator() {
             : undefined,
         library: () => setDialog("library"),
         save: () => setDialog("save"),
+        improve: aiEnabled ? improveWeak : undefined,
+        copyImprove: () => {
+          const weak = result.testCases.filter((c) => quality?.weakKeys.has(c.key));
+          if (!weak.length) return void toast("No weak rows to improve.");
+          void copyText(buildImprovePrompt(input, weak), `Improve prompt for ${weak.length} weak ${weak.length === 1 ? "row" : "rows"} copied — paste Claude's answer into Import`);
+          setPrompt(buildImprovePrompt(input, weak));
+        },
       }
     : null;
+
+  /** Replaces rows with improved versions (matched by ID; unmatched answers are appended). */
+  function mergeImproved(improved: TestCase[]) {
+    if (!result) return;
+    const byId = new Map(improved.map((c) => [c.id, c]));
+    const next = result.testCases.map((c) => {
+      const better = byId.get(c.id);
+      if (!better) return c;
+      byId.delete(c.id);
+      return { ...better, key: c.key };
+    });
+    setResult({ ...result, testCases: [...next, ...byId.values()] });
+  }
+
+  async function improveWeak() {
+    if (!result || !quality) return;
+    const weak = result.testCases.filter((c) => quality.weakKeys.has(c.key)).slice(0, 60);
+    if (!weak.length) return;
+    setBusy("improve");
+    try {
+      const res = await fetch("/api/test-case-generator/improve", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ input, cases: weak }) });
+      if (!res.ok) return void toast.error(await errorText(res, "Couldn't improve the weak cases."));
+      const { cases } = (await res.json()) as { cases: TestCase[] };
+      mergeImproved(cases);
+      toast.success(`Improved ${cases.length} ${cases.length === 1 ? "case" : "cases"}`);
+    } catch {
+      toast.error("Couldn't improve the weak cases.");
+    } finally {
+      setBusy(null);
+    }
+  }
 
   async function saveGeneration(name: string): Promise<string | null> {
     if (!result || !mode) return "Nothing to save.";
@@ -210,6 +263,7 @@ export function TestCaseGenerator() {
       selectedTypes: input.types,
       mode,
       summary: result.summary || null,
+      requirementRules: result.requirementRules,
       assumptions: result.assumptions,
       questions: result.questions,
       testCases: result.testCases,
@@ -254,10 +308,14 @@ export function TestCaseGenerator() {
     guard(() => applyGeneration(g, api));
   }
 
-  function applyGeneration(g: { id: string; name: string; requirement: string; context: unknown; selectedTypes: string[]; options: unknown; summary: string | null; assumptions: string[]; questions: string[]; testCases: TestCase[]; mode: Mode }, api: { spec: string; form: unknown }) {
+  function applyGeneration(
+    g: { id: string; name: string; requirement: string; context: unknown; selectedTypes: string[]; options: unknown; summary: string | null; requirementRules?: string[]; assumptions: string[]; questions: string[]; testCases: unknown; mode: Mode },
+    api: { spec: string; form: unknown },
+  ) {
     const nextInput = readDraft(JSON.stringify({ requirement: g.requirement, apiSpec: api.spec, apiForm: api.form, context: g.context, types: g.selectedTypes, options: g.options }));
     setInput(nextInput);
-    const r: GenerationResult = { summary: g.summary ?? "", assumptions: g.assumptions, questions: g.questions, testCases: g.testCases };
+    // Older saved generations (P0–P3, Non-Functional, …) are converted to the current format.
+    const r: GenerationResult = { summary: g.summary ?? "", requirementRules: g.requirementRules ?? [], assumptions: g.assumptions, questions: g.questions, testCases: normalizeCases(g.testCases, nextInput.options.priorityScheme) };
     setResult(r);
     setMode(g.mode);
     setSaved({ id: g.id, name: g.name });
@@ -307,7 +365,7 @@ export function TestCaseGenerator() {
       )}
 
       {result && actions ? (
-        <CasesView result={result} onCases={setCases} scheme={input.options.priorityScheme} requirement={input.requirement} prefix={prefix} actions={actions} busy={busy} dirty={dirty} savedName={saved?.name ?? null} />
+        <CasesView result={result} onCases={setCases} scheme={input.options.priorityScheme} requirement={input.requirement} prefix={prefix} actions={actions} busy={busy} dirty={dirty} savedName={saved?.name ?? null} quality={quality!} />
       ) : (
         <section className="rounded-xl border border-dashed border-neutral-300 bg-card p-8 text-center">
           <h2 className="text-base font-semibold">No test cases yet</h2>

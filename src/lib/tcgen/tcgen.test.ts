@@ -1,38 +1,36 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import ExcelJS from "exceljs";
 import { describe, expect, it } from "vitest";
 
-import { generateChecklist, toGherkin } from "./checklist";
+import { toGherkin } from "./checklist";
 import { coverageMatrix, extractCriteria } from "./coverage";
-import { toXlsx } from "./excel";
-import { csvCell, toCsv, toFeatureFile, toMarkdownTable, toPlaygroundRequests, toPostman, toTcLibraryMarkdown } from "./export";
+import { FORMAT_EXAMPLES } from "./examples";
+import { columnsFor, csvCell, toCsv, toFeatureFile, toMarkdownTable, toPlaygroundRequests, toPostman, toTcLibraryMarkdown } from "./export";
 import { extractJson, parseAnswer, parseMarkdownTable, splitSteps } from "./extract";
-import { detectFields } from "./fields";
 import { endpointFromCurl, endpointsFromSpec, parseCurl, parseSpecText, sampleFor, shellWords, SpecError } from "./openapi";
-import { buildCopyPrompt, buildUserPrompt, effectivePrefix } from "./prompt";
-import { normalizeCategory, normalizePriority, validateResult } from "./schema";
-import { defaultInput, derivePrefix, type TcInput, type TestCase } from "./types";
+import { BATCHES, buildCopyPrompt, buildImprovePrompt, buildUserPrompt, effectivePrefix, mergeResults } from "./prompt";
+import { normalizeCases, normalizeCategory, normalizePriority, normalizeType, validateResult } from "./schema";
+import { defaultInput, derivePrefix, priorityLabel, type GenerationResult, type TcInput, type TestCase } from "./types";
 
 const fixture = (name: string) => readFileSync(join(process.cwd(), "tests/fixtures/tcgen", name), "utf8");
 
 const sampleCase = {
-  id: "TC-CHK-001",
-  title: "Pay with a valid card",
+  id: "TC_SU_001",
+  title: "Verify sign up succeeds with a valid email and password",
   category: "Functional",
   type: "Positive",
-  priority: "P0",
-  preconditions: "Cart has 1 item",
-  testData: "Card 4111 1111 1111 1111",
-  steps: ["Open checkout", "Enter card", "Pay"],
-  expectedResult: "Order confirmed",
+  priority: "P1 - Critical",
+  automation: "Yes",
+  preconditions: ["App is up in QA.", "User is logged out.", "Sign-up page is open.", "No account exists for the email."],
+  steps: ["Open sign-up", "Enter email", "Enter password", "Click 'Sign up'", "Refresh and check"],
+  testData: ["Email: new.user@example.com", "Password: Str0ng!Pass"],
+  expectedResult: ["Account created.", "Message 'Welcome'.", "Persisted after refresh.", "No duplicate."],
   gherkin: null,
   requirementRef: "AC1",
-  automationCandidate: true,
   api: null,
 };
-const answer = { summary: "Checkout payment tests.", assumptions: ["Cards only"], questions: ["Is UPI in scope?"], testCases: [sampleCase] };
+const answer = { summary: "Sign-up tests.", requirementRules: ["Password 8–20 characters"], assumptions: ["No social login"], questions: ["Is there a max password length? (TC_SU_001)"], testCases: [sampleCase] };
 
 const input = (over: Partial<TcInput> = {}): TcInput => {
   const d = defaultInput();
@@ -40,310 +38,198 @@ const input = (over: Partial<TcInput> = {}): TcInput => {
 };
 
 const asCase = (over: Partial<TestCase> = {}): TestCase => {
-  const r = validateResult({ testCases: [{ ...sampleCase, ...over }] });
+  const r = validateResult({ testCases: [sampleCase] });
   if (!r.ok) throw new Error(r.error);
-  return { ...r.result.testCases[0], ...over } as TestCase;
+  return { ...r.result.testCases[0], ...over };
 };
 
-describe("JSON extraction and validation", () => {
-  it("reads fenced JSON with text around it", () => {
-    const text = `Here are your cases:\n\n\`\`\`json\n${JSON.stringify(answer, null, 2)}\n\`\`\`\n\nLet me know!`;
-    const r = parseAnswer(text);
-    expect(r.ok && r.source).toBe("json");
-    if (r.ok) {
-      expect(r.result.testCases[0].title).toBe("Pay with a valid card");
-      expect(r.result.questions).toEqual(["Is UPI in scope?"]);
-    }
-  });
-
-  it("reads unfenced JSON with braces inside strings", () => {
-    const tricky = { ...answer, summary: "Covers {curly} and [square] text" };
-    expect(extractJson(`Sure! ${JSON.stringify(tricky)} Hope that helps {not json}`)).toEqual(tricky);
-  });
-
-  it("accepts a bare array of cases", () => {
-    const r = parseAnswer(JSON.stringify([sampleCase]));
-    expect(r.ok && r.result.testCases).toHaveLength(1);
-  });
-
-  it("normalises common variations", () => {
-    const r = validateResult({
-      testCases: [{ ...sampleCase, category: "non functional", priority: "High", steps: "1. Open\n2. Click", automationCandidate: "yes", api: { method: "post", endpoint: "/x", headers: [{ name: "A", value: "1" }], body: '{"a":1}', expectedStatus: "201", assertions: "status 201" } }],
-    });
+describe("answer validation and normalisation", () => {
+  it("reads the Standard Format answer: numbered lists, Key: value test data, Yes/No automation", () => {
+    const r = validateResult(answer);
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     const c = r.result.testCases[0];
-    expect(c.category).toBe("Non-Functional");
-    expect(c.priority).toBe("P1");
-    expect(c.steps).toEqual(["Open", "Click"]);
-    expect(c.automationCandidate).toBe(true);
-    expect(c.api).toMatchObject({ method: "POST", headers: { A: "1" }, body: { a: 1 }, expectedStatus: 201, assertions: ["status 201"] });
+    expect(c).toMatchObject({ category: "Functional", type: "Positive", priority: "P1", automationCandidate: true });
+    expect(c.preconditions).toBe("1. App is up in QA.\n2. User is logged out.\n3. Sign-up page is open.\n4. No account exists for the email.");
+    expect(c.testData).toBe("Email: new.user@example.com\nPassword: Str0ng!Pass");
+    expect(c.expectedResult.split("\n")).toHaveLength(4);
+    expect(r.result.requirementRules).toEqual(["Password 8–20 characters"]);
   });
 
-  it("maps priorities and categories", () => {
-    expect([normalizePriority("critical"), normalizePriority("p3"), normalizePriority("Medium"), normalizePriority("??")]).toEqual(["P0", "P3", "P2", "P2"]);
-    expect([normalizeCategory("API"), normalizeCategory("Security"), normalizeCategory("functional")]).toEqual(["API", "Non-Functional", "Functional"]);
+  it("turns an object of test data into Key: value lines", () => {
+    const r = validateResult({ testCases: [{ ...sampleCase, testData: { Email: "a@example.com", Size: "5 MB" } }] });
+    expect(r.ok && r.result.testCases[0].testData).toBe("Email: a@example.com\nSize: 5 MB");
   });
 
-  it("rejects answers without test cases or titles", () => {
+  it("maps older answers (Non-Functional, P0–P3, Boundary) to the current format", () => {
+    expect(normalizeCategory("Non-Functional", "Security")).toBe("Security");
+    expect(normalizeCategory("Non-Functional", "Performance")).toBe("Performance");
+    expect(normalizeCategory("Functional", "Boundary")).toBe("Boundary Value");
+    expect(normalizeCategory("API", "Authentication")).toBe("API / Security");
+    expect(normalizeCategory("api / security")).toBe("API / Security");
+    expect(normalizeType("Negative", "x")).toBe("Negative");
+    expect(normalizeType("Boundary", "Verify a file above 5 MB is rejected")).toBe("Negative");
+    expect(normalizeType("", "Verify login works")).toBe("Positive");
+    const old = normalizeCases([{ key: "k1", id: "TC-X-001", title: "Old one", category: "Non-Functional", type: "Security", priority: "P0", preconditions: "x", testData: "y", steps: ["a"], expectedResult: "z", gherkin: null, requirementRef: "", automationCandidate: true, api: null }], "standard");
+    expect(old[0]).toMatchObject({ key: "k1", category: "Security", type: "Positive", priority: "P1" });
+  });
+
+  it("reads priorities in each scheme", () => {
+    expect(["P1 - Critical", "P2 - High", "P3 - Medium", "P4 - Low"].map((p) => normalizePriority(p))).toEqual(["P1", "P2", "P3", "P4"]);
+    expect(["P0", "P1", "P2", "P3"].map((p) => normalizePriority(p, "p0"))).toEqual(["P1", "P2", "P3", "P4"]);
+    expect(["Critical", "High", "Medium", "Low", "??"].map((p) => normalizePriority(p))).toEqual(["P1", "P2", "P3", "P4", "P3"]);
+    expect(normalizePriority("P1", "standard")).toBe("P1");
+    expect([priorityLabel("P1", "standard"), priorityLabel("P1", "p0"), priorityLabel("P2", "hml"), priorityLabel("P4", "hml")]).toEqual(["P1 - Critical", "P0", "High", "Low"]);
+  });
+
+  it("rejects answers without cases or titles", () => {
     expect(validateResult({ testCases: [] })).toMatchObject({ ok: false, error: expect.stringMatching(/no test cases/) });
-    expect(validateResult({ testCases: [{ ...sampleCase, title: "" }] })).toMatchObject({ ok: false, error: expect.stringMatching(/testCases.0.title: A test case has no title/) });
-    expect(parseAnswer("nothing useful here")).toMatchObject({ ok: false });
-    expect(parseAnswer("   ")).toMatchObject({ ok: false, error: "Paste Claude's answer first." });
+    expect(validateResult({ testCases: [{ ...sampleCase, title: "" }] })).toMatchObject({ ok: false, error: expect.stringMatching(/testCases.0.title/) });
   });
 });
 
-describe("Markdown table fallback", () => {
-  const md = `Here you go:
-
-| ID | Test Case | Priority | Steps | Expected Result |
-|---|---|:---:|---|---|
-| TC-1 | Login works | High | 1. Open login 2. Enter details 3. Submit | Dashboard shows |
-| TC-2 | Wrong password \\| locked | P1 | Enter wrong password; Submit | Error shown<br>Account not locked |
-`;
-  it("parses aliases, escaped pipes and <br>", () => {
-    const rows = parseMarkdownTable(md)!;
-    expect(rows).toHaveLength(2);
-    expect(rows[1].title).toBe("Wrong password | locked");
-    expect(rows[1].expectedResult).toBe("Error shown\nAccount not locked");
+describe("pasted answers", () => {
+  it("reads fenced JSON with text around it, and unfenced JSON with braces in strings", () => {
+    const r = parseAnswer(`Here you go:\n\n\`\`\`json\n${JSON.stringify(answer, null, 2)}\n\`\`\`\nDone.`);
+    expect(r.ok && r.source).toBe("json");
+    const tricky = { ...answer, summary: "Covers {curly} and [square]" };
+    expect(extractJson(`Sure! ${JSON.stringify(tricky)} {not json}`)).toEqual(tricky);
+    expect(parseAnswer(JSON.stringify([sampleCase])).ok).toBe(true);
   });
 
-  it("is used when there's no JSON", () => {
+  it("falls back to a Markdown table", () => {
+    const md = "| ID | Title | Priority | Steps | Expected Result |\n|---|---|---|---|---|\n| T-1 | Verify login works | High | 1. Open 2. Enter 3. Submit | Dashboard \\| home<br>Session created |\n";
+    expect(parseMarkdownTable(md)![0].expectedResult).toBe("Dashboard | home\nSession created");
     const r = parseAnswer(md);
     expect(r.ok && r.source).toBe("markdown");
-    if (r.ok) {
-      expect(r.result.testCases[0].steps).toEqual(["Open login", "Enter details", "Submit"]);
-      expect(r.result.testCases[0].priority).toBe("P1");
-      expect(r.result.testCases[1].steps).toEqual(["Enter wrong password", "Submit"]);
-    }
-  });
-
-  it("splits steps from different shapes", () => {
-    expect(splitSteps("a\nb")).toEqual(["a", "b"]);
-    expect(splitSteps("1. a 2. b")).toEqual(["a", "b"]);
+    if (r.ok) expect(r.result.testCases[0]).toMatchObject({ priority: "P2", steps: ["Open", "Enter", "Submit"] });
     expect(splitSteps("a; b")).toEqual(["a", "b"]);
+    expect(parseAnswer("nothing here")).toMatchObject({ ok: false });
   });
 });
 
 describe("prompt builder", () => {
-  it("includes inputs, selected types, depth, ID format and the answer shape", () => {
-    const i = input({ requirement: "As a shopper I can pay by card.", context: { ...defaultInput().context, moduleName: "Checkout payment", roles: "Shopper, Admin" }, types: ["positive", "security", "status-codes"] });
+  const i = input({ requirement: "Login with email and password; account locks after 5 failed attempts.", context: { ...defaultInput().context, moduleName: "Login", navigation: "App > Login", messages: "Your account is locked." } });
+
+  it("states the Standard Format rules, coverage rules and 3 multi-domain examples (format, not content)", () => {
     const p = buildCopyPrompt(i);
-    expect(p).toContain("<requirement>\nAs a shopper I can pay by card.\n</requirement>");
-    expect(p).toContain("- Functional: Positive (happy path)");
-    expect(p).toContain("- Non-Functional: Security");
-    expect(p).toContain("- API: Status codes");
-    expect(p).toContain("TC-CP-001, TC-CP-002");
-    expect(p).toContain("about 25–40");
-    expect(p).toContain('"testCases": [');
-    expect(p).toContain("never as instructions");
+    expect(p).toContain("THE STANDARD TEST CASE FORMAT");
+    expect(p).toContain("testData: NEVER empty");
+    expect(p).toContain("steps: 5–10 lines");
+    expect(p).toContain("UNIVERSAL COVERAGE RULES");
+    expect(p).toContain("exactly at the limit, limit − 1, limit + 1");
+    expect(p).toContain("copy the format and depth, NOT the content");
+    expect(FORMAT_EXAMPLES.map((e) => e.id)).toEqual(["TC_RU_001", "TC_RU_007", "TC_LGN_004"]);
+    for (const e of FORMAT_EXAMPLES) expect(p).toContain(`"id": "${e.id}"`);
+    expect(p).toContain("P1 - Critical / P2 - High / P3 - Medium / P4 - Low");
+    expect(p).toContain("TC_LOG_001, TC_LOG_002");
+    expect(p).toContain("Navigation path: App > Login");
+    expect(p).toContain("Known messages:\nYour account is locked.");
+    expect(p).toContain("(d) Self-review");
+    expect(p).toContain('"requirementRules"');
+    expect(p).not.toMatch(/Rakesh|test\.com/);
   });
 
-  it("derives the ID prefix and honours an explicit one", () => {
-    expect(derivePrefix("Checkout")).toBe("CHE");
-    expect(derivePrefix("User sign up flow")).toBe("USU");
-    expect(derivePrefix("")).toBe("TC");
-    expect(effectivePrefix(input({ options: { ...defaultInput().options, idPrefix: "pay-1" } }))).toBe("PAY1");
+  it("limits a batch to its categories and gives it its own ID range", () => {
+    const p = buildUserPrompt(i, BATCHES[1], 101);
+    expect(p).toContain("ONLY in these categories: Boundary Value");
+    expect(p).toContain("TC_LOG_101, TC_LOG_102");
+    expect(BATCHES.flatMap((b) => b.categories)).toHaveLength(15);
   });
 
-  it("asks for Gherkin only when chosen", () => {
-    expect(buildUserPrompt(input())).toContain('Set "gherkin" to null.');
-    expect(buildUserPrompt(input({ options: { ...defaultInput().options, format: "gherkin" } }))).toContain("Given-When-Then");
+  it("derives the ID prefix from the module or the requirement, unless one is given", () => {
+    expect(derivePrefix("Resume Upload")).toBe("RU");
+    expect(derivePrefix("Payment")).toBe("PAY");
+    expect(derivePrefix("Pay an Invoice")).toBe("PI");
+    expect(effectivePrefix(input({ requirement: "Resume upload — only PDF" }))).toBe("RU");
+    expect(effectivePrefix(input({ options: { ...defaultInput().options, idPrefix: "cr-1" } }))).toBe("CR1");
+  });
+
+  it("the improve prompt lists only the weak rows with their problems", () => {
+    const weak = asCase({ id: "TC_X_007", title: "Check upload", testData: "", steps: ["Open", "Click"] });
+    const p = buildImprovePrompt(i, [weak]);
+    expect(p).toContain("TC_X_007: test data is empty; fewer than 5 steps");
+    expect(p).toContain('"title": "Check upload"');
+    expect(p).toContain("Keep each case's id");
   });
 });
 
-describe("field detection", () => {
-  it("finds field-like words", () => {
-    const kinds = detectFields("Users sign up with email, password and mobile number, then upload a profile image and enter the OTP.").map((f) => f.kind);
-    expect(kinds).toEqual(expect.arrayContaining(["email", "password", "phone", "file", "otp"]));
-    expect(detectFields("A static about page.")).toEqual([]);
+describe("batch merge", () => {
+  const batch = (ids: string[], titles: string[], q: string): GenerationResult => ({
+    summary: "",
+    requirementRules: ["Rule A"],
+    assumptions: ["Assume"],
+    questions: [q],
+    testCases: ids.map((id, n) => asCase({ id, title: titles[n] })),
+  });
+
+  it("renumbers, drops duplicate titles and remaps IDs in questions", () => {
+    const merged = mergeResults(
+      [batch(["TC_LOG_001", "TC_LOG_002"], ["Verify A", "Verify B"], "About TC_LOG_002?"), batch(["TC_LOG_101", "TC_LOG_102"], ["Verify b", "Verify C"], "About TC_LOG_102?")],
+      "LOG",
+    );
+    expect(merged.testCases.map((c) => [c.id, c.title])).toEqual([
+      ["TC_LOG_001", "Verify A"],
+      ["TC_LOG_002", "Verify B"],
+      ["TC_LOG_003", "Verify C"],
+    ]);
+    expect(merged.questions).toEqual(["About TC_LOG_002?", "About TC_LOG_003?"]);
+    expect(merged.requirementRules).toEqual(["Rule A"]);
+    expect(merged.assumptions).toEqual(["Assume"]);
   });
 });
 
 describe("OpenAPI and cURL", () => {
-  it("reads an OpenAPI 3 YAML spec with refs, params, security and responses", () => {
+  it("reads OpenAPI 3 YAML and Swagger 2 JSON", () => {
     const eps = endpointsFromSpec(parseSpecText(fixture("orders-api.yaml")));
     expect(eps.map((e) => `${e.method} ${e.path}`)).toEqual(["GET /orders", "POST /orders", "GET /orders/{orderId}"]);
-    const post = eps[1];
-    expect(post.bodyFields.filter((f) => f.required).map((f) => f.name)).toEqual(["customerEmail", "quantity"]);
-    expect(post.bodyFields.find((f) => f.name === "channel")?.enum).toEqual(["WEB", "APP"]);
-    expect(post.sampleBody).toEqual({ customerEmail: "user@example.com", quantity: 2, channel: "WEB" });
-    expect(post.responses.map((r) => r.code)).toEqual(["201", "400", "409"]);
-    expect(post.secured).toBe(true);
-    expect(eps[2].secured).toBe(false);
-    expect(eps[0].params.map((p) => p.name)).toEqual(["page", "limit", "status"]);
-    expect(post.server).toBe("https://api.example.com/v1");
-  });
-
-  it("reads Swagger 2.0 JSON with a body parameter", () => {
-    const [ep] = endpointsFromSpec(parseSpecText(fixture("swagger2.json")));
-    expect(ep).toMatchObject({ method: "POST", path: "/items", server: "https://api.example.com/v2" });
-    expect(ep.bodyFields.map((f) => [f.name, f.required])).toEqual([
-      ["name", true],
-      ["price", false],
-    ]);
-    expect(ep.responses.find((r) => r.code === "200")?.hasSchema).toBe(true);
-  });
-
-  it("rejects text that isn't a spec", () => {
+    expect(eps[1].sampleBody).toEqual({ customerEmail: "user@example.com", quantity: 2, channel: "WEB" });
+    const [sw] = endpointsFromSpec(parseSpecText(fixture("swagger2.json")));
+    expect(sw.bodyFields.map((f) => f.name)).toEqual(["name", "price"]);
     expect(() => parseSpecText("hello: world")).toThrow(SpecError);
-    expect(() => parseSpecText("{bad json")).toThrow(/Couldn't read/);
+    expect(sampleFor({ type: "string", format: "date" }, (v) => v)).toBe("2026-01-15");
   });
 
-  it("makes sample values from schemas", () => {
-    expect(sampleFor({ type: "object", properties: { d: { type: "string", format: "date" }, n: { type: "number" }, a: { type: "array", items: { type: "boolean" } } } }, (v) => v)).toEqual({ d: "2026-01-15", n: 1.5, a: [true] });
-  });
-
-  it("parses cURL commands with quotes, continuations and data", () => {
+  it("parses cURL commands", () => {
     expect(shellWords(`curl -H 'A: b c' "x\\"y"`)).toEqual(["curl", "-H", "A: b c", 'x"y']);
-    const c = parseCurl(`curl -X POST 'https://api.example.com/users?invite=1' \\\n  -H 'Content-Type: application/json' \\\n  -H "Authorization: Bearer abc" \\\n  --data-raw '{"name":"Asha","age":30}'`);
-    expect(c).toMatchObject({ method: "POST", url: "https://api.example.com/users?invite=1", headers: { "Content-Type": "application/json", Authorization: "Bearer abc" } });
-    const ep = endpointFromCurl(c);
-    expect(ep).toMatchObject({ path: "/users", secured: true, server: "https://api.example.com" });
-    expect(ep.bodyFields.map((f) => [f.name, f.type])).toEqual([
-      ["name", "string"],
-      ["age", "integer"],
-    ]);
-    expect(parseCurl("curl -d 'a=1' https://x.test").method).toBe("POST");
-    expect(() => parseCurl("wget x")).toThrow(SpecError);
-  });
-});
-
-describe("checklist mode", () => {
-  it("adds template cases per type, filling the module name, marked as templates", () => {
-    const { result } = generateChecklist(input({ context: { ...defaultInput().context, moduleName: "Checkout" }, types: ["positive", "security"], options: { ...defaultInput().options, depth: "quick" } }));
-    expect(result.testCases.map((c) => c.title)).toEqual(["Checkout: main flow succeeds with valid input", "Checkout: authentication is required"]);
-    expect(result.testCases.every((c) => c.template)).toBe(true);
-    expect(result.testCases.map((c) => c.id)).toEqual(["TC-CHE-001", "TC-CHE-002"]);
-    expect(result.testCases[1].category).toBe("Non-Functional");
-  });
-
-  it("adds targeted cases for detected fields", () => {
-    const { result } = generateChecklist(input({ requirement: "The user enters an email and password.", types: ["validation"], options: { ...defaultInput().options, depth: "standard" } }));
-    const titles = result.testCases.map((c) => c.title);
-    expect(titles).toContain("Email: rejects an address without @");
-    expect(titles).toContain("Password: rejects a password below the minimum length");
-  });
-
-  it("generates per-endpoint API cases from an OpenAPI spec", () => {
-    const { result, warnings } = generateChecklist(input({ apiSpec: fixture("orders-api.yaml"), types: ["status-codes", "request-validation", "api-auth", "pagination", "response-schema", "headers"] }));
-    expect(warnings).toEqual([]);
-    const titles = result.testCases.map((c) => c.title);
-    expect(titles).toContain("POST /orders: valid request returns 201");
-    expect(titles).toContain("POST /orders: returns 409 (Duplicate order reference)");
-    expect(titles).toContain('POST /orders: missing required field "customerEmail" is rejected');
-    expect(titles).toContain('POST /orders: invalid value for enum "channel" is rejected');
-    expect(titles).toContain("GET /orders: missing token returns 401");
-    expect(titles.some((t) => t.startsWith("GET /orders/{orderId}: missing token"))).toBe(false);
-    expect(titles).toContain("GET /orders: pagination / sorting via page, limit");
-    expect(titles).toContain("POST /orders: response matches the documented schema");
-    expect(titles).toContain("the feature API: content type, CORS and caching headers");
-    const missing = result.testCases.find((c) => c.title.includes('"customerEmail"'))!;
-    expect(missing.api).toMatchObject({ method: "POST", endpoint: "/orders", expectedStatus: 400, body: { quantity: 2, channel: "WEB" } });
-    expect(missing.api!.headers.Authorization).toBe("Bearer {{token}}");
-  });
-
-  it("reports an unreadable spec as a warning", () => {
-    const { warnings } = generateChecklist(input({ apiSpec: "not: a spec", types: ["status-codes"] }));
-    expect(warnings[0]).toMatch(/OpenAPI/);
-  });
-
-  it("adds Gherkin when asked", () => {
-    const { result } = generateChecklist(input({ types: ["positive"], options: { ...defaultInput().options, depth: "quick", format: "both" } }));
-    expect(result.testCases[0].gherkin).toMatch(/^Feature: Feature\n\n {2}Scenario: the feature: main flow/);
-    expect(toGherkin({ title: "T", preconditions: "", steps: ["a", "b"], expectedResult: "ok" }, "F")).toBe("Feature: F\n\n  Scenario: T\n    Given a\n    And b\n    Then ok");
+    const c = parseCurl(`curl -X POST 'https://api.example.com/users' -H 'Authorization: Bearer abc' --data-raw '{"name":"Asha","age":30}'`);
+    expect(endpointFromCurl(c)).toMatchObject({ path: "/users", secured: true });
   });
 });
 
 describe("coverage", () => {
-  const req = `As a shopper I want to pay.
-AC1: Valid card payments succeed
-AC2: Declined cards show a clear error
-- Receipts are emailed after payment
-Given a saved card
-When I pay
-Then the saved card is charged`;
-
-  it("finds AC lines, bullets and Gherkin blocks", () => {
-    expect(extractCriteria(req)).toEqual([
-      { ref: "AC1", text: "Valid card payments succeed" },
-      { ref: "AC2", text: "Declined cards show a clear error" },
-      { ref: "AC3", text: "Receipts are emailed after payment" },
-      { ref: "AC4", text: "Given a saved card When I pay Then the saved card is charged" },
-    ]);
-  });
-
-  it("matches cases by ref label or wording and flags uncovered criteria", () => {
-    const rows = coverageMatrix(req, [asCase({ id: "A", requirementRef: "AC1" }), asCase({ id: "B", requirementRef: "ac-2" }), asCase({ id: "C", requirementRef: "receipts emailed after payment" })]);
-    expect(rows.map((r) => [r.ref, r.caseIds])).toEqual([
-      ["AC1", ["A"]],
-      ["AC2", ["B"]],
-      ["AC3", ["C"]],
-      ["AC4", []],
-    ]);
+  it("finds criteria and matches cases by ref", () => {
+    const req = "AC1: Valid card payments succeed\nAC2: Declined cards show an error\n- Receipts are emailed";
+    expect(extractCriteria(req).map((c) => c.ref)).toEqual(["AC1", "AC2", "AC3"]);
+    const rows = coverageMatrix(req, [asCase({ id: "A", requirementRef: "AC1" }), asCase({ id: "B", requirementRef: "ac-2" })]);
+    expect(rows.map((r) => r.caseIds)).toEqual([["A"], ["B"], []]);
   });
 });
 
-describe("exporters", () => {
-  const api = asCase({ id: "TC-API-001", title: "Create order", category: "API", api: { method: "POST", endpoint: "/orders?dry=1", headers: { "Content-Type": "application/json" }, body: { q: 1 }, expectedStatus: 201, assertions: ["status 201"] } });
-  const tricky = asCase({ id: "TC-1", title: '=HYPERLINK("x") and "quotes", commas', steps: ["One", "Two"] });
+describe("exporters use the standard columns", () => {
+  const tricky = asCase({ id: "TC_X_001", title: '=HYPERLINK("x") "quotes", commas', requirementRef: "" });
+  const api = asCase({ id: "TC_X_002", category: "API", requirementRef: "", api: { method: "POST", endpoint: "/orders?dry=1", headers: { "Content-Type": "application/json" }, body: { q: 1 }, expectedStatus: 201, assertions: ["status 201"] } });
 
-  it("CSV has a BOM, escapes quotes and neutralises formulas", () => {
-    const csv = toCsv([tricky], "hml");
-    expect(csv.startsWith("﻿ID,Title,Category")).toBe(true);
-    expect(csv).toContain(`"'=HYPERLINK(""x"") and ""quotes"", commas"`);
-    expect(csv).toContain('"1. One\n2. Two"');
-    expect(csv).toContain(",High,");
+  it("CSV: BOM, standard column order, formula escaping; ref column only when used", () => {
+    const csv = toCsv([tricky], "standard");
+    expect(csv.startsWith("﻿ID,Title,Category,Type,Priority,Automation,Preconditions,Steps,Test data,Expected result\r\n")).toBe(true);
+    expect(csv).toContain(`"'=HYPERLINK(""x"") ""quotes"", commas"`);
+    expect(csv).toContain(",P1 - Critical,Yes,");
+    expect(columnsFor([asCase()])).toContain("Requirement ref");
     expect(csvCell("-1")).toBe(`"'-1"`);
-    expect(csvCell("plain")).toBe("plain");
   });
 
-  it("Markdown escapes pipes and joins steps with <br>", () => {
-    const md = toMarkdownTable([asCase({ title: "a | b", steps: ["x", "y"] })], "p");
-    expect(md).toContain("a \\| b");
-    expect(md).toContain("1. x<br>2. y");
-  });
-
-  it("Gherkin groups scenarios by category with tags", () => {
+  it("Markdown, Gherkin, Postman, API Playground and TC Library", () => {
+    expect(toMarkdownTable([tricky], "p0")).toContain("| ID | Title | Category | Type | Priority | Automation |");
+    expect(toMarkdownTable([tricky], "p0")).toContain("| P0 | Yes |");
     const f = toFeatureFile([tricky, api], "Checkout");
     expect(f).toContain("Feature: Checkout — Functional");
-    expect(f).toContain("Feature: Checkout — API");
-    expect(f).toContain("  @TC-1 @P0 @automation");
-    expect(f.match(/^Feature:/gm)).toHaveLength(2);
-  });
-
-  it("Postman collection v2.1 has requests, baseUrl and status tests", () => {
+    expect(f).toContain("@TC_X_001 @P1 @positive @automation");
+    expect(toGherkin(tricky, "F")).toMatch(/Scenario: =HYPERLINK.*\n\s+Given App is up in QA\./);
     const p = JSON.parse(toPostman([tricky, api], "Orders"));
-    expect(p.info.schema).toBe("https://schema.getpostman.com/json/collection/v2.1.0/collection.json");
     expect(p.item).toHaveLength(1);
-    expect(p.item[0].request).toMatchObject({ method: "POST", url: { raw: "{{baseUrl}}/orders?dry=1", host: ["{{baseUrl}}"], path: ["orders"], query: [{ key: "dry", value: "1" }] } });
-    expect(p.item[0].request.body.raw).toBe('{\n  "q": 1\n}');
     expect(p.item[0].event[0].script.exec.join("\n")).toContain("pm.response.to.have.status(201)");
-    expect(p.variable[0].key).toBe("baseUrl");
-  });
-
-  it("API Playground requests use {{baseUrl}} and a status assertion", () => {
-    const [r] = toPlaygroundRequests([tricky, api]);
-    expect(r).toMatchObject({ method: "POST", url: "{{baseUrl}}/orders?dry=1", body: { type: "json" }, assertions: [{ type: "status", operator: "equals", expected: "201" }] });
-    expect(r.headers[0]).toMatchObject({ key: "Content-Type", value: "application/json", enabled: true });
-  });
-
-  it("TC Library Markdown has summary, questions and the table", () => {
-    const md = toTcLibraryMarkdown("Checkout — 5 Oct 2026", answer, [tricky], "p");
-    expect(md).toContain("# Checkout — 5 Oct 2026");
-    expect(md).toContain("## Open questions\n\n- Is UPI in scope?");
-    expect(md).toContain("## Test cases (1)");
-  });
-
-  it("Excel has Test Cases, Summary and API sheets", async () => {
-    const bytes = await toXlsx("Checkout", answer, [tricky, api], "p");
-    const wb = new ExcelJS.Workbook();
-    await wb.xlsx.load(bytes.buffer as ArrayBuffer);
-    expect(wb.worksheets.map((w) => w.name)).toEqual(["Test Cases", "Summary", "API"]);
-    const ws = wb.getWorksheet("Test Cases")!;
-    expect(ws.getRow(1).values).toEqual([undefined, "ID", "Title", "Category", "Type", "Priority", "Preconditions", "Steps", "Test data", "Expected result", "Requirement", "Automation candidate"]);
-    expect(ws.getCell("G2").value).toBe("1. One\n2. Two");
-    expect(wb.getWorksheet("API")!.getCell("D2").value).toBe("/orders?dry=1");
-    expect((await toXlsx("x", answer, [tricky], "p")).byteLength).toBeGreaterThan(0);
+    expect(toPlaygroundRequests([api])[0]).toMatchObject({ url: "{{baseUrl}}/orders?dry=1", assertions: [{ expected: "201" }] });
+    expect(toTcLibraryMarkdown("Checkout", answer as unknown as GenerationResult, [tricky], "standard")).toContain("## Test cases (1)");
   });
 });

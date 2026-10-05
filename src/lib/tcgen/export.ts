@@ -3,13 +3,32 @@
 import { toGherkin } from "./checklist";
 import { CATEGORIES, priorityLabel, type GenerationResult, type PriorityScheme, type TestCase } from "./types";
 
-export const COLUMNS = ["ID", "Title", "Category", "Type", "Priority", "Preconditions", "Steps", "Test data", "Expected result", "Requirement", "Automation candidate"] as const;
+/** The Standard Test Case Format columns, in order. "Requirement ref" is added only when a case has one. */
+export const COLUMNS = ["ID", "Title", "Category", "Type", "Priority", "Automation", "Preconditions", "Steps", "Test data", "Expected result"] as const;
+export const REF_COLUMN = "Requirement ref";
 
-export const numberedSteps = (steps: string[]) => steps.map((s, i) => `${i + 1}. ${s}`).join("\n");
+export const numberedSteps = (steps: string[]) => steps.map((s, i) => `${i + 1}. ${s.replace(/^\s*\d+[.)]\s*/, "")}`).join("\n");
 
-/** Row values in COLUMNS order. */
-export function rowValues(c: TestCase, scheme: PriorityScheme): string[] {
-  return [c.id, c.title, c.category, c.type, priorityLabel(c.priority, scheme), c.preconditions, numberedSteps(c.steps), c.testData, c.expectedResult, c.requirementRef, c.automationCandidate ? "Yes" : "No"];
+export const hasRefs = (cases: TestCase[]) => cases.some((c) => c.requirementRef.trim());
+
+/** Header for a set of cases. */
+export const columnsFor = (cases: TestCase[]) => [...COLUMNS, ...(hasRefs(cases) ? [REF_COLUMN] : [])];
+
+/** Row values in column order (+ ref when `withRef`). */
+export function rowValues(c: TestCase, scheme: PriorityScheme, withRef = false): string[] {
+  return [
+    c.id,
+    c.title,
+    c.category,
+    c.type,
+    priorityLabel(c.priority, scheme),
+    c.automationCandidate ? "Yes" : "No",
+    c.preconditions,
+    numberedSteps(c.steps),
+    c.testData,
+    c.expectedResult,
+    ...(withRef ? [c.requirementRef] : []),
+  ];
 }
 
 /** Quotes when needed; prefixes formula-like values (= + - @) with ' so spreadsheets don't run them. */
@@ -20,18 +39,18 @@ export function csvCell(v: string): string {
 
 /** UTF-8 CSV with BOM so Excel opens it cleanly. */
 export function toCsv(cases: TestCase[], scheme: PriorityScheme): string {
-  const lines = [COLUMNS.join(","), ...cases.map((c) => rowValues(c, scheme).map(csvCell).join(","))];
+  const withRef = hasRefs(cases);
+  const lines = [columnsFor(cases).join(","), ...cases.map((c) => rowValues(c, scheme, withRef).map(csvCell).join(","))];
   return `﻿${lines.join("\r\n")}\r\n`;
 }
 
 const mdCell = (s: string) => s.replace(/\|/g, "\\|").replace(/\r?\n/g, "<br>").trim() || " ";
 
 export function toMarkdownTable(cases: TestCase[], scheme: PriorityScheme): string {
-  const cols = ["ID", "Title", "Category", "Type", "Priority", "Preconditions", "Steps", "Test data", "Expected result"];
+  const withRef = hasRefs(cases);
+  const cols = columnsFor(cases);
   const lines = [`| ${cols.join(" | ")} |`, `|${cols.map(() => "---").join("|")}|`];
-  for (const c of cases) {
-    lines.push(`| ${[c.id, c.title, c.category, c.type, priorityLabel(c.priority, scheme), c.preconditions, numberedSteps(c.steps), c.testData, c.expectedResult].map(mdCell).join(" | ")} |`);
-  }
+  for (const c of cases) lines.push(`| ${rowValues(c, scheme, withRef).map(mdCell).join(" | ")} |`);
   return lines.join("\n") + "\n";
 }
 
@@ -41,7 +60,7 @@ function scenarioOf(c: TestCase, feature: string): string {
   const lines = src.split(/\r?\n/).filter((l) => !/^\s*Feature:/i.test(l));
   while (lines.length && !lines[0].trim()) lines.shift();
   const body = lines.map((l) => (/^\s*(Scenario|Scenario Outline|Background|Examples):/i.test(l) ? `  ${l.trim()}` : /^\s*\|/.test(l) ? `      ${l.trim()}` : l.trim() ? `    ${l.trim()}` : ""));
-  const tags = [`@${c.id}`, `@${c.priority}`, ...(c.automationCandidate ? ["@automation"] : [])].join(" ");
+  const tags = [`@${c.id}`, `@${c.priority}`, `@${c.type.toLowerCase()}`, ...(c.automationCandidate ? ["@automation"] : [])].join(" ");
   return [`  ${tags}`, ...body].join("\n");
 }
 

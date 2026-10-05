@@ -47,6 +47,6 @@ export class TestCaseGeneratorPage extends BasePage {
   async download(button: string | RegExp) {
     const [dl] = await Promise.all([this.page.waitForEvent("download"), this.page.getByRole("button", { name: button }).click()]);
     const path = await dl.path();
-    return { name: dl.suggestedFilename(), text: path ? await readFile(path, "utf8") : "" };
+    return { name: dl.suggestedFilename(), path, text: path ? await readFile(path, "utf8") : "" };
   }
 }

@@ -533,21 +533,23 @@ enum TcGenMode {
 }
 
 model TestCaseGeneration {
-  id            String    @id @default(cuid())
-  name          String
-  requirement   String
-  apiInput      String?
-  context       Json
-  options       Json
-  selectedTypes String[]
-  mode          TcGenMode
-  summary       String?
-  assumptions   String[]
-  questions     String[]
-  testCases     Json
-  createdBy     String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id               String    @id @default(cuid())
+  name             String
+  requirement      String
+  apiInput         String?
+  context          Json
+  options          Json
+  selectedTypes    String[]
+  mode             TcGenMode
+  summary          String?
+  /// Rules, values and limits found in the requirement.
+  requirementRules String[]  @default([])
+  assumptions      String[]
+  questions        String[]
+  testCases        Json
+  createdBy        String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@index([updatedAt])
 }

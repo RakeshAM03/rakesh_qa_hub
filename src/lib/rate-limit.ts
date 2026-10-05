@@ -29,7 +29,7 @@ const OWN_LIMIT: [RegExp, Rule][] = [
   [/^\/api\/selenium-to-playwright\/ai\/?$/, RULES.converterAi],
   [/^\/api\/failure-analyzer\/ai\/?$/, RULES.failureAi],
   [/^\/api\/api-playground\/send\/?$/, RULES.apiSend],
-  [/^\/api\/test-case-generator\/generate\/?$/, RULES.tcgenAi],
+  [/^\/api\/test-case-generator\/(?:generate|improve)\/?$/, RULES.tcgenAi],
 ];
 
 export function createLimiter(now: () => number = Date.now) {

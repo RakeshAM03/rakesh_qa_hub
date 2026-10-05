@@ -1,0 +1,1 @@
+Resume upload — only PDF, DOCX, DOC, TXT; max file size 5 MB.

@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { effectivePrefix } from "@/lib/tcgen/prompt";
 import { MAX_INPUT_BYTES } from "@/lib/tcgen/schema";
-import { CATEGORIES, DEPTHS, TEST_TYPES, TYPE_PRESETS, type ApiForm, type Context, type TcInput, type TcOptions } from "@/lib/tcgen/types";
+import { DEPTHS, TEST_TYPES, TYPE_GROUPS, TYPE_PRESETS, type ApiForm, type Context, type TcInput, type TcOptions } from "@/lib/tcgen/types";
 import { cn } from "@/lib/utils";
 
 const MAX_UPLOAD = 1024 * 1024;
@@ -32,7 +32,7 @@ type Props = {
   onChecklist: () => void;
 };
 
-export const inputBytes = (i: TcInput) => new TextEncoder().encode(i.requirement + i.apiSpec + i.apiForm.requestBody + i.apiForm.responseSample + i.apiForm.notes + i.context.rules + i.context.outOfScope).length;
+export const inputBytes = (i: TcInput) => new TextEncoder().encode(i.requirement + i.apiSpec + i.apiForm.requestBody + i.apiForm.responseSample + i.apiForm.notes + i.context.rules + i.context.outOfScope + i.context.messages).length;
 
 export function InputCard({ input, onChange, tab, onTab, aiEnabled, aiBusy, onAi, onCancelAi, onCopyPrompt, onChecklist }: Props) {
   const id = useId();
@@ -215,6 +215,27 @@ export function InputCard({ input, onChange, tab, onTab, aiEnabled, aiBusy, onAi
               <Label htmlFor={`${id}-oos`}>Out of scope</Label>
               <Textarea id={`${id}-oos`} value={input.context.outOfScope} onChange={(e) => setCtx({ outOfScope: e.target.value })} rows={3} />
             </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor={`${id}-nav`}>Navigation path</Label>
+              <Input id={`${id}-nav`} value={input.context.navigation} onChange={(e) => setCtx({ navigation: e.target.value })} placeholder="App > Settings > Profile" maxLength={500} />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor={`${id}-env`}>Environment</Label>
+              <Input id={`${id}-env`} value={input.context.environment} onChange={(e) => setCtx({ environment: e.target.value })} placeholder="QA environment" maxLength={200} />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor={`${id}-elements`}>UI element names</Label>
+              <Textarea id={`${id}-elements`} value={input.context.elements} onChange={(e) => setCtx({ elements: e.target.value })} rows={2} placeholder="Upload Resume, Save, Resume section (comma-separated)" />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor={`${id}-messages`}>Known messages</Label>
+              <Textarea id={`${id}-messages`} value={input.context.messages} onChange={(e) => setCtx({ messages: e.target.value })} rows={2} placeholder={"Resume uploaded successfully\nFile size exceeds the maximum limit of 5 MB."} />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor={`${id}-prefix`}>Module abbreviation (for IDs)</Label>
+              <Input id={`${id}-prefix`} value={input.options.idPrefix} onChange={(e) => setOpt({ idPrefix: e.target.value.toUpperCase() })} placeholder={effectivePrefix(input)} maxLength={20} />
+              <p className="text-xs text-neutral-600">IDs look like TC_{effectivePrefix(input)}_001</p>
+            </div>
           </div>
         )}
       </div>
@@ -236,14 +257,14 @@ export function InputCard({ input, onChange, tab, onTab, aiEnabled, aiBusy, onAi
           ))}
         </div>
         <div className="grid gap-3 lg:grid-cols-3">
-          {CATEGORIES.map((cat) => (
+          {TYPE_GROUPS.map((cat) => (
             <div key={cat} role="group" aria-label={`${cat} test types`} className="rounded-lg border border-neutral-200 p-3">
               <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-700">
                 {cat}
                 {cat === "API" && !apiUsed && <span className="ml-1 font-normal normal-case tracking-normal text-neutral-600">(for API definitions or app type API)</span>}
               </p>
               <div className="flex flex-wrap gap-1.5">
-                {TEST_TYPES.filter((t) => t.category === cat).map((t) => {
+                {TEST_TYPES.filter((t) => t.group === cat).map((t) => {
                   const on = input.types.includes(t.id);
                   return (
                     <button
@@ -267,7 +288,7 @@ export function InputCard({ input, onChange, tab, onTab, aiEnabled, aiBusy, onAi
         </div>
       </fieldset>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor={`${id}-depth`}>Depth</Label>
           <Select value={input.options.depth} onValueChange={(depth) => setOpt({ depth: depth as TcOptions["depth"] })}>
@@ -277,7 +298,7 @@ export function InputCard({ input, onChange, tab, onTab, aiEnabled, aiBusy, onAi
             <SelectContent position="popper">
               {DEPTHS.map((d) => (
                 <SelectItem key={d.value} value={d.value}>
-                  {d.label} ({d.target.replace("about ", "~")})
+                  {d.label} ({d.target})
                 </SelectItem>
               ))}
             </SelectContent>
@@ -303,15 +324,11 @@ export function InputCard({ input, onChange, tab, onTab, aiEnabled, aiBusy, onAi
               <SelectValue />
             </SelectTrigger>
             <SelectContent position="popper">
-              <SelectItem value="p">P0–P3</SelectItem>
+              <SelectItem value="standard">P1 - Critical … P4 - Low</SelectItem>
+              <SelectItem value="p0">P0–P3</SelectItem>
               <SelectItem value="hml">High / Medium / Low</SelectItem>
             </SelectContent>
           </Select>
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor={`${id}-prefix`}>ID prefix</Label>
-          <Input id={`${id}-prefix`} value={input.options.idPrefix} onChange={(e) => setOpt({ idPrefix: e.target.value.toUpperCase() })} placeholder={effectivePrefix(input)} maxLength={20} />
-          <p className="text-xs text-neutral-600">IDs look like TC-{effectivePrefix(input)}-001</p>
         </div>
         <label className="flex items-center gap-2 self-center text-sm">
           <Checkbox checked={input.options.includeTestData} onCheckedChange={(c) => setOpt({ includeTestData: c === true })} />

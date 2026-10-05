@@ -1,0 +1,1 @@
+Registration form: Name (required, max 50 chars), email (required, unique), phone (10 digits), date of birth (age 18+).
