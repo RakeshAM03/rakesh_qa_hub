@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { FileUp, Plus } from "lucide-react";
+import { FileUp, Plus, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,6 +12,7 @@ import type { IssueDto } from "@/lib/customer-issues/server";
 import { CiHeader } from "./ci-header";
 import { BulkEditDialog, NewIssueDialog } from "./issue-dialogs";
 import { ImportDialog } from "./import-dialog";
+import { syncNow, useJira } from "./jira-settings";
 import { IssueList } from "./issue-list";
 import { useLists } from "./use-lists";
 
@@ -27,6 +28,9 @@ export function IssuesPage() {
   const [product, setProduct] = useState(ALL);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [dialog, setDialog] = useState<"new" | "import" | "bulk" | null>(null);
+  const { jira, reload: reloadJira } = useJira();
+  const [syncing, setSyncing] = useState(false);
+  const lastSync = jira?.logs.find((l) => l.finishedAt);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -50,6 +54,22 @@ export function IssuesPage() {
       <CiHeader
         actions={
           <>
+            {jira?.connected && (
+              <Button
+                variant="outline"
+                disabled={syncing || !jira.settings.jql.trim()}
+                title={jira.settings.jql.trim() ? (lastSync ? `Last sync ${new Date(lastSync.startedAt).toLocaleString()}` : "Not synced yet") : "Set a JQL query in Settings → Jira"}
+                onClick={async () => {
+                  setSyncing(true);
+                  await syncNow();
+                  setSyncing(false);
+                  reload();
+                  reloadJira();
+                }}
+              >
+                <RefreshCw className={syncing ? "animate-spin" : undefined} aria-hidden /> Sync now
+              </Button>
+            )}
             <Button variant="outline" onClick={() => setDialog("import")} disabled={!lists}>
               <FileUp aria-hidden /> Import
             </Button>

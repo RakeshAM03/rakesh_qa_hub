@@ -91,3 +91,13 @@ export const importSchema = z.object({
 });
 
 export { LIST_KINDS };
+
+export const jiraSettingsSchema = z.object({
+  jql: z.string().max(5000).optional(),
+  productMapping: z
+    .array(z.object({ kind: z.enum(["project", "component"]), value: z.string().trim().min(1, "Enter a project key or component").max(200), productId: id }))
+    .max(200)
+    .optional(),
+  scheduleEnabled: z.boolean().optional(),
+  writeBackEnabled: z.boolean().optional(),
+});

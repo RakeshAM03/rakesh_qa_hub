@@ -706,6 +706,26 @@ Spec: `prompts/CustomerIssueRegression-prompt.md`. All defaults accepted:
     values changed).
 14. Phases C0–C7, push per phase, deploy once at the end (migration reaches Supabase via Vercel).
 
+### Customer Issue RCA phase notes
+
+- **C1:** migration `customer_issues` (models + `CUSTOMER_REGRESSION` gate type + 102 default list
+  rows + Jira settings row + template gate, generated from `src/config/customer-issues.ts`).
+  `ListItem.key` marks items the rules rely on (Valid Bug, Duplicate, Known Issue, Others,
+  Customer…) so names stay editable; keyed items can't be deleted. Issues reference list items by
+  id (soft links, like other modules); items in use can only be deactivated. Own rate limits:
+  Jira sync 5/hour, run results 300/10 min (one PATCH per executed case).
+- **C2:** saving partial work is always allowed; rule problems show inline and only block
+  "Mark RCA complete"; changing an RCA field re-opens a completed RCA. Every list reference is
+  checked server-side against the right list. Sidebar entry + guide land together in C7 (the
+  guide tests require a guide + screenshot for every sidebar module).
+- **C3:** Jira search uses `POST /rest/api/3/search/jql` with `nextPageToken` (the old
+  `/rest/api/3/search` is retired); 429 → `Retry-After` (capped 30 s, 3 retries). Refinement of
+  decision 8: "days to detect" uses the earliest **Affects Version** release date (the release
+  that introduced the bug); "Released in" / Product are filled from Jira only while empty.
+  Concurrent syncs refused (10-min window). Write-back hashes the comment text so an unchanged RCA
+  isn't posted twice. Mock Jira (`e2e/mock-jira.mjs`, fake fixture issues) runs as a second
+  Playwright web server; the app gets fake `JIRA_*` env in E2E only.
+
 ## Open questions / next steps
 
 - Install the Vercel GitHub app for RakeshAM03/rakesh_qa_hub, then run
