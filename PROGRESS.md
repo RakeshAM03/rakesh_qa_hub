@@ -739,6 +739,15 @@ Spec: `prompts/CustomerIssueRegression-prompt.md`. All defaults accepted:
   Release Readiness (only change there). Fail → Bug Formatter hand-off (case + linked issue).
   Pack and run report exports reuse the Standard Test Case Format workbook style; the run report
   also copies as Markdown.
+- **C6:** dashboard on `/customer-issues` above the issue list, sharing its product filter. KPIs
+  per spec (% catchable = Yes + Partially among Valid Bugs with Catchable set; % customers first
+  among issues with Detected by set; quarter = calendar quarter, UTC). Ranked charts use one hue
+  (identity on the axis — 11 categories exceed the 8-colour validated palette); only per-product
+  and catchable charts are stacked (≤ 7 products coloured, the rest "Other / no product").
+  Legend text in text colours, series order kept (`itemSorter={null}`). Every chart has a
+  "Show as table". RCA categories drill into sub-categories on click. Leakage insights: top catch
+  stage this quarter, categories that doubled / are new, recurring, customers-first ≥ 50%,
+  "Others" > 15%, valid bugs without cases.
 
 ## Open questions / next steps
 

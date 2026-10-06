@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { IssueDto } from "@/lib/customer-issues/server";
 
 import { CiHeader } from "./ci-header";
+import { Dashboard } from "./dashboard";
 import { BulkEditDialog, NewIssueDialog } from "./issue-dialogs";
 import { ImportDialog } from "./import-dialog";
 import { syncNow, useJira } from "./jira-settings";
@@ -102,6 +103,8 @@ export function IssuesPage() {
               </SelectContent>
             </Select>
           </div>
+          <Dashboard issues={filtered} lists={lists} productFiltered={product !== ALL} />
+          <h2 className="mt-2 text-lg font-semibold text-neutral-900">Issues</h2>
           <IssueList issues={filtered} lists={lists} selected={selected} onSelect={setSelected} onBulkEdit={() => setDialog("bulk")} />
           <NewIssueDialog open={dialog === "new"} onOpenChange={(o) => setDialog(o ? "new" : null)} lists={lists} onCreated={(id) => router.push(`/customer-issues/${id}`)} />
           <ImportDialog open={dialog === "import"} onOpenChange={(o) => setDialog(o ? "import" : null)} lists={lists} onImported={reload} />
