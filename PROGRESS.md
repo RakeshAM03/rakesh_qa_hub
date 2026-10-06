@@ -668,6 +668,44 @@ test types and Standard depth are the page defaults.
   404, in-app links, Help link, How to use links). Contrast: 21 guide states × light / dark × 5
   themes = 210 checks, 0 violations.
 
+## Customer Issue RCA — decisions (Phase C0, 2026-10-06)
+
+Spec: `prompts/CustomerIssueRegression-prompt.md`. All defaults accepted:
+
+1. Module icon `LifeBuoy` (as specified); the sidebar Help link moves to `CircleHelp`.
+2. 17th module, 5th in Test Planning (rose accent): sidebar, home cards, README, user-guide index /
+   overview (overview must still print on one A4 page), guide tests, navigation E2E; new guide
+   `docs/user-guide/customer-issues.md` + screenshot.
+3. Generic lists (dispositions, RCA categories + sub-categories with default catchable / owner,
+   caught-at stages, why-escaped, detected-by, scope, impact, owner teams) inserted by the migration
+   (like the Standard release template); E2E global setup re-inserts them. Products: none seeded
+   (hint suggests generic names); `seed:demo` adds "Demo Product A / B" + DEMO-101…105.
+4. Scheduled sync: daily Vercel Cron (00:30 UTC = 06:00 IST, Hobby-safe), no-op unless enabled in
+   Settings; endpoint requires `Authorization: Bearer $CRON_SECRET`.
+5. No production secrets added by me (`JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`,
+   `CRON_SECRET`): "Jira not connected" until the user adds them; commands given at the end.
+6. Tests: unit tests mock `fetch`; E2E uses a local mock Jira server (fake fixture JSON: paginated
+   search, 429 + Retry-After, /myself, comments) via `JIRA_BASE_URL`. Never a real Jira.
+7. Jira status by status category: To Do → Open, In Progress → In Progress, Done → Closed if the
+   name contains "closed", else Fixed. Priority → `priority`; severity stays hub-owned.
+8. Days to detect: Jira fix version `releaseDate` (when synced), else a Release Readiness release
+   with the same version and a release date, else "—".
+9. Status (Open / In Progress / Fixed / Closed) separate from **Mark RCA complete** (enabled only
+   when validation passes; editing a required field later clears it). Needs RCA = no disposition,
+   or Valid Bug with RCA not complete.
+10. New gate type "Customer issue regression pack passed" (blocker): latest regression run linked to
+    the release must be Complete with 0 Fail / 0 Blocked; no linked run → "Can't check".
+    Migration appends it to the stored Standard release template only if that row exists and
+    lacks it; existing releases untouched.
+11. Regression cases from the Test Case Generator engine (checklist / Claude prompt + import / AI
+    when a key exists); requirement = summary + description + RCA + sub-category + prevention +
+    variants hint; IDs `TC_CI_<issue-key>_<NN>`; one TC Library entry per issue (create / update).
+12. CSV / Excel import client-side (≤ 2,000 rows / 5 MB), auto column matching + manual mapping,
+    old "Type" → category mapping step, preview with per-row errors, skip existing keys, template.
+13. Write-back off by default; when on, one comment per RCA completion (again only if the RCA
+    values changed).
+14. Phases C0–C7, push per phase, deploy once at the end (migration reaches Supabase via Vercel).
+
 ## Open questions / next steps
 
 - Install the Vercel GitHub app for RakeshAM03/rakesh_qa_hub, then run

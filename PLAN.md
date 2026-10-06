@@ -205,3 +205,18 @@ Source: `prompts/TestCaseGenerator-QUALITY-UPGRADE.md`; format reference
 - [x] **Phase G — User guide** 🛑 questions answered ("go", all defaults). 16 module guides + index +
   one-page overview in `docs/user-guide/`, screenshots, in-app `/guide` rendered from the same files,
   Help / How to use links, tests, deploy.
+
+---
+
+# Customer Issue RCA — Plan
+
+Spec: `prompts/CustomerIssueRegression-prompt.md`. All 14 defaults accepted.
+
+- [x] **C0 — Decisions** recorded in PROGRESS.md.
+- [ ] **C1 — Data model + lists + Settings** (migration with generic lists, Settings → Lists / Products).
+- [ ] **C2 — Issues** (record, form, validation + completeness, list / Needs RCA, CSV / Excel import, bulk edit).
+- [ ] **C3 — Jira** (connection, test, JQL + product mapping, sync with paging / 429, cron, log, write-back).
+- [ ] **C4 — Regression cases** (generate via the Test Case Generator engine, edit, TC Library).
+- [ ] **C5 — Pack, runs, enforcement** (pack + export, runs, Bug Formatter hand-off, Readiness gate).
+- [ ] **C6 — Dashboard** (product filter, KPIs, charts, leakage insights).
+- [ ] **C7 — Guide, screenshots, tests, deploy.**
