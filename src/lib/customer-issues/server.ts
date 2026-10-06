@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { CustomerIssue, ListItem, Prisma } from "@prisma/client";
+import type { CustomerIssue, ListItem, Prisma, RegressionCase } from "@prisma/client";
 
 import { db } from "@/lib/db";
 
@@ -164,3 +164,27 @@ export function badReference(data: Record<string, unknown>, lists: Lists): strin
   }
   return null;
 }
+
+export const caseDto = (c: RegressionCase) => ({
+  id: c.id,
+  issueId: c.issueId,
+  caseId: c.caseId,
+  title: c.title,
+  category: c.category,
+  type: c.type,
+  priority: c.priority,
+  preconditions: c.preconditions,
+  steps: c.steps,
+  testData: c.testData,
+  expectedResult: c.expectedResult,
+  productId: c.productId,
+  module: c.module,
+  mandatory: c.mandatory,
+  automated: c.automated,
+  automationRef: c.automationRef,
+  retired: c.retired,
+  retiredReason: c.retiredReason,
+  sortOrder: c.sortOrder,
+  updatedAt: c.updatedAt.toISOString(),
+});
+export type CaseDto = ReturnType<typeof caseDto>;

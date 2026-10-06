@@ -673,9 +673,10 @@ test types and Standard depth are the page defaults.
 Spec: `prompts/CustomerIssueRegression-prompt.md`. All defaults accepted:
 
 1. Module icon `LifeBuoy` (as specified); the sidebar Help link moves to `CircleHelp`.
-2. 17th module, 5th in Test Planning (rose accent): sidebar, home cards, README, user-guide index /
-   overview (overview must still print on one A4 page), guide tests, navigation E2E; new guide
-   `docs/user-guide/customer-issues.md` + screenshot.
+2. 17th module (rose accent). **Placement changed by the user (2026-10-06):** in **Test Execution**,
+   right after Bug Formatter and before AI PR Review (not Test Planning) — sidebar, home cards,
+   README, user-guide index / overview (overview must still print on one A4 page), guide tests,
+   navigation E2E; new guide `docs/user-guide/customer-issues.md` + screenshot.
 3. Generic lists (dispositions, RCA categories + sub-categories with default catchable / owner,
    caught-at stages, why-escaped, detected-by, scope, impact, owner teams) inserted by the migration
    (like the Standard release template); E2E global setup re-inserts them. Products: none seeded
@@ -725,6 +726,12 @@ Spec: `prompts/CustomerIssueRegression-prompt.md`. All defaults accepted:
   Concurrent syncs refused (10-min window). Write-back hashes the comment text so an unchanged RCA
   isn't posted twice. Mock Jira (`e2e/mock-jira.mjs`, fake fixture issues) runs as a second
   Playwright web server; the app gets fake `JIRA_*` env in E2E only.
+- **C4:** checklist mode = issue-specific cases (exact reported scenario with the description's
+  numbered steps, one case per root-cause variant from the sub-category — `VARIANT_HINTS`, main
+  category fallback — and related flows) + up to 4 relevant P1/P2 engine cases (no templates);
+  Claude prompt / AI use `tcInputFor()` (focused types, Quick depth). Cases are previewed and
+  ticked before adding. The cases panel reloads only itself, so unsaved classification edits on
+  the page are kept. TC Library: one entry per issue (`tcLibraryEntryId`), updated in place.
 
 ## Open questions / next steps
 

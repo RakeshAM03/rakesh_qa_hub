@@ -101,3 +101,19 @@ export const jiraSettingsSchema = z.object({
   scheduleEnabled: z.boolean().optional(),
   writeBackEnabled: z.boolean().optional(),
 });
+
+const caseFields = {
+  title: z.string().trim().min(1, "Title is required").max(500),
+  category: z.string().trim().min(1).max(60),
+  type: z.string().trim().min(1).max(30),
+  priority: z.enum(["P1", "P2", "P3", "P4"]),
+  preconditions: z.string().max(10_000),
+  steps: z.array(z.string().max(2000)).max(60),
+  testData: z.string().max(10_000),
+  expectedResult: z.string().max(10_000),
+};
+export const caseCreateSchema = z.object({ cases: z.array(z.object(caseFields)).min(1).max(100) });
+export const casePatchSchema = z
+  .object({ ...caseFields, mandatory: z.boolean(), automated: z.enum(["NO", "PLANNED", "YES"]), automationRef: z.string().trim().max(500).nullable(), sortOrder: z.number().int().min(0).max(100_000) })
+  .partial();
+export const caseRetireSchema = z.object({ retired: z.boolean(), reason: z.string().trim().max(1000).optional() }).refine((v) => !v.retired || (v.reason ?? "").length > 0, "Give a reason for retiring the case.");
