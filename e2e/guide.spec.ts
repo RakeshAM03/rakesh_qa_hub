@@ -9,6 +9,7 @@ const MODULES: [slug: string, title: string][] = [
   ["api-playground", "API Test Playground"],
   ["bug-tracker", "Bug Tracker"],
   ["bug-formatter", "Bug Formatter"],
+  ["customer-issues", "Customer Issue RCA"],
   ["ai-pr-review", "AI PR Review"],
   ["ci", "CI Reports"],
   ["failure-analyzer", "Test Failure Analyzer"],
@@ -20,11 +21,11 @@ const MODULES: [slug: string, title: string][] = [
 ];
 
 test.describe("User guide", () => {
-  test("the index lists all 16 modules and links to the overview", async ({ page }) => {
+  test("the index lists all 17 modules and links to the overview", async ({ page }) => {
     await page.goto("/guide");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Rakesh QA Hub — User Guide");
     const table = page.locator("article table").first();
-    await expect(table.getByRole("link", { name: "Open" })).toHaveCount(16);
+    await expect(table.getByRole("link", { name: "Open" })).toHaveCount(17);
     await page.locator("article").getByRole("link", { name: "Overview" }).click();
     await expect(page).toHaveURL(/\/guide\/overview$/);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Rakesh QA Hub — Overview");

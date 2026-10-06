@@ -28,8 +28,8 @@ const SECTIONS = [
 ];
 
 describe("user guide files", () => {
-  it("has one guide per sidebar module (16), named after its route", () => {
-    expect(GUIDE_MODULES).toHaveLength(16);
+  it("has one guide per sidebar module (17), named after its route", () => {
+    expect(GUIDE_MODULES).toHaveLength(17);
     expect(GUIDE_MODULES.map((m) => `/${m.slug}`)).toEqual(navItems.map((i) => i.href));
     const onDisk = readdirSync(DIR).filter((f) => f.endsWith(".md"));
     expect(onDisk.sort()).toEqual([...allFiles].sort());

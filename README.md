@@ -1,6 +1,6 @@
 # Rakesh QA Hub
 
-One place for everyday QA work: CI runs, bug and time tracking, PR QA session prompts for Claude Code, AI code-review flags and a test-plan library, plus release readiness, risk-based test planning, locator and Selenium-to-Playwright tools, a test failure analyzer, an API test playground, an automation ROI dashboard, a test case generator and a test data generator. It's a public Next.js app; no login is needed.
+One place for everyday QA work: CI runs, bug and time tracking, PR QA session prompts for Claude Code, AI code-review flags and a test-plan library, plus release readiness, risk-based test planning, locator and Selenium-to-Playwright tools, a test failure analyzer, an API test playground, an automation ROI dashboard, a test case generator, a test data generator and a customer-issue RCA and regression hub. It's a public Next.js app; no login is needed.
 
 **Live:** https://rakesh-qa-hub.vercel.app
 
@@ -33,6 +33,7 @@ The sidebar groups modules the same way as the tables below.
 | API Test Playground | `/api-playground` | A lightweight Postman: requests with params, headers, auth and body, `{{environment}}` variables, assertions, collections, cURL export and history. Requests go through an SSRF-protected proxy. |
 | Bug Tracker | `/bug-tracker` | Teams and feature pages with total / valid issues and a % valid pill. Feature issue lists, an activity feed and a workload view. |
 | Bug Formatter | `/bug-formatter` | Turn pasted Claude findings, a form or a CSV into Markdown for Jira or Slack. |
+| Customer Issue RCA | `/customer-issues` | Customer-reported (escaped) defects from Jira, CSV / Excel or by hand: disposition, two-level RCA category, catch stage, catchable, prevention and RCA completeness; regression cases per issue from the Test Case Generator engine, a mandatory regression pack, release runs and a Release Readiness gate that blocks the release until the run passes; dashboard with leakage insights. Jira is optional (server env vars). |
 | AI PR Review | `/ai-pr-review` | Generate a focused code-review prompt, then log the flags from Claude's table and browse them all. |
 
 **Automation**
@@ -83,8 +84,8 @@ Without `ANTHROPIC_API_KEY`, AI buttons are hidden and a **Copy prompt for Claud
 
 ## Public-access protection
 
-- Deleting anything, changing CI suites, running workflows, changing a recorded release decision, editing ROI projects and changing the ROI currency need the admin passcode (`x-admin-passcode` header). The app asks for it once per tab.
-- Per-IP rate limits: 30 writes per 10 minutes; 5 workflow runs and 10 CI root-cause analyses per hour; 20 Locator Helper and 20 failure-explanation AI calls, 10 AI conversions and 10 AI test-case generations per hour; 30 API Playground sends per 10 minutes.
+- Deleting anything, changing CI suites, running workflows, changing a recorded release decision, editing ROI projects, changing the ROI currency, editing Customer Issue RCA lists and Jira settings, and retiring regression cases need the admin passcode (`x-admin-passcode` header). The app asks for it once per tab.
+- Per-IP rate limits: 30 writes per 10 minutes; 5 workflow runs and 10 CI root-cause analyses per hour; 20 Locator Helper and 20 failure-explanation AI calls, 10 AI conversions and 10 AI test-case generations per hour; 30 API Playground sends per 10 minutes; 5 Jira syncs per hour.
 - The API Playground proxy only reaches public addresses. Loopback, private, link-local / cloud-metadata, CGNAT, multicast, reserved and IPv6-internal ranges are blocked, and the resolved IP is checked at connect time. Every redirect hop is re-checked. Other limits: 15 s timeout, 2 MB response and 1 MB request caps. Request contents are never logged, and the visitor's cookies are never forwarded.
 - Every request body is validated with zod. User content is always escaped, and Markdown is rendered without raw HTML.
 - Tokens and keys stay on the server; nothing secret is sent to the browser.
@@ -119,6 +120,8 @@ ALLOW_DEMO_SEED=1 npm run seed:demo -- --reset # removes it again
 | `GITHUB_TOKEN` | No | Fine-grained token with Actions read/write on your automation repos. Powers CI Reports, the Release Readiness "CI suite green" gate, Failure Analyzer "From CI" and ROI run counts. Without it those show "Connect GitHub" or fall back to estimates |
 | `ANTHROPIC_API_KEY` | No | Turns on the AI features: CI root cause, Locator Helper alternatives, converter AI mode, failure explanations, AI test-case generation |
 | `RCA_DAILY_LIMIT` | No | Max AI root-cause calls per day per server instance (default 50) |
+| `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN` | No | Customer Issue RCA: Jira Cloud site, account email and API token for syncing customer issues (server only, never sent to the browser). Without them the module shows "Jira not connected" and uses CSV import / manual entry |
+| `CRON_SECRET` | No | Lets the daily Vercel cron run the scheduled Jira sync (`/api/cron/jira-sync`), when it's switched on in Settings → Jira |
 
 If the database password contains special characters, percent-encode them in both URLs (`@` → `%40`).
 

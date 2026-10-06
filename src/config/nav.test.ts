@@ -22,6 +22,16 @@ describe("isActivePath", () => {
 });
 
 describe("isNavChildActive", () => {
+  it("Customer Issue RCA: Dashboard owns issue pages; pack, runs and settings own theirs", () => {
+    const ci = navItems.find((i) => i.href === "/customer-issues")!;
+    const [ciDash, pack, runs, settings] = ci.children!;
+    expect(isNavChildActive("/customer-issues/abc123", ci, ciDash)).toBe(true);
+    expect(isNavChildActive("/customer-issues/runs/r1", ci, runs)).toBe(true);
+    expect(isNavChildActive("/customer-issues/runs/r1", ci, ciDash)).toBe(false);
+    expect(isNavChildActive("/customer-issues/pack", ci, pack)).toBe(true);
+    expect(isNavChildActive("/customer-issues/settings", ci, settings)).toBe(true);
+  });
+
   it("highlights Dashboard on the dashboard and feature detail pages", () => {
     expect(isNavChildActive("/bug-tracker", bugTracker, dashboard)).toBe(true);
     expect(isNavChildActive("/bug-tracker/abc123", bugTracker, dashboard)).toBe(true);
@@ -46,6 +56,7 @@ describe("navItems", () => {
       "/api-playground",
       "/bug-tracker",
       "/bug-formatter",
+      "/customer-issues",
       "/ai-pr-review",
       "/ci",
       "/failure-analyzer",
@@ -60,7 +71,7 @@ describe("navItems", () => {
   it("groups modules into Test Planning, Test Execution, Automation and Reports & Insights", () => {
     expect(navGroups.map((g) => [g.title, g.items.length])).toEqual([
       ["Test Planning", 4],
-      ["Test Execution", 5],
+      ["Test Execution", 6],
       ["Automation", 5],
       ["Reports & Insights", 2],
     ]);

@@ -22,7 +22,7 @@ const MODULES = [
 
 const GROUPS = [
   { name: "Test Planning", cards: 4 },
-  { name: "Test Execution", cards: 5 },
+  { name: "Test Execution", cards: 6 },
   { name: "Automation", cards: 5 },
   { name: "Reports & Insights", cards: 2 },
 ];
@@ -66,6 +66,17 @@ test.describe("navigation", () => {
     await base.goto();
     await base.sidebar.getByRole("button", { name: "Bug Tracker" }).click();
     for (const [name, path] of [["Activity", "/bug-tracker/activity"], ["Workload", "/bug-tracker/workload"], ["Dashboard", "/bug-tracker"]]) {
+      await base.sidebarLink(name).click();
+      await expect(page).toHaveURL(path);
+      await expect(base.sidebarLink(name)).toHaveAttribute("aria-current", "page");
+    }
+  });
+
+  test("Customer Issue RCA group expands to its pages", async ({ page }) => {
+    const base = new BasePage(page, "/");
+    await base.goto();
+    await base.sidebar.getByRole("button", { name: "Customer Issue RCA" }).click();
+    for (const [name, path] of [["Regression pack", "/customer-issues/pack"], ["Release runs", "/customer-issues/runs"], ["Settings", "/customer-issues/settings"], ["Dashboard & issues", "/customer-issues"]]) {
       await base.sidebarLink(name).click();
       await expect(page).toHaveURL(path);
       await expect(base.sidebarLink(name)).toHaveAttribute("aria-current", "page");

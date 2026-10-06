@@ -67,7 +67,7 @@ export function ListsEditor({ lists, reload }: Props) {
             onClick={() => setKind(k)}
             className={cn("rounded-full border px-3 py-1 text-sm", kind === k ? "border-rose-700 bg-rose-700 text-rose-50" : "border-neutral-200 text-neutral-700 hover:bg-neutral-100")}
           >
-            {LIST_LABELS[k]} <span className="opacity-80">({lists.items.filter((i) => i.list === k).length})</span>
+            {LIST_LABELS[k]} ({lists.items.filter((i) => i.list === k).length})
           </button>
         ))}
       </div>

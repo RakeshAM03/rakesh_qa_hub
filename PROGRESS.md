@@ -1,6 +1,6 @@
 # Progress
 
-**Current phase:** All done — original 13 phases, N0–N10, M0–M5, Phase Q (Test Case Generator upgrade), Phase P (PR QA Session prompt rebuild) and Phase G (user guide). Live at https://rakesh-qa-hub.vercel.app.
+**Current phase:** All done — original 13 phases, N0–N10, M0–M5, Phase Q (Test Case Generator upgrade), Phase P (PR QA Session prompt rebuild), Phase G (user guide) and Phase C (Customer Issue RCA). Live at https://rakesh-qa-hub.vercel.app.
 
 ## Decisions (Phase 0)
 
@@ -748,6 +748,16 @@ Spec: `prompts/CustomerIssueRegression-prompt.md`. All defaults accepted:
   "Show as table". RCA categories drill into sub-categories on click. Leakage insights: top catch
   stage this quarter, categories that doubled / are new, recurring, customers-first ≥ 50%,
   "Others" > 15%, valid bugs without cases.
+- **C7:** sidebar entry in Test Execution after Bug Formatter (user change) with sub-pages
+  Dashboard & issues / Regression pack / Release runs / Settings; Help link icon → CircleHelp.
+  Guide `docs/user-guide/customer-issues.md` (11 sections + category table) and all 17 guide
+  screenshots retaken (new sidebar), index / overview / README / glossary updated; overview still
+  prints on one A4 page. Tests: 746 unit (Customer Issue RCA: model, import, Jira, cases, runs +
+  gate, dashboard), 141 E2E incl. `e2e/customer-issues.spec.ts` (mock-Jira sync → Needs RCA →
+  classify → checklist cases → run linked to a release → fail blocks the gate → pass completes →
+  dashboard; CSV import; Lists + passcode). Contrast: 17 Customer Issue RCA states × light / dark
+  × 5 themes = 170 checks → 1 issue (chip count at 80% opacity) fixed → 0. Generic-content scan:
+  only example.com hosts, DEMO-xxx keys and "Demo …" names.
 
 ## Open questions / next steps
 

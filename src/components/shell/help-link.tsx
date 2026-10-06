@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LifeBuoy } from "lucide-react";
+import { CircleHelp } from "lucide-react";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { isActivePath } from "@/config/nav";
@@ -23,7 +23,7 @@ export function HelpLink({ compact = false, onNavigate }: { compact?: boolean; o
         compact && "size-9 justify-center px-0",
       )}
     >
-      <LifeBuoy className="size-4 shrink-0" aria-hidden />
+      <CircleHelp className="size-4 shrink-0" aria-hidden />
       {!compact && "Help"}
     </Link>
   );

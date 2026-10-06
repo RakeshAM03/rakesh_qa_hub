@@ -8,6 +8,7 @@ import {
   FlaskConical,
   GitBranch,
   LayoutGrid,
+  LifeBuoy,
   ListChecks,
   Rocket,
   Send,
@@ -113,6 +114,20 @@ export const navGroups: NavGroup[] = [
         description: "Turn findings, forms or CSVs into clean Markdown for Jira or Slack.",
         tone: "bg-orange-100 text-orange-700",
         ai: true,
+      },
+      {
+        title: "Customer Issue RCA",
+        href: "/customer-issues",
+        icon: LifeBuoy,
+        description: "Classify escaped defects, write the RCA and make their regression tests mandatory before release.",
+        tone: "bg-rose-100 text-rose-700",
+        ai: true,
+        children: [
+          { title: "Dashboard & issues", href: "/customer-issues" },
+          { title: "Regression pack", href: "/customer-issues/pack" },
+          { title: "Release runs", href: "/customer-issues/runs" },
+          { title: "Settings", href: "/customer-issues/settings" },
+        ],
       },
       {
         title: "AI PR Review",

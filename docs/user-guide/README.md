@@ -2,7 +2,7 @@
 
 ## What is Rakesh QA Hub?
 
-Rakesh QA Hub is a free web toolkit for everyday software testing work. It brings 16 small tools together in one place:
+Rakesh QA Hub is a free web toolkit for everyday software testing work. It brings 17 small tools together in one place:
 
 - planning what to test;
 - running tests and logging bugs;
@@ -27,17 +27,18 @@ The hub is open in the browser with no login. Your choices (theme, drafts, your 
 - PRs tested by guesswork → a step-by-step Claude Code session that reads the actual code changes.
 - Dozens of failing tests read one by one → failures grouped by root cause.
 - Automation value nobody can prove → hours saved, ROI and coverage over time.
+- The same customer bug escaping twice → a structured RCA and mandatory regression tests that block the release until they pass.
 
 ## How the sidebar follows the QA lifecycle
 
 The sidebar has four sections, in the order work usually flows:
 
 1. **Test Planning** — decide *what* to test and *how much*: write test cases, reuse approved plans, prioritise by risk, track release gates.
-2. **Test Execution** — *do* the testing: run AI-assisted PR sessions, call APIs, log and format bugs, review code changes.
+2. **Test Execution** — *do* the testing: run AI-assisted PR sessions, call APIs, log and format bugs, turn customer-reported bugs into mandatory regression tests, review code changes.
 3. **Automation** — keep automated tests *running and healthy*: CI runs, failure analysis, locators, migration to Playwright, test data.
 4. **Reports & Insights** — *show* the effort and value: daily QA time and automation ROI.
 
-## All 16 modules
+## All 17 modules
 
 | Module | Section | What it's for | Guide |
 |---|---|---|---|
@@ -49,6 +50,7 @@ The sidebar has four sections, in the order work usually flows:
 | API Test Playground | Test Execution | Send HTTP requests, check responses with assertions, save collections | [Open](api-playground.md) |
 | Bug Tracker | Test Execution | Log issues per feature and team; see % valid, activity and workload | [Open](bug-tracker.md) |
 | Bug Formatter | Test Execution | Turn findings, forms or CSVs into Jira or Slack-ready bug reports | [Open](bug-formatter.md) |
+| Customer Issue RCA | Test Execution | Classify customer-reported bugs, write the RCA, and make their regression tests mandatory before release | [Open](customer-issues.md) |
 | AI PR Review | Test Execution | Generate a code review prompt and log the flags Claude finds | [Open](ai-pr-review.md) |
 | CI Reports | Automation | Trigger and follow GitHub Actions test suites | [Open](ci.md) |
 | Test Failure Analyzer | Automation | Group test failures by root cause: script issues vs product bugs | [Open](failure-analyzer.md) |
@@ -99,6 +101,7 @@ Actions that could lose data or cost money ask for an **admin passcode**. It's s
 - deleting anything (bugs, plans, releases, entries, schemas and so on);
 - adding, editing or reordering CI suites, and starting workflow runs;
 - changing a recorded release decision;
+- retiring regression cases, editing Customer Issue RCA lists and Jira settings;
 - editing or deleting ROI projects, and changing the ROI currency.
 
 You enter it once per browser tab; it's forgotten when the tab closes.
@@ -129,7 +132,9 @@ Modules with an **AI** badge on the home page can use Claude. AI buttons (such a
 | Claude Code | Anthropic's AI assistant that runs in a terminal and can read code, run commands and drive a browser. |
 | Collection | A saved group of API requests. |
 | Contract (API contract) | The agreed shape of an API's requests and responses. A mismatch means the frontend and backend disagree. |
+| Disposition | What happened to a reported issue: valid bug, duplicate, known issue, not a bug, can't reproduce or user error. |
 | Edge case | An unusual but possible input or situation, such as an empty field, a very long name or 29 February. |
+| Escaped defect | A bug that reached production and was found by a customer (or in production) instead of during testing. |
 | Environment (API) | A named set of variables, such as `baseUrl`, so the same request can run against QA or staging. |
 | Exploratory testing | Unscripted testing where the tester learns the feature while looking for problems. |
 | Flaky test | A test that sometimes passes and sometimes fails without any code change. |
@@ -146,6 +151,7 @@ Modules with an **AI** badge on the home page can use Claude. AI buttons (such a
 | Quality gate | A condition a release must meet before shipping, e.g. "No open P0 bugs". |
 | Regression testing | Re-testing existing features to make sure a change didn't break them. |
 | Risk-based testing | Spending the most testing effort where failure is most likely and most costly. |
+| RCA (root cause analysis) | Finding and writing down why a bug happened and why it wasn't caught, so it can be prevented. |
 | ROI (return on investment) | What you gained compared with what you spent, as a percentage. |
 | Root cause | The underlying reason a test failed or a bug happened. |
 | Seed | A number that makes "random" data repeatable: the same seed gives the same data. |

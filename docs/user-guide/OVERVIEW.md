@@ -2,7 +2,7 @@
 
 **One web toolkit for the whole QA lifecycle:** plan → execute → automate → report. No login needed. AI help from Claude is optional, and every module works without it.
 
-## The 16 modules
+## The 17 modules
 
 | Section | Module | What it does for the team |
 |---|---|---|
@@ -14,6 +14,7 @@
 | Test Execution | API Test Playground | Sends API requests with assertions, environments and shared collections, in the browser. |
 | Test Execution | Bug Tracker | Issues per feature and team, with % valid, an activity feed and workload per person. |
 | Test Execution | Bug Formatter | Turns raw findings into clean bug reports for Jira or Slack. |
+| Test Execution | Customer Issue RCA | Classifies customer-reported bugs, records the RCA, and blocks releases until their regression tests pass. |
 | Test Execution | AI PR Review | A standard AI code-review prompt, plus a searchable log of the issues it finds. |
 | Automation | CI Reports | Starts and follows GitHub Actions test suites from one page. |
 | Automation | Test Failure Analyzer | Groups failed tests by root cause and separates script problems from product bugs. |
