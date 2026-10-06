@@ -4,6 +4,7 @@ import type { CustomerIssue, ListItem, Prisma, RegressionCase } from "@prisma/cl
 
 import { db } from "@/lib/db";
 
+import type { CaseSnapshot } from "./runs";
 import { completeness, daysToDetect, daysToResolve, Lists, needsRca, type Classification, type ListItemDto } from "./model";
 
 export const listDto = (i: ListItem): ListItemDto => ({
@@ -188,3 +189,33 @@ export const caseDto = (c: RegressionCase) => ({
   updatedAt: c.updatedAt.toISOString(),
 });
 export type CaseDto = ReturnType<typeof caseDto>;
+
+export async function runDto(runId: string) {
+  const run = await db.regressionRun.findUnique({ where: { id: runId }, include: { results: { orderBy: { sortOrder: "asc" } } } });
+  if (!run) return null;
+  const release = run.releaseId ? await db.release.findUnique({ where: { id: run.releaseId }, select: { id: true, name: true, version: true } }) : null;
+  return {
+    id: run.id,
+    name: run.name,
+    productIds: run.productIds,
+    environment: run.environment,
+    build: run.build,
+    releaseId: run.releaseId,
+    release,
+    status: run.status,
+    createdBy: run.createdBy,
+    createdAt: run.createdAt.toISOString(),
+    results: run.results.map((r) => ({
+      id: r.id,
+      regressionCaseId: r.regressionCaseId,
+      snapshot: r.caseSnapshot as unknown as CaseSnapshot,
+      result: r.result,
+      reason: r.reason,
+      notes: r.notes,
+      evidenceUrl: r.evidenceUrl,
+      executedBy: r.executedBy,
+      executedAt: r.executedAt?.toISOString() ?? null,
+    })),
+  };
+}
+export type RunDto = NonNullable<Awaited<ReturnType<typeof runDto>>>;

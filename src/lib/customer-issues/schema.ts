@@ -117,3 +117,22 @@ export const casePatchSchema = z
   .object({ ...caseFields, mandatory: z.boolean(), automated: z.enum(["NO", "PLANNED", "YES"]), automationRef: z.string().trim().max(500).nullable(), sortOrder: z.number().int().min(0).max(100_000) })
   .partial();
 export const caseRetireSchema = z.object({ retired: z.boolean(), reason: z.string().trim().max(1000).optional() }).refine((v) => !v.retired || (v.reason ?? "").length > 0, "Give a reason for retiring the case.");
+
+export const runCreateSchema = z.object({
+  name: z.string().trim().min(1, "Name is required").max(200),
+  productIds: z.array(id).max(100).default([]),
+  environment: z.string().trim().max(200).nullable().optional(),
+  build: z.string().trim().max(200).nullable().optional(),
+  releaseId: id.nullable().optional(),
+  createdBy: z.string().trim().max(100).nullable().optional(),
+});
+export const runPatchSchema = runCreateSchema.pick({ name: true, environment: true, build: true, releaseId: true }).partial();
+export const resultPatchSchema = z
+  .object({
+    result: z.enum(["PENDING", "PASS", "FAIL", "BLOCKED", "NA"]).optional(),
+    reason: z.string().trim().max(1000).nullable().optional(),
+    notes: z.string().max(5000).nullable().optional(),
+    evidenceUrl: z.string().trim().max(2000).nullable().optional().refine((v) => !v || /^https?:\/\//i.test(v), "Evidence must be an http(s) link"),
+    executedBy: z.string().trim().max(100).nullable().optional(),
+  })
+  .refine((v) => v.result !== "NA" || (v.reason ?? "").length > 0, "N/A needs a reason.");

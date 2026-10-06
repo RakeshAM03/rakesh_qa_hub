@@ -9,7 +9,7 @@ export type ReleaseStatus = "PLANNED" | "IN_TESTING" | "GO" | "NO_GO" | "GO_WITH
 export type DecisionType = "GO" | "NO_GO" | "GO_WITH_ISSUES";
 
 /** Result of an auto check; status null = "can't check" (gate stays manual). */
-export type AutoResult = { status: "PASS" | "FAIL" | null; detail: string; checkedAt?: string };
+export type AutoResult = { status: "PASS" | "FAIL" | null; detail: string; checkedAt?: string; /** In-app link to the evidence (e.g. a regression run). */ href?: string };
 export type Override = { status: GateStatus; note: string; by: string; at: string };
 
 export type GateLike = {
@@ -166,8 +166,9 @@ export type RegressionRunLite = { id: string; name: string; status: "IN_PROGRESS
 export function ruleCustomerRegression(run: RegressionRunLite | null | undefined): AutoResult {
   if (!run) return { status: null, detail: "Can't check — link a customer-issue regression run to this release" };
   const detail = `${run.executed}/${run.total} executed, ${run.failed} failed${run.blocked ? `, ${run.blocked} blocked` : ""} (${run.name})`;
-  if (run.failed || run.blocked || run.status === "BLOCKED") return { status: "FAIL", detail };
-  return run.status === "COMPLETE" ? { status: "PASS", detail } : { status: "FAIL", detail: `${detail} — not complete yet` };
+  const href = `/customer-issues/runs/${run.id}`;
+  if (run.failed || run.blocked || run.status === "BLOCKED") return { status: "FAIL", detail, href };
+  return run.status === "COMPLETE" ? { status: "PASS", detail, href } : { status: "FAIL", detail: `${detail} — not complete yet`, href };
 }
 
 /** Auto result for one gate (null for manual gates). */

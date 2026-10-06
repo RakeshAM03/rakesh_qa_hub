@@ -217,6 +217,6 @@ Spec: `prompts/CustomerIssueRegression-prompt.md`. All 14 defaults accepted.
 - [x] **C2 — Issues** (record, form, validation + completeness, list / Needs RCA, CSV / Excel import, bulk edit).
 - [x] **C3 — Jira** (connection, test, JQL + product mapping, sync with paging / 429, cron, log, write-back).
 - [x] **C4 — Regression cases** (generate via the Test Case Generator engine, edit, TC Library).
-- [ ] **C5 — Pack, runs, enforcement** (pack + export, runs, Bug Formatter hand-off, Readiness gate).
+- [x] **C5 — Pack, runs, enforcement** (pack + export, runs, Bug Formatter hand-off, Readiness gate).
 - [ ] **C6 — Dashboard** (product filter, KPIs, charts, leakage insights).
 - [ ] **C7 — Guide, screenshots, tests, deploy.**

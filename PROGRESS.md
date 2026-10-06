@@ -732,6 +732,13 @@ Spec: `prompts/CustomerIssueRegression-prompt.md`. All defaults accepted:
   Claude prompt / AI use `tcInputFor()` (focused types, Quick depth). Cases are previewed and
   ticked before adding. The cases panel reloads only itself, so unsaved classification edits on
   the page are kept. TC Library: one entry per issue (`tcLibraryEntryId`), updated in place.
+- **C5:** a run snapshots the mandatory, active cases of the chosen products (none = all) at
+  creation, so later case edits / retirements don't change it. Run status recomputed on every
+  result: any Fail / Blocked → Blocked; all Pass or N/A-with-reason → Complete. The Readiness
+  gate uses the latest run linked to the release; `AutoResult.href` adds an "Open run" link in
+  Release Readiness (only change there). Fail → Bug Formatter hand-off (case + linked issue).
+  Pack and run report exports reuse the Standard Test Case Format workbook style; the run report
+  also copies as Markdown.
 
 ## Open questions / next steps
 

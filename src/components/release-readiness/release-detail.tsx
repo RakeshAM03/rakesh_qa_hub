@@ -560,6 +560,11 @@ function GateRow({
         {auto && g.autoResult && !g.override && (
           <span className={cn(g.autoResult.status === null && "text-amber-700")}>
             {GATE_TYPE_LABELS[g.type]}: {g.autoResult.detail}
+            {g.autoResult.href && (
+              <a href={g.autoResult.href} className="ml-1 underline underline-offset-2">
+                Open run
+              </a>
+            )}
             {g.autoResult.status === null && " (set it manually)"}
           </span>
         )}
