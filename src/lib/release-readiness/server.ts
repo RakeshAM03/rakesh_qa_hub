@@ -13,6 +13,7 @@ import {
   type AutoResult,
   type GateLike,
   type Override,
+  type RegressionRunLite,
   type SuiteRun,
 } from "@/lib/readiness";
 import type { TemplateSection } from "@/config/release-templates";
@@ -105,13 +106,23 @@ export async function loadAutoData(release: Release, gates: ReleaseGate[]): Prom
     needs.has("CI_GREEN") && githubConnected() && release.linkedCiSuiteIds.length ? latestRuns(release.linkedCiSuiteIds) : Promise.resolve([] as SuiteRun[]),
   ]);
   const existingFeatures = release.linkedFeaturePageIds.length ? await db.featurePage.count({ where: { id: { in: release.linkedFeaturePageIds } } }) : 0;
+  const regressionRun = needs.has("CUSTOMER_REGRESSION") ? await latestRegressionRun(release.id) : null;
   return {
     issues,
+    regressionRun,
     linkedFeatures: existingFeatures,
     flags,
     linkedRepos: release.linkedRepos,
     ci: { connected: githubConnected(), linked: release.linkedCiSuiteIds.length, runs },
   };
+}
+
+/** Latest Customer Issue regression run linked to the release, with its result counts. */
+async function latestRegressionRun(releaseId: string): Promise<RegressionRunLite | null> {
+  const run = await db.regressionRun.findFirst({ where: { releaseId }, orderBy: { createdAt: "desc" }, include: { results: { select: { result: true } } } });
+  if (!run) return null;
+  const count = (r: string) => run.results.filter((x) => x.result === r).length;
+  return { id: run.id, name: run.name, status: run.status, total: run.results.length, executed: run.results.length - count("PENDING"), failed: count("FAIL"), blocked: count("BLOCKED") };
 }
 
 async function latestRuns(suiteIds: string[]): Promise<SuiteRun[]> {

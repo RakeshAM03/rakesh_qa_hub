@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
 const actor = z.string().trim().max(100).optional();
-export const GATE_TYPES = ["MANUAL", "CI_GREEN", "NO_P0", "NO_P1", "VALID_RATE", "NO_P0_FLAGS"] as const;
+export const GATE_TYPES = ["MANUAL", "CI_GREEN", "NO_P0", "NO_P1", "VALID_RATE", "NO_P0_FLAGS", "CUSTOMER_REGRESSION"] as const;
 export const GATE_STATUSES = ["PENDING", "PASS", "FAIL", "NA"] as const;
 
 const gateConfig = z.record(z.string(), z.number().min(0).max(100_000)).nullable().optional();

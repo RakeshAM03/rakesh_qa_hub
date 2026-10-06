@@ -4,7 +4,7 @@
  */
 
 export type GateStatus = "PENDING" | "PASS" | "FAIL" | "NA";
-export type GateType = "MANUAL" | "CI_GREEN" | "NO_P0" | "NO_P1" | "VALID_RATE" | "NO_P0_FLAGS";
+export type GateType = "MANUAL" | "CI_GREEN" | "NO_P0" | "NO_P1" | "VALID_RATE" | "NO_P0_FLAGS" | "CUSTOMER_REGRESSION";
 export type ReleaseStatus = "PLANNED" | "IN_TESTING" | "GO" | "NO_GO" | "GO_WITH_ISSUES" | "RELEASED";
 export type DecisionType = "GO" | "NO_GO" | "GO_WITH_ISSUES";
 
@@ -32,6 +32,7 @@ export const GATE_TYPE_LABELS: Record<GateType, string> = {
   NO_P1: "No open P1 bugs",
   VALID_RATE: "Valid-bug rate",
   NO_P0_FLAGS: "No unresolved P0 review flags",
+  CUSTOMER_REGRESSION: "Customer issue regression pack passed",
 };
 
 export const STATUS_LABELS: Record<ReleaseStatus, string> = {
@@ -154,8 +155,20 @@ export type AutoData = {
   flags: FlagLite[];
   linkedRepos: string[];
   ci: { connected: boolean; linked: number; runs: SuiteRun[] };
+  /** Latest Customer Issue regression run linked to this release (null when none). */
+  regressionRun?: RegressionRunLite | null;
   now?: number;
 };
+
+export type RegressionRunLite = { id: string; name: string; status: "IN_PROGRESS" | "BLOCKED" | "COMPLETE"; total: number; executed: number; failed: number; blocked: number };
+
+/** Passes only when the linked regression run is Complete with 0 Fail / 0 Blocked. */
+export function ruleCustomerRegression(run: RegressionRunLite | null | undefined): AutoResult {
+  if (!run) return { status: null, detail: "Can't check — link a customer-issue regression run to this release" };
+  const detail = `${run.executed}/${run.total} executed, ${run.failed} failed${run.blocked ? `, ${run.blocked} blocked` : ""} (${run.name})`;
+  if (run.failed || run.blocked || run.status === "BLOCKED") return { status: "FAIL", detail };
+  return run.status === "COMPLETE" ? { status: "PASS", detail } : { status: "FAIL", detail: `${detail} — not complete yet` };
+}
 
 /** Auto result for one gate (null for manual gates). */
 export function autoResultFor(g: Pick<GateLike, "type" | "config">, data: AutoData): AutoResult | null {
@@ -171,6 +184,8 @@ export function autoResultFor(g: Pick<GateLike, "type" | "config">, data: AutoDa
       return ruleValidRate(data.issues, data.linkedFeatures, cfg.threshold ?? 80);
     case "NO_P0_FLAGS":
       return ruleNoP0Flags(data.flags, data.linkedRepos, cfg.days ?? 14, data.now);
+    case "CUSTOMER_REGRESSION":
+      return ruleCustomerRegression(data.regressionRun);
     default:
       return null;
   }

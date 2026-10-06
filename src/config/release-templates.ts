@@ -4,7 +4,7 @@
  * E2E global setup re-inserts it after emptying the test database.
  */
 
-export type TemplateGateType = "MANUAL" | "CI_GREEN" | "NO_P0" | "NO_P1" | "VALID_RATE" | "NO_P0_FLAGS";
+export type TemplateGateType = "MANUAL" | "CI_GREEN" | "NO_P0" | "NO_P1" | "VALID_RATE" | "NO_P0_FLAGS" | "CUSTOMER_REGRESSION";
 
 export type TemplateGate = {
   title: string;
@@ -28,6 +28,8 @@ export const STANDARD_TEMPLATE_SECTIONS: TemplateSection[] = [
       { title: "Regression suite passed", type: "CI_GREEN", isBlocker: false, weight: 1 },
       manual("New features tested against acceptance criteria"),
       manual("Cross-browser / responsive checks done"),
+      // Added by the customer_issues migration (blocker): mandatory customer-issue regressions passed.
+      { title: "Customer issue regression pack passed", type: "CUSTOMER_REGRESSION", isBlocker: true, weight: 1 },
     ],
   },
   {

@@ -213,7 +213,7 @@ Source: `prompts/TestCaseGenerator-QUALITY-UPGRADE.md`; format reference
 Spec: `prompts/CustomerIssueRegression-prompt.md`. All 14 defaults accepted.
 
 - [x] **C0 — Decisions** recorded in PROGRESS.md.
-- [ ] **C1 — Data model + lists + Settings** (migration with generic lists, Settings → Lists / Products).
+- [x] **C1 — Data model + lists + Settings** (migration with generic lists, Settings → Lists / Products).
 - [ ] **C2 — Issues** (record, form, validation + completeness, list / Needs RCA, CSV / Excel import, bulk edit).
 - [ ] **C3 — Jira** (connection, test, JQL + product mapping, sync with paging / 429, cron, log, write-back).
 - [ ] **C4 — Regression cases** (generate via the Test Case Generator engine, edit, TC Library).

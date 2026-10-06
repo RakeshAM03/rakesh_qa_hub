@@ -241,6 +241,8 @@ enum GateType {
   NO_P1
   VALID_RATE
   NO_P0_FLAGS
+  /// Customer Issue RCA: the linked regression run is Complete with 0 Fail / 0 Blocked.
+  CUSTOMER_REGRESSION
 }
 
 enum GateStatus {
@@ -558,4 +560,233 @@ model TestCaseGeneration {
   updatedAt        DateTime  @updatedAt
 
   @@index([updatedAt])
+}
+
+// ---------------------------------------------------------------- Customer Issue RCA
+
+enum ListKind {
+  PRODUCT
+  DISPOSITION
+  RCA_CATEGORY
+  RCA_SUBCATEGORY
+  CAUGHT_AT
+  WHY_ESCAPED
+  DETECTED_BY
+  SCOPE
+  IMPACT
+  OWNER_TEAM
+}
+
+enum Catchable {
+  YES
+  NO
+  PARTIAL
+}
+
+enum IssueSource {
+  JIRA
+  CSV
+  MANUAL
+}
+
+enum CustomerIssueStatus {
+  OPEN
+  IN_PROGRESS
+  FIXED
+  CLOSED
+}
+
+enum PreventionStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  DONE
+}
+
+enum AutomationState {
+  NO
+  PLANNED
+  YES
+}
+
+enum RegressionRunStatus {
+  IN_PROGRESS
+  BLOCKED
+  COMPLETE
+}
+
+enum RunResult {
+  PENDING
+  PASS
+  FAIL
+  BLOCKED
+  NA
+}
+
+/// Editable classification lists. Generic defaults come from a migration; products are user-added.
+model ListItem {
+  id               String     @id @default(cuid())
+  list             ListKind
+  /// Internal meaning the logic relies on (e.g. VALID_BUG, DUPLICATE, OTHERS, CUSTOMER); null for plain items.
+  key              String?
+  name             String
+  description      String?
+  /// RCA sub-categories: their main category.
+  parentId         String?
+  defaultCatchable Catchable?
+  /// RCA categories: default owner team (a ListItem id of list OWNER_TEAM).
+  defaultOwnerId   String?
+  sortOrder        Int        @default(0)
+  active           Boolean    @default(true)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  @@index([list, sortOrder])
+  @@index([parentId])
+}
+
+/// Single row (id "default"). Credentials live only in server environment variables.
+model JiraSettings {
+  id               String   @id @default("default")
+  jql              String   @default("")
+  /// [{ kind: "project" | "component", value, productId }]
+  productMapping   Json     @default("[]")
+  scheduleEnabled  Boolean  @default(false)
+  writeBackEnabled Boolean  @default(false)
+  updatedAt        DateTime @updatedAt
+}
+
+model JiraSyncLog {
+  id         String    @id @default(cuid())
+  /// "manual" | "schedule"
+  trigger    String    @default("manual")
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+  added      Int       @default(0)
+  updated    Int       @default(0)
+  unchanged  Int       @default(0)
+  /// [{ key?, message }]
+  errors     Json?
+
+  @@index([startedAt])
+}
+
+model CustomerIssue {
+  id                 String              @id @default(cuid())
+  issueKey           String              @unique
+  issueUrl           String?
+  source             IssueSource         @default(MANUAL)
+  lastSyncedAt       DateTime?
+  /// Jira-owned fields (refreshed on every sync).
+  summary            String
+  description        String?
+  status             CustomerIssueStatus @default(OPEN)
+  createdDate        DateTime            @db.Date
+  resolvedDate       DateTime?           @db.Date
+  fixVersion         String?
+  /// Release date of the Jira fix version / "Released in" version, when Jira knows it.
+  releasedInDate     DateTime?           @db.Date
+  priority           String?
+  reporter           String?
+  assignee           String?
+  components         String[]
+  labels             String[]
+  /// Hub-owned fields (never overwritten by sync).
+  productId          String?
+  module             String?
+  releasedIn         String?
+  severity           String?
+  dispositionId      String?
+  dispositionNote    String?
+  linkedIssueKey     String?
+  rcaCategoryId      String?
+  rcaSubcategoryId   String?
+  caughtAtId         String?
+  catchable          Catchable?
+  whyEscapedId       String?
+  detectedById       String?
+  scopeId            String?
+  impactId           String?
+  recurring          Boolean             @default(false)
+  ownerTeamId        String?
+  rca                String?
+  prevention         String?
+  preventionStatus   PreventionStatus    @default(NOT_STARTED)
+  qaOwner            String?
+  comments           String?
+  regressionRequired Boolean             @default(true)
+  rcaComplete        Boolean             @default(false)
+  rcaCompletedAt     DateTime?
+  /// Hash of the last RCA comment written back to Jira (so it's posted once per RCA).
+  writeBackHash      String?
+  tcLibraryEntryId   String?
+  cases              RegressionCase[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([createdDate])
+  @@index([productId])
+}
+
+model RegressionCase {
+  id             String          @id @default(cuid())
+  issueId        String
+  issue          CustomerIssue   @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  /// TC_CI_<issue-key>_<NN>
+  caseId         String          @unique
+  title          String
+  category       String
+  type           String
+  priority       String
+  preconditions  String          @default("")
+  steps          String[]
+  testData       String          @default("")
+  expectedResult String          @default("")
+  productId      String?
+  module         String?
+  mandatory      Boolean         @default(true)
+  automated      AutomationState @default(NO)
+  automationRef  String?
+  retired        Boolean         @default(false)
+  retiredReason  String?
+  sortOrder      Int             @default(0)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([issueId, sortOrder])
+}
+
+model RegressionRun {
+  id          String                @id @default(cuid())
+  name        String
+  productIds  String[]
+  environment String?
+  build       String?
+  /// Soft link to a Release Readiness release.
+  releaseId   String?
+  status      RegressionRunStatus   @default(IN_PROGRESS)
+  createdBy   String?
+  results     RegressionRunResult[]
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  @@index([releaseId])
+  @@index([createdAt])
+}
+
+model RegressionRunResult {
+  id               String        @id @default(cuid())
+  runId            String
+  run              RegressionRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  regressionCaseId String?
+  /// Copy of the case at run creation (later edits don't change the run).
+  caseSnapshot     Json
+  result           RunResult     @default(PENDING)
+  reason           String?
+  notes            String?
+  evidenceUrl      String?
+  executedBy       String?
+  executedAt       DateTime?
+  sortOrder        Int           @default(0)
+
+  @@index([runId, sortOrder])
 }

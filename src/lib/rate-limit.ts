@@ -21,6 +21,10 @@ export const RULES = {
   tcgenAi: { name: "tcgen-ai", limit: 10, windowMs: 60 * 60_000 },
   /** API Test Playground outbound sends. */
   apiSend: { name: "api-send", limit: 30, windowMs: 10 * 60_000 },
+  /** Customer Issue RCA: manual Jira sync. */
+  jiraSync: { name: "jira-sync", limit: 5, windowMs: 60 * 60_000 },
+  /** Customer Issue RCA: recording regression run results (one write per executed case). */
+  runResult: { name: "run-result", limit: 300, windowMs: 10 * 60_000 },
 } satisfies Record<string, Rule>;
 
 /** POST routes with their own limit instead of the generic write limit. */
@@ -30,7 +34,11 @@ const OWN_LIMIT: [RegExp, Rule][] = [
   [/^\/api\/failure-analyzer\/ai\/?$/, RULES.failureAi],
   [/^\/api\/api-playground\/send\/?$/, RULES.apiSend],
   [/^\/api\/test-case-generator\/(?:generate|improve)\/?$/, RULES.tcgenAi],
+  [/^\/api\/customer-issues\/jira\/sync\/?$/, RULES.jiraSync],
 ];
+
+/** PATCH routes with their own limit instead of the generic write limit. */
+const OWN_PATCH_LIMIT: [RegExp, Rule][] = [[/^\/api\/customer-issues\/runs\/[^/]+\/results\/[^/]+\/?$/, RULES.runResult]];
 
 export function createLimiter(now: () => number = Date.now) {
   const hits = new Map<string, number[]>();
@@ -65,7 +73,7 @@ export function createLimiter(now: () => number = Date.now) {
 export function rulesFor(method: string, pathname: string): Rule[] {
   if (!pathname.startsWith("/api/")) return [];
   const rules: Rule[] = [];
-  const own = method === "POST" ? OWN_LIMIT.find(([re]) => re.test(pathname))?.[1] : undefined;
+  const own = (method === "POST" ? OWN_LIMIT : method === "PATCH" ? OWN_PATCH_LIMIT : []).find(([re]) => re.test(pathname))?.[1];
   if (own) return [own];
   if (method === "POST" || method === "PATCH") rules.push(RULES.write);
   if (method === "POST" && /^\/api\/ci\/suites\/[^/]+\/dispatch\/?$/.test(pathname)) rules.push(RULES.dispatch);

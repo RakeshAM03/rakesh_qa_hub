@@ -2,6 +2,7 @@ import { execSync } from "node:child_process";
 
 import { PrismaClient } from "@prisma/client";
 
+import { DEFAULT_LISTS } from "../src/config/customer-issues";
 import { STANDARD_TEMPLATE_NAME, STANDARD_TEMPLATE_SECTIONS } from "../src/config/release-templates";
 
 /**
@@ -31,6 +32,9 @@ export default async function globalSetup() {
     await db.checklistTemplate.create({
       data: { id: "builtin_standard_release", name: STANDARD_TEMPLATE_NAME, sections: STANDARD_TEMPLATE_SECTIONS },
     });
+    // Customer Issue RCA: default lists and the Jira settings row (also from a migration in production).
+    await db.listItem.createMany({ data: DEFAULT_LISTS });
+    await db.jiraSettings.create({ data: { id: "default" } });
   } finally {
     await db.$disconnect();
   }
