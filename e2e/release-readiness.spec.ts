@@ -10,7 +10,7 @@ test.describe("Release Readiness", () => {
     await expect(rr.heading("Release Readiness")).toBeVisible();
     await page.getByRole("link", { name: "Manage templates" }).click();
     await expect(page.getByRole("list", { name: "Templates" })).toContainText("Standard release");
-    await expect(page.getByRole("list", { name: "Templates" })).toContainText("4 sections · 12 gates (4 auto)");
+    await expect(page.getByRole("list", { name: "Templates" })).toContainText("4 sections · 13 gates (5 auto)");
   });
 });
 
@@ -20,8 +20,8 @@ test.describe("Release Readiness @write", () => {
     const name = `Checkout revamp ${uid()}`;
     await rr.createRelease(name, { version: "v2.4.0" });
 
-    // 12 gates from the Standard template; auto gates without linked data can't check.
-    await expect(page.getByTestId("gate-row")).toHaveCount(12);
+    // 13 gates from the Standard template; auto gates without linked data can't check.
+    await expect(page.getByTestId("gate-row")).toHaveCount(13);
     await expect(rr.gate("No open P0 bugs")).toContainText("Can't check — link Bug Tracker feature pages");
     await expect(rr.scoreRing).toHaveAccessibleName(/Readiness 0%/);
 
@@ -34,6 +34,7 @@ test.describe("Release Readiness @write", () => {
       "Regression suite passed",
       "New features tested against acceptance criteria",
       "Cross-browser / responsive checks done",
+      "Customer issue regression pack passed",
       "No open P0 bugs",
       "No open P1 bugs",
       "Known issues documented",
@@ -96,7 +97,7 @@ test.describe("Release Readiness @write", () => {
     await rr.goto();
     const row = page.getByRole("table", { name: "Releases" }).getByRole("row").filter({ hasText: name });
     await expect(row).toContainText("No-Go");
-    await expect(row).toContainText("10 / 11 passed");
+    await expect(row).toContainText("11 / 12 passed");
   });
 
   test("auto gate reads Bug Tracker: an open P0 in a linked feature fails the blocker; override needs a note", async ({ page, request }) => {
