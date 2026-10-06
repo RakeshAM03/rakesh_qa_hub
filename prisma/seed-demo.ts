@@ -25,6 +25,8 @@ const RESOURCES = ["Demo Resource 1", "Demo Resource 2", "Demo Resource 3"];
 const SUITE = "Demo Suite";
 const FLAG_REPOS = ["demo-repo", "demo-api"];
 const TC_PREFIX = "Sample Test Plan";
+const DEMO_PRODUCTS = ["Demo Product A", "Demo Product B"];
+const DEMO_ISSUE_PREFIX = "DEMO-";
 /** name → [team index | null, issue count, invalid count] */
 const FEATURES: Array<[string, number | null, number, number]> = [
   ["Sample Feature", 0, 20, 0], // 100% valid → green
@@ -74,6 +76,8 @@ async function reset() {
   await db.flag.deleteMany({ where: { repo: { in: FLAG_REPOS } } });
   await db.testPlanEntry.deleteMany({ where: { name: { startsWith: TC_PREFIX } } });
   await db.ciSuite.deleteMany({ where: { name: SUITE } });
+  await db.customerIssue.deleteMany({ where: { issueKey: { startsWith: DEMO_ISSUE_PREFIX } } });
+  await db.listItem.deleteMany({ where: { list: "PRODUCT", name: { in: DEMO_PRODUCTS } } });
   console.log("Demo data removed.");
 }
 
@@ -217,6 +221,51 @@ async function seedCi() {
   });
 }
 
+/** Customer Issue RCA: two demo products and DEMO-101…105 across several categories (spec §10). */
+async function seedCustomerIssues() {
+  const products = await Promise.all(DEMO_PRODUCTS.map((name, i) => db.listItem.create({ data: { list: "PRODUCT", name, sortOrder: i } })));
+  const item = async (list: "DISPOSITION" | "RCA_CATEGORY" | "RCA_SUBCATEGORY" | "CAUGHT_AT" | "DETECTED_BY" | "WHY_ESCAPED", name: string) => (await db.listItem.findFirst({ where: { list, name } }))?.id ?? null;
+  const issue = async (key: string, summary: string, opts: { product: number; module: string; created: number; resolved?: number; disposition: string; category?: string; sub?: string; caught?: string; catchable?: "YES" | "NO" | "PARTIAL"; why?: string; detected?: string; severity?: string; rca?: string; prevention?: string; linked?: string; complete?: boolean }) => {
+    const category = opts.category ? await item("RCA_CATEGORY", opts.category) : null;
+    const cat = category ? await db.listItem.findUnique({ where: { id: category } }) : null;
+    const dispositionId = await item("DISPOSITION", opts.disposition);
+    await db.customerIssue.create({
+      data: {
+        issueKey: key,
+        summary,
+        description: `Sample: ${summary}. Reported by a demo customer in the demo environment.`,
+        status: opts.resolved !== undefined ? "FIXED" : "OPEN",
+        source: "MANUAL",
+        productId: products[opts.product].id,
+        module: opts.module,
+        createdDate: daysAgo(opts.created),
+        resolvedDate: opts.resolved !== undefined ? daysAgo(opts.resolved) : null,
+        dispositionId,
+        linkedIssueKey: opts.linked ?? null,
+        rcaCategoryId: category,
+        rcaSubcategoryId: opts.sub ? await item("RCA_SUBCATEGORY", opts.sub) : null,
+        caughtAtId: opts.caught ? await item("CAUGHT_AT", opts.caught) : null,
+        catchable: opts.catchable ?? cat?.defaultCatchable ?? null,
+        whyEscapedId: opts.why ? await item("WHY_ESCAPED", opts.why) : null,
+        detectedById: opts.detected ? await item("DETECTED_BY", opts.detected) : null,
+        ownerTeamId: cat?.defaultOwnerId ?? null,
+        severity: opts.severity ?? null,
+        rca: opts.rca ?? null,
+        prevention: opts.prevention ?? null,
+        qaOwner: "Demo Reviewer",
+        regressionRequired: opts.disposition === "Valid Bug",
+        rcaComplete: opts.complete ?? false,
+        rcaCompletedAt: opts.complete ? new Date() : null,
+      },
+    });
+  };
+  await issue("DEMO-101", "Apply form rejects 10-digit phone numbers", { product: 0, module: "Apply form", created: 40, resolved: 37, disposition: "Valid Bug", category: "Config / Data", sub: "Shared config affected another client", caught: "Regression testing", why: "Missing test data", detected: "Customer", severity: "P2 - High", rca: "A shared validation setting for one demo client also applied to every other client.", prevention: "Per-client config review + a regression case for each phone format.", complete: true });
+  await issue("DEMO-102", "Blank page after deployment", { product: 1, module: "Dashboard", created: 25, resolved: 25, disposition: "Valid Bug", category: "Infra / Deployment", sub: "Static asset/cache issue", caught: "Deployment / release checklist", detected: "Monitoring", severity: "P1 - Critical", rca: "Old cached script referenced a removed asset after deploy.", prevention: "Cache purge step added to the release checklist.", complete: true });
+  await issue("DEMO-103", "Partner sync shows false 'rejected' status", { product: 0, module: "Partner sync", created: 12, resolved: 9, disposition: "Valid Bug", category: "Code Defect", sub: "Missing null/validation check", caught: "Code review / unit tests", why: "Missing test case", detected: "Customer", severity: "P2 - High", rca: "An empty status from the partner was treated as 'rejected'.", prevention: "Unit tests for empty / null partner responses." });
+  await issue("DEMO-104", "Cannot save item with an archived item's name", { product: 1, module: "Items", created: 6, disposition: "Valid Bug", category: "Code Defect", sub: "Logic error", caught: "QA functional testing", detected: "Support", severity: "P3 - Medium" });
+  await issue("DEMO-105", "Duplicate of DEMO-101", { product: 0, module: "Apply form", created: 38, disposition: "Duplicate", linked: "DEMO-101" });
+}
+
 async function main() {
   guard();
   if (process.argv.includes("--reset")) return reset();
@@ -230,6 +279,7 @@ async function main() {
   await seedFlags();
   await seedTcLibrary();
   await seedCi();
+  await seedCustomerIssues();
   console.log("Demo data inserted.");
 }
 
